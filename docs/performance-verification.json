@@ -1,0 +1,140 @@
+{
+  "date": "2026-10-27",
+  "appUrl": "http://127.0.0.1:3000",
+  "backendContract": {
+    "url": "http://94.184.32.84:8090/openapi/v1.json",
+    "paths": 283,
+    "removedMfaPaths": 7,
+    "selectedOperations": 115,
+    "runtimeSchemas": 222,
+    "runtimeContractBytesBefore": 250630,
+    "runtimeContractBytesAfter": 116350
+  },
+  "before": {
+    "phase": "before",
+    "date": "2026-10-27",
+    "loginResponseMs": [
+      84,
+      24,
+      43,
+      44
+    ],
+    "initialScriptRequests": 19,
+    "scriptBytes": 1274666,
+    "estimatedScriptGzipBytes": 335366,
+    "challengeStatus": 202,
+    "loginStatus": 200,
+    "reads": [
+      {
+        "path": "/api/admin/v1/organizations?page=1&pageSize=5",
+        "status": 200,
+        "ms": 433
+      },
+      {
+        "path": "/api/admin/v1/users?page=1&pageSize=1",
+        "status": 200,
+        "ms": 691
+      },
+      {
+        "path": "/api/admin/v1/education/classes?page=1&pageSize=1",
+        "status": 200,
+        "ms": 950
+      },
+      {
+        "path": "/api/admin/v1/moderation/cases?page=1&pageSize=1",
+        "status": 200,
+        "ms": 1134
+      },
+      {
+        "path": "/api/admin/v1/operations/health",
+        "status": 200,
+        "ms": 1301
+      },
+      {
+        "path": "/api/admin/v1/provisioning?status=NeedsAttention&page=1&pageSize=3",
+        "status": 200,
+        "ms": 1444
+      }
+    ],
+    "parallelReadsMs": 1445,
+    "logoutStatus": 204
+  },
+  "after": {
+    "phase": "after",
+    "date": "2026-10-27",
+    "loginResponseMs": [
+      180,
+      41,
+      30,
+      29
+    ],
+    "initialScriptRequests": 19,
+    "scriptBytes": 1004838,
+    "estimatedScriptGzipBytes": 294878,
+    "challengeStatus": 202,
+    "loginStatus": 200,
+    "reads": [
+      {
+        "path": "/api/admin/v1/organizations?page=1&pageSize=5",
+        "status": 200,
+        "ms": 355
+      },
+      {
+        "path": "/api/admin/v1/users?page=1&pageSize=1",
+        "status": 200,
+        "ms": 360
+      },
+      {
+        "path": "/api/admin/v1/education/classes?page=1&pageSize=1",
+        "status": 200,
+        "ms": 231
+      },
+      {
+        "path": "/api/admin/v1/moderation/cases?page=1&pageSize=1",
+        "status": 200,
+        "ms": 237
+      },
+      {
+        "path": "/api/admin/v1/operations/health",
+        "status": 200,
+        "ms": 234
+      },
+      {
+        "path": "/api/admin/v1/provisioning?status=NeedsAttention&page=1&pageSize=3",
+        "status": 200,
+        "ms": 239
+      }
+    ],
+    "parallelReadsMs": 361,
+    "logoutStatus": 204
+  },
+  "improvement": {
+    "parallelReadsPercent": 75,
+    "initialScriptBytesPercent": 21.2,
+    "estimatedGzipPercent": 12.1
+  },
+  "liveAuth": {
+    "date": "2026-10-27",
+    "challengeStatus": 202,
+    "verifyStatus": 200,
+    "ownerStatus": 200,
+    "roles": [
+      "PlatformOwner"
+    ],
+    "hasPlatformAccess": true,
+    "logoutStatus": 204
+  },
+  "validation": {
+    "typecheck": "passed",
+    "unitTests": 99,
+    "browserScenarios": 57,
+    "browserRun": "56 passed in full run; remaining scenario passed after fixing hardcoded test Origin for port 3110",
+    "dockerTests": 5,
+    "hostBuild": "passed",
+    "dockerBuild": "passed",
+    "healthyContainer": true,
+    "handbookPages": 19,
+    "servedHandbookSha256": "5f40b5e0cd986f0f5b46c4596aee4a3daaf760b204c22eef5eb72b66e78e9337"
+  },
+  "caveat": "Single before/after live-backend sample; gzip is a local estimate, not measured transferred bytes. No guarantee of identical timings on future requests."
+}

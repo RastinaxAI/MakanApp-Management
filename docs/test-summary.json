@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-18",
+  "timezone": "Asia/Tehran",
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "unit": {
+    "passed": 28,
+    "failed": 0,
+    "files": 5
+  },
+  "e2eFullRun": {
+    "passed": 19,
+    "failed": 0,
+    "backend": "isolated HTTP fixture",
+    "browser": "installed Chrome"
+  },
+  "additionalChecks": [
+    "Responsive and dark-mode visual rerun passed",
+    "Organization edit/report rerun passed",
+    "Production dependency audit: zero reported vulnerabilities",
+    "10 token contrast pairs >= 4.5:1"
+  ],
+  "live": {
+    "openApiFetched": true,
+    "paths": 290,
+    "schemas": 553,
+    "unauthenticatedGetChecks": 4,
+    "authenticatedAcceptance": "not run; no test account",
+    "liveMutations": 0,
+    "liveOtpRequests": 0
+  },
+  "limitations": [
+    "Unverified platform permission bindings remain disabled",
+    "Step-up backend code mapping awaits confirmation",
+    "Single Node process session storage",
+    "Backend HTTP path needs HTTPS or secure network",
+    "Ambiguous organization person age identifiers remain unconnected"
+  ],
+  "demoVerification": {
+    "passed": 5,
+    "failedAfterFixes": 0,
+    "existingBrowserRegressionTestsPassed": 19,
+    "fullSuiteBeforeLayoutFix": {
+      "passed": 23,
+      "failed": 1
+    },
+    "layoutRetest": "passed after grid min-width fix",
+    "apiRequestsFromDemo": 0,
+    "authCookiesCreatedByDemo": 0,
+    "writes": "disabled before any fetch",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "productionSmoke": {
+      "status": 200,
+      "apiRequests": 0,
+      "authCookies": 0,
+      "protectedRouteStatus": 307
+    }
+  }
+}

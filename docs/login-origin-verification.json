@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "canonicalOrigin": "http://127.0.0.1:3000",
+  "localAlias": {
+    "host": "localhost:3000",
+    "status": 307,
+    "location": "http://127.0.0.1:3000/login"
+  },
+  "ownerAdmission": {
+    "phone": "09120000105",
+    "verifiedInUserBrowser": true,
+    "verifiedBeforeDeployment": true,
+    "sessionPreservedAfterDeployment": true,
+    "finalPage": "/admin",
+    "rolePolicy": "PlatformOwner and platform.access from backend; no phone allowlist",
+    "screenshot": "screenshots/owner-login-2026-10-28.png"
+  },
+  "checks": {
+    "unitTests": 110,
+    "typecheck": "passed",
+    "dockerBuild": "passed",
+    "dockerBrowserTests": 6,
+    "foreignOriginBlocked": true,
+    "missingOriginBlocked": true,
+    "aliasPostWithoutCanonicalNavigationBlocked": true
+  },
+  "scope": "Local aliases on the configured port redirect before rendering the login form. Origin and Host validation on POST requests is unchanged."
+}

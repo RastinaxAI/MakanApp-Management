@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-24",
+  "image": "makan-management:local",
+  "service": "makan-management-web-1",
+  "finalUrl": "http://127.0.0.1:3000/login",
+  "health": "healthy",
+  "latestOtpCheck": "otp-connection-check.json",
+  "latestOwnerMfaCheck": "login-mfa-verification.json",
+  "build": {
+    "bundler": "webpack",
+    "nodeHeapLimitMiBPerBuildProcess": 1536,
+    "pageWorkers": 1,
+    "webpackMemoryOptimizations": true
+  },
+  "runtime": {
+    "node": "22.23.4",
+    "next": "16.4.2",
+    "user": "1000:1000",
+    "readOnlyRootFilesystem": true,
+    "sessionDirectoryMode": "0700",
+    "hostBinding": "127.0.0.1:3000",
+    "restartPolicy": "unless-stopped"
+  },
+  "checks": {
+    "linuxDockerBuild": "passed",
+    "composeValidation": "passed",
+    "windowsPowerShell5Helper": "passed",
+    "automaticPrivateEnvironmentAndNewKey": "passed",
+    "portConflictFailsWithoutKillingOtherProcess": "passed",
+    "invalidSessionKeyPreventsStartup": "passed",
+    "privateEnvironmentFilesExcludedFromImage": "passed",
+    "nonRootRuntime": "passed",
+    "sessionVolumeWritable": "passed",
+    "sessionVolumeSurvivesDownUp": "passed",
+    "stopAndRestartHelpers": "passed",
+    "alternatePort3001AndMatchingOrigin": "passed",
+    "wrongOriginRejected403": "passed",
+    "defaultPort3000Restored": "passed",
+    "typecheck": "passed",
+    "backendReachableFromContainerWithoutAuthentication": 401
+  },
+  "tests": {
+    "unitPassed": 76,
+    "fixtureBrowserPassed": 37,
+    "loginMfaBrowserPassed": 5,
+    "dockerBrowserPassed": 8,
+    "dockerBrowserFailed": 0,
+    "dockerBrowserCommand": "npx playwright test --config playwright.docker.config.ts",
+    "dockerBrowserCoverage": [
+      "production login with bundled styles and fonts",
+      "protected pages redirect and session API denies unauthenticated access",
+      "OTP error preserves the phone and recovers only on explicit retry",
+      "five existing demo flows including desktop and mobile"
+    ],
+    "realOtpSentDuringDockerVerification": true,
+    "realOtpScope": "One explicit live browser check for 09100000000, recorded separately in otp-connection-check.json; the eight-test Docker suite sends no real OTP."
+  },
+  "scope": "Frontend and BFF only; real backend remains http://94.184.32.84:8090. Owner authorization is unchanged."
+}

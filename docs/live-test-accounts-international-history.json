@@ -1,0 +1,326 @@
+{
+  "date": "2026-10-24",
+  "baseUrl": "http://94.184.32.84:8090",
+  "numberSource": "https://nanpa.com/numbering/555-line-numbers",
+  "testCode": "123456",
+  "accounts": [
+    {
+      "phoneNumber": "+12025550171",
+      "label": "تست ورود ماکان 1",
+      "steps": [
+        {
+          "operation": "challenge",
+          "status": 202
+        },
+        {
+          "operation": "verify",
+          "status": 200
+        },
+        {
+          "operation": "profile",
+          "status": 200
+        },
+        {
+          "operation": "me",
+          "status": 200
+        },
+        {
+          "operation": "platformMe",
+          "status": 403
+        },
+        {
+          "operation": "workspaces",
+          "status": 200
+        },
+        {
+          "operation": "logout",
+          "status": 204
+        }
+      ],
+      "userId": "6c6fade9-3104-4ece-867e-3bc0737b6832",
+      "loginReady": true,
+      "profileComplete": true,
+      "identityMatches": true,
+      "platformStatus": 403,
+      "platformRoles": [],
+      "platformPermissions": [],
+      "workspaces": [
+        {
+          "workspaceType": "Personal",
+          "organizationId": null,
+          "organizationName": null,
+          "membershipId": null,
+          "role": null,
+          "displayName": "فضای شخصی",
+          "status": "Active"
+        }
+      ],
+      "assignedSchoolRoles": []
+    },
+    {
+      "phoneNumber": "+12025550172",
+      "label": "تست ورود ماکان 2",
+      "steps": [
+        {
+          "operation": "challenge",
+          "status": 202
+        },
+        {
+          "operation": "verify",
+          "status": 200
+        },
+        {
+          "operation": "profile",
+          "status": 200
+        },
+        {
+          "operation": "me",
+          "status": 200
+        },
+        {
+          "operation": "platformMe",
+          "status": 403
+        },
+        {
+          "operation": "workspaces",
+          "status": 200
+        },
+        {
+          "operation": "logout",
+          "status": 204
+        }
+      ],
+      "userId": "a7bcb814-fff5-4c71-9264-d342d6a5b251",
+      "loginReady": true,
+      "profileComplete": true,
+      "identityMatches": true,
+      "platformStatus": 403,
+      "platformRoles": [],
+      "platformPermissions": [],
+      "workspaces": [
+        {
+          "workspaceType": "Personal",
+          "organizationId": null,
+          "organizationName": null,
+          "membershipId": null,
+          "role": null,
+          "displayName": "فضای شخصی",
+          "status": "Active"
+        }
+      ],
+      "assignedSchoolRoles": []
+    },
+    {
+      "phoneNumber": "+12025550173",
+      "label": "تست ورود ماکان 3",
+      "steps": [
+        {
+          "operation": "challenge",
+          "status": 202
+        },
+        {
+          "operation": "verify",
+          "status": 200
+        },
+        {
+          "operation": "profile",
+          "status": 200
+        },
+        {
+          "operation": "me",
+          "status": 200
+        },
+        {
+          "operation": "platformMe",
+          "status": 403
+        },
+        {
+          "operation": "workspaces",
+          "status": 200
+        },
+        {
+          "operation": "logout",
+          "status": 204
+        }
+      ],
+      "userId": "066a8bec-e2ad-4264-b36c-7c566c6bbdc1",
+      "loginReady": true,
+      "profileComplete": true,
+      "identityMatches": true,
+      "platformStatus": 403,
+      "platformRoles": [],
+      "platformPermissions": [],
+      "workspaces": [
+        {
+          "workspaceType": "Personal",
+          "organizationId": null,
+          "organizationName": null,
+          "membershipId": null,
+          "role": null,
+          "displayName": "فضای شخصی",
+          "status": "Active"
+        }
+      ],
+      "assignedSchoolRoles": []
+    },
+    {
+      "phoneNumber": "+12025550174",
+      "label": "تست ورود ماکان 4",
+      "steps": [
+        {
+          "operation": "challenge",
+          "status": 202
+        },
+        {
+          "operation": "verify",
+          "status": 200
+        },
+        {
+          "operation": "profile",
+          "status": 200
+        },
+        {
+          "operation": "me",
+          "status": 200
+        },
+        {
+          "operation": "platformMe",
+          "status": 403
+        },
+        {
+          "operation": "workspaces",
+          "status": 200
+        },
+        {
+          "operation": "logout",
+          "status": 204
+        }
+      ],
+      "userId": "c598bfbc-13fc-466e-bb72-50f019f7d6cd",
+      "loginReady": true,
+      "profileComplete": true,
+      "identityMatches": true,
+      "platformStatus": 403,
+      "platformRoles": [],
+      "platformPermissions": [],
+      "workspaces": [
+        {
+          "workspaceType": "Personal",
+          "organizationId": null,
+          "organizationName": null,
+          "membershipId": null,
+          "role": null,
+          "displayName": "فضای شخصی",
+          "status": "Active"
+        }
+      ],
+      "assignedSchoolRoles": []
+    },
+    {
+      "phoneNumber": "+12025550175",
+      "label": "تست ورود ماکان 5",
+      "steps": [
+        {
+          "operation": "challenge",
+          "status": 202
+        },
+        {
+          "operation": "verify",
+          "status": 200
+        },
+        {
+          "operation": "profile",
+          "status": 200
+        },
+        {
+          "operation": "me",
+          "status": 200
+        },
+        {
+          "operation": "platformMe",
+          "status": 403
+        },
+        {
+          "operation": "workspaces",
+          "status": 200
+        },
+        {
+          "operation": "logout",
+          "status": 204
+        }
+      ],
+      "userId": "d67e45ef-5756-459d-b4e7-3b67bed4e56d",
+      "loginReady": true,
+      "profileComplete": true,
+      "identityMatches": true,
+      "platformStatus": 403,
+      "platformRoles": [],
+      "platformPermissions": [],
+      "workspaces": [
+        {
+          "workspaceType": "Personal",
+          "organizationId": null,
+          "organizationName": null,
+          "membershipId": null,
+          "role": null,
+          "displayName": "فضای شخصی",
+          "status": "Active"
+        }
+      ],
+      "assignedSchoolRoles": []
+    },
+    {
+      "phoneNumber": "+12025550176",
+      "label": "تست ورود ماکان 6",
+      "steps": [
+        {
+          "operation": "challenge",
+          "status": 202
+        },
+        {
+          "operation": "verify",
+          "status": 200
+        },
+        {
+          "operation": "profile",
+          "status": 200
+        },
+        {
+          "operation": "me",
+          "status": 200
+        },
+        {
+          "operation": "platformMe",
+          "status": 403
+        },
+        {
+          "operation": "workspaces",
+          "status": 200
+        },
+        {
+          "operation": "logout",
+          "status": 204
+        }
+      ],
+      "userId": "4d3e6afa-77fc-4959-bcde-e462b66df206",
+      "loginReady": true,
+      "profileComplete": true,
+      "identityMatches": true,
+      "platformStatus": 403,
+      "platformRoles": [],
+      "platformPermissions": [],
+      "workspaces": [
+        {
+          "workspaceType": "Personal",
+          "organizationId": null,
+          "organizationName": null,
+          "membershipId": null,
+          "role": null,
+          "displayName": "فضای شخصی",
+          "status": "Active"
+        }
+      ],
+      "assignedSchoolRoles": []
+    }
+  ]
+}

@@ -1,0 +1,577 @@
+{
+  "capturedAt": "2026-10-25T14:06:42.767Z",
+  "source": "Actual built frontend; isolated fixture backend; no live customer data",
+  "shots": {
+    "login": {
+      "file": "docs/screenshots/handbook/login.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 46.5,
+          "width": 360,
+          "x": 111.25,
+          "y": 300.625,
+          "label": "شماره همراه مالک",
+          "n": 1
+        },
+        {
+          "height": 46,
+          "width": 360,
+          "x": 111.25,
+          "y": 420.125,
+          "label": "دریافت کد",
+          "n": 2
+        },
+        {
+          "height": 44,
+          "width": 360,
+          "x": 111.25,
+          "y": 486.125,
+          "label": "نصب برنامه",
+          "n": 3
+        }
+      ]
+    },
+    "dashboard": {
+      "file": "docs/screenshots/handbook/dashboard.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 457.265625,
+          "width": 213,
+          "x": 936,
+          "y": 139.984375,
+          "label": "انتخاب بخش",
+          "n": 1
+        },
+        {
+          "height": 44,
+          "width": 183.9375,
+          "x": 311,
+          "y": 18.5,
+          "label": "جست‌وجوی سریع",
+          "n": 2
+        },
+        {
+          "height": 38.5,
+          "width": 133,
+          "x": 34,
+          "y": 21.25,
+          "label": "منوی حساب و راهنما",
+          "n": 3
+        },
+        {
+          "height": 44,
+          "width": 145.109375,
+          "x": 69,
+          "y": 265.25,
+          "label": "شروع ساخت سازمان",
+          "n": 4
+        }
+      ]
+    },
+    "organizations": {
+      "file": "docs/screenshots/handbook/organizations.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 46.5,
+          "width": 340,
+          "x": 520,
+          "y": 324.25,
+          "label": "جست‌وجوی نام سازمان",
+          "n": 1
+        },
+        {
+          "height": 34,
+          "width": 75.265625,
+          "x": 154.734375,
+          "y": 330.5,
+          "label": "اعمال فیلتر",
+          "n": 2
+        },
+        {
+          "height": 32,
+          "width": 160,
+          "x": 704,
+          "y": 451.75,
+          "label": "بازکردن پرونده سازمان",
+          "n": 3
+        }
+      ]
+    },
+    "provision": {
+      "file": "docs/screenshots/handbook/provision.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 46.5,
+          "width": 510,
+          "x": 327.5,
+          "y": 305,
+          "label": "نام سازمان",
+          "n": 1
+        },
+        {
+          "height": 44,
+          "width": 84.890625,
+          "x": 327.5,
+          "y": 535,
+          "label": "رفتن به مرحله بعد",
+          "n": 2
+        },
+        {
+          "height": 44,
+          "width": 42,
+          "x": 327.5,
+          "y": 101,
+          "label": "بستن فرم",
+          "n": 3
+        }
+      ]
+    },
+    "users": {
+      "file": "docs/screenshots/handbook/users.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 46.5,
+          "width": 340,
+          "x": 520,
+          "y": 324.25,
+          "label": "پیداکردن شخص",
+          "n": 1
+        },
+        {
+          "height": 42.25,
+          "width": 160,
+          "x": 704,
+          "y": 451.75,
+          "label": "پرونده کاربر",
+          "n": 2
+        },
+        {
+          "height": 44,
+          "width": 42,
+          "x": 60,
+          "y": 241.25,
+          "label": "دریافت دوباره اطلاعات",
+          "n": 3
+        }
+      ]
+    },
+    "user-detail": {
+      "file": "docs/screenshots/handbook/user-detail.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 47,
+          "width": 111.578125,
+          "x": 771.421875,
+          "y": 292,
+          "label": "اطلاعات و عضویت‌ها",
+          "n": 1
+        },
+        {
+          "height": 47,
+          "width": 48.3125,
+          "x": 703.109375,
+          "y": 292,
+          "label": "نشست‌های این کاربر",
+          "n": 2
+        },
+        {
+          "height": 34,
+          "width": 85.453125,
+          "x": 36,
+          "y": 152.75,
+          "label": "اقدام حساس روی حساب",
+          "n": 3
+        }
+      ]
+    },
+    "roles": {
+      "file": "docs/screenshots/handbook/roles.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 47,
+          "width": 75.828125,
+          "x": 807.171875,
+          "y": 220.25,
+          "label": "فهرست نقش‌های تعریف‌شده",
+          "n": 1
+        },
+        {
+          "height": 47,
+          "width": 76.109375,
+          "x": 711.0625,
+          "y": 220.25,
+          "label": "نقش‌های واگذارشده",
+          "n": 2
+        },
+        {
+          "height": 34,
+          "width": 84.421875,
+          "x": 36,
+          "y": 139.125,
+          "label": "واگذاری نقش",
+          "n": 3
+        }
+      ]
+    },
+    "education": {
+      "file": "docs/screenshots/handbook/education.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 47,
+          "width": 40.8125,
+          "x": 842.1875,
+          "y": 220.25,
+          "label": "نوع اطلاعات آموزشی",
+          "n": 1
+        },
+        {
+          "height": 46.5,
+          "width": 136.484375,
+          "x": 723.515625,
+          "y": 495.25,
+          "label": "محدودکردن به سازمان",
+          "n": 2
+        },
+        {
+          "height": 42.25,
+          "width": 170.75,
+          "x": 693.25,
+          "y": 622.75,
+          "label": "جزئیات کلاس",
+          "n": 3
+        }
+      ]
+    },
+    "commerce": {
+      "file": "docs/screenshots/handbook/commerce.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 47,
+          "width": 47.140625,
+          "x": 785.765625,
+          "y": 291.25,
+          "label": "اشتراک سازمان‌ها",
+          "n": 1
+        },
+        {
+          "height": 47,
+          "width": 131.09375,
+          "x": 634.671875,
+          "y": 291.25,
+          "label": "پیگیری راه‌اندازی‌ها",
+          "n": 2
+        },
+        {
+          "height": 42.25,
+          "width": 237.984375,
+          "x": 626.015625,
+          "y": 594.75,
+          "label": "نسخه‌ها و جزئیات پلن",
+          "n": 3
+        }
+      ]
+    },
+    "finance": {
+      "file": "docs/screenshots/handbook/finance.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 44,
+          "width": 137,
+          "x": 723,
+          "y": 324.25,
+          "label": "فیلتر وضعیت سفارش",
+          "n": 1
+        },
+        {
+          "height": 46.5,
+          "width": 136.484375,
+          "x": 723.515625,
+          "y": 420.75,
+          "label": "انتخاب سازمان",
+          "n": 2
+        },
+        {
+          "height": 32,
+          "width": 300.921875,
+          "x": 563.078125,
+          "y": 548.25,
+          "label": "پرونده سفارش",
+          "n": 3
+        }
+      ]
+    },
+    "moderation": {
+      "file": "docs/screenshots/handbook/moderation.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 44,
+          "width": 130,
+          "x": 730,
+          "y": 324.25,
+          "label": "وضعیت رسیدگی",
+          "n": 1
+        },
+        {
+          "height": 44,
+          "width": 250,
+          "x": 610,
+          "y": 414.5,
+          "label": "فیلتر اولویت",
+          "n": 2
+        },
+        {
+          "height": 32,
+          "width": 284,
+          "x": 580,
+          "y": 539.5,
+          "label": "بازکردن پرونده گزارش",
+          "n": 3
+        }
+      ]
+    },
+    "messaging": {
+      "file": "docs/screenshots/handbook/messaging.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 46.5,
+          "width": 136.484375,
+          "x": 723.515625,
+          "y": 420.75,
+          "label": "فیلتر سازمان گفتگو",
+          "n": 1
+        },
+        {
+          "height": 44,
+          "width": 211.5,
+          "x": 502.015625,
+          "y": 414.5,
+          "label": "نوع گفتگو",
+          "n": 2
+        },
+        {
+          "height": 34,
+          "width": 75.265625,
+          "x": 644.734375,
+          "y": 329.25,
+          "label": "دریافت نتیجه فیلتر",
+          "n": 3
+        }
+      ]
+    },
+    "operations": {
+      "file": "docs/screenshots/handbook/operations.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 47,
+          "width": 88.78125,
+          "x": 794.21875,
+          "y": 220.25,
+          "label": "سلامت سرویس‌ها",
+          "n": 1
+        },
+        {
+          "height": 47,
+          "width": 38.703125,
+          "x": 735.515625,
+          "y": 220.25,
+          "label": "وضعیت ارسال سامانه",
+          "n": 2
+        },
+        {
+          "height": 47,
+          "width": 47.203125,
+          "x": 668.3125,
+          "y": 220.25,
+          "label": "کارهای پس‌زمینه",
+          "n": 3
+        }
+      ]
+    },
+    "audit": {
+      "file": "docs/screenshots/handbook/audit.jpg",
+      "width": 1180,
+      "height": 680,
+      "pins": [
+        {
+          "height": 46.5,
+          "width": 121.34375,
+          "x": 738.65625,
+          "y": 420.75,
+          "label": "شخص انجام‌دهنده",
+          "n": 1
+        },
+        {
+          "height": 44,
+          "width": 216.546875,
+          "x": 512.109375,
+          "y": 414.5,
+          "label": "نوع اقدام",
+          "n": 2
+        },
+        {
+          "height": 44,
+          "width": 216.546875,
+          "x": 59,
+          "y": 414.5,
+          "label": "پرونده یا منبع هدف",
+          "n": 3
+        }
+      ]
+    },
+    "notifications": {
+      "file": "docs/screenshots/handbook/notifications.jpg",
+      "height": 1340,
+      "width": 1265,
+      "crop": {
+        "x": 32,
+        "y": 210,
+        "width": 955,
+        "height": 583
+      },
+      "pins": [
+        {
+          "height": 47,
+          "width": 75.4375,
+          "x": 726.546875,
+          "y": 220.25,
+          "n": 1,
+          "label": "تب نصب و اعلان‌ها"
+        },
+        {
+          "height": 44,
+          "width": 172.4375,
+          "x": 786.5625,
+          "y": 427.5,
+          "n": 2,
+          "label": "نصب روی دستگاه"
+        },
+        {
+          "height": 44,
+          "width": 179.578125,
+          "x": 779.421875,
+          "y": 679,
+          "n": 3,
+          "label": "اجازه و ثبت اعلان"
+        }
+      ]
+    },
+    "inbox": {
+      "file": "docs/screenshots/handbook/notifications.jpg",
+      "height": 1340,
+      "width": 1265,
+      "crop": {
+        "height": 412.25,
+        "width": 955,
+        "x": 32,
+        "y": 809
+      },
+      "pins": [
+        {
+          "height": 18,
+          "width": 18,
+          "x": 941,
+          "y": 959,
+          "n": 1,
+          "label": "محدودکردن فهرست"
+        },
+        {
+          "height": 44,
+          "width": 42,
+          "x": 772.8125,
+          "y": 946,
+          "n": 2,
+          "label": "دریافت اعلان تازه"
+        },
+        {
+          "height": 34,
+          "width": 55.875,
+          "x": 77,
+          "y": 1025,
+          "n": 3,
+          "label": "ثبت خواندن اعلان"
+        }
+      ]
+    },
+    "mobile-cards": {
+      "file": "docs/screenshots/handbook/mobile-cards.jpg",
+      "width": 390,
+      "height": 760,
+      "pins": [
+        {
+          "height": 44,
+          "width": 44,
+          "x": 319,
+          "y": 9.5,
+          "label": "منوی اصلی موبایل",
+          "n": 1
+        },
+        {
+          "height": 44,
+          "width": 156.5,
+          "x": 191.5,
+          "y": 321.25,
+          "label": "فیلترهای بیشتر",
+          "n": 2
+        },
+        {
+          "height": 50.5,
+          "width": 287,
+          "x": 44,
+          "y": 492.25,
+          "label": "پرونده از کارت کاربر",
+          "n": 3
+        }
+      ]
+    },
+    "mobile-menu": {
+      "file": "docs/screenshots/handbook/mobile-menu.jpg",
+      "width": 390,
+      "height": 760,
+      "pins": [
+        {
+          "height": 44,
+          "width": 44,
+          "x": 60,
+          "y": 21,
+          "label": "بستن منو",
+          "n": 1
+        },
+        {
+          "height": 48,
+          "width": 294,
+          "x": 60,
+          "y": 257.234375,
+          "label": "انتخاب صفحه",
+          "n": 2
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-10-27"
+}

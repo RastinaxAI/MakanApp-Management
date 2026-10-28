@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-24T09:06:23.979Z",
+  "baseUrl": "http://94.184.32.84:8090",
+  "phoneNumber": "09120000105",
+  "checks": [
+    {
+      "operation": "challenge",
+      "status": 202
+    },
+    {
+      "operation": "verify",
+      "status": 200
+    },
+    {
+      "operation": "platformIdentity",
+      "status": 403,
+      "problem": {
+        "type": "urn:makan:problem:mfa-required",
+        "title": "Request failed",
+        "status": 403,
+        "detail": "تأیید MFA برای Backoffice الزامی است.",
+        "code": "MFA_REQUIRED",
+        "traceId": "00-b4b97028169c77d92516394e5bcbd0db-a5f111fbd516b9d1-00",
+        "correlationId": "b4b97028169c77d92516394e5bcbd0db"
+      }
+    },
+    {
+      "operation": "roleCatalog",
+      "status": 403,
+      "problem": {
+        "type": "urn:makan:problem:mfa-required",
+        "title": "Request failed",
+        "status": 403,
+        "detail": "تأیید MFA برای Backoffice الزامی است.",
+        "code": "MFA_REQUIRED",
+        "traceId": "00-de919e5adfca414c44cb3f6915c894f8-f6eec4fed56283c0-00",
+        "correlationId": "de919e5adfca414c44cb3f6915c894f8"
+      }
+    },
+    {
+      "operation": "identity",
+      "status": 200,
+      "data": {
+        "id": "d3700000-0000-0000-0000-000000000005",
+        "phoneNumber": "+989120000105",
+        "isProfileComplete": true,
+        "firstName": "Development",
+        "lastName": "PlatformOwner",
+        "displayName": "Development PlatformOwner",
+        "username": "dev.PlatformOwner"
+      }
+    },
+    {
+      "operation": "logout",
+      "status": 204
+    }
+  ],
+  "userId": "d3700000-0000-0000-0000-000000000005"
+}

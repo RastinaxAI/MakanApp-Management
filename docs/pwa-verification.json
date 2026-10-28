@@ -1,0 +1,30 @@
+{
+  "verifiedAt": "2026-10-25",
+  "frontend": "http://127.0.0.1:3000",
+  "backend": "http://94.184.32.84:8090",
+  "checks": {
+    "typecheck": "passed",
+    "unit": { "passed": 100, "files": 12 },
+    "browser": { "passed": 62, "pwaScenarios": 7, "backend": "isolated test fixture" },
+    "dockerProduction": { "passed": 5, "build": "passed", "health": "healthy" },
+    "productionBrowser": "login reloaded; installation button visible; owner-only login retained",
+    "handbook": { "pages": 9, "format": "A4 PDF", "allPagesRenderedAndVisuallyReviewed": true }
+  },
+  "artifacts": {
+    "pdf": "output/pdf/MakanApp_User_Handbook_FA.pdf",
+    "html": "output/documents/MakanApp_User_Handbook_FA.html",
+    "applicationPdfUrl": "/guides/makan-owner-guide.pdf",
+    "mobileSettingsScreenshot": "docs/screenshots/pwa-notifications-mobile.png"
+  },
+  "pushVerification": {
+    "contractFetchedFromCurrentServer": true,
+    "deviceRegistrationAndRevocation": "verified with fixture backend and browser PushManager stub",
+    "permissionOnlyAfterClick": true,
+    "localTest": "verified with browser notification stub; does not prove remote delivery",
+    "realBackendConfiguration": "not authenticated in this verification; unauthenticated request returned 401",
+    "realProviderDeliveryOnPhysicalDevice": "not verified",
+    "realPushAccepted": false
+  },
+  "offlinePolicy": "Cache only public offline page and icons; no authenticated pages, API responses or offline mutations",
+  "deploymentLimit": "Mobile and remote devices require a valid HTTPS frontend origin; existing loopback Docker deployment is usable on this Windows computer"
+}

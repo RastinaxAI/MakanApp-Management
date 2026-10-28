@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-24T08:38:27.788Z",
+  "baseUrl": "http://94.184.32.84:8090",
+  "phoneNumber": "09100000000",
+  "userId": "fb071b1a-971b-493a-9014-62115912616d",
+  "endpoint": "POST /api/admin/v1/role-assignments",
+  "roleKey": "PlatformOwner",
+  "roleKeyVerifiedByCatalog": false,
+  "note": "PlatformOwner is a single provisional owner-role key for this authorized grant attempt, not a verified backend catalog key and not a frontend configuration change.",
+  "roleGranted": false,
+  "checks": [
+    {
+      "operation": "challenge",
+      "status": 202
+    },
+    {
+      "operation": "verify",
+      "status": 200
+    },
+    {
+      "operation": "platformIdentityAfterGrant",
+      "status": 403,
+      "problem": null
+    },
+    {
+      "operation": "logout",
+      "status": 204
+    }
+  ],
+  "grantStatus": 403,
+  "grantResponse": null
+}

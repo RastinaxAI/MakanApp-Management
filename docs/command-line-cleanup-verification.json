@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-28",
+  "removedLaunchers": [
+    "start.cmd",
+    "stop.cmd",
+    "restart.cmd",
+    "status.cmd",
+    "logs.cmd",
+    "scripts/docker.ps1"
+  ],
+  "removedLauncherCount": 6,
+  "executionGuide": "README.md",
+  "detailedGuide": "docs/docker.md",
+  "checks": {
+    "composeConfiguration": "passed",
+    "existingDockerStartup": "healthy",
+    "runtimeEntrySyntax": "passed",
+    "PowerShellExamples": "parsed successfully",
+    "currentGuideLinks": "valid"
+  },
+  "generatedOutputsStillPresent": [
+    "tmp",
+    ".next",
+    "test-results",
+    "tsconfig.tsbuildinfo"
+  ],
+  "cleanupLimitation": "Recursive removal of tmp was rejected by automatic approval review: blocked by policy. Generated output cleanup remains incomplete.",
+  "preserved": [
+    "application source",
+    "tests",
+    "dependencies",
+    "runtime environment settings",
+    "real sessions and Docker session volume",
+    "user reports",
+    "handbook and screenshots",
+    "original logo"
+  ]
+}

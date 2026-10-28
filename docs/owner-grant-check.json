@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-10-24T08:35:14.612Z",
+  "baseUrl": "http://94.184.32.84:8090",
+  "phoneNumber": "09100000000",
+  "expectedUserId": "fb071b1a-971b-493a-9014-62115912616d",
+  "roleMutationPerformed": false,
+  "checks": [
+    {
+      "operation": "liveOpenApi",
+      "status": 200
+    },
+    {
+      "operation": "challenge",
+      "status": 202
+    },
+    {
+      "operation": "verify",
+      "status": 200
+    },
+    {
+      "operation": "identity",
+      "status": 200,
+      "userId": "fb071b1a-971b-493a-9014-62115912616d",
+      "phoneNumber": "+989100000000"
+    },
+    {
+      "operation": "platformIdentity",
+      "status": 403
+    },
+    {
+      "operation": "roleCatalog",
+      "status": 403
+    },
+    {
+      "operation": "roleAssignments",
+      "status": 403
+    },
+    {
+      "operation": "logout",
+      "status": 204
+    }
+  ],
+  "roleGrantSchema": {
+    "required": [
+      "userId",
+      "roleKey",
+      "reason"
+    ],
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "roleKey": {
+        "type": "string"
+      },
+      "reason": {
+        "type": "string"
+      }
+    }
+  },
+  "userId": "fb071b1a-971b-493a-9014-62115912616d",
+  "blocker": "Backend denies the test account platform access and role catalog. An existing authorized platform owner or backend administrator is required to grant the role."
+}

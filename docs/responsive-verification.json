@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-25",
+  "origin": "http://127.0.0.1:3000",
+  "demoRemoved": true,
+  "unit": {
+    "passed": 87,
+    "files": 10
+  },
+  "typecheck": "passed",
+  "browser": {
+    "passed": 55,
+    "fixture": "independent test backend on 127.0.0.1:4100; not shipped",
+    "responsiveScenarios": 13,
+    "widths": [320, 375, 430, 768, 1024, 1440, 1920],
+    "ownerSections": 12,
+    "sectionViewportCombinations": 84
+  },
+  "docker": {
+    "build": "passed",
+    "testsPassed": 4,
+    "healthy": true
+  },
+  "visualReview": {
+    "mobile": true,
+    "tablet": true,
+    "desktop": true,
+    "viewportReset": true
+  },
+  "scope": {
+    "realOwnerAuthenticationRepeated": false,
+    "realBusinessMutations": false,
+    "testServersStopped": true
+  },
+  "routes": [
+    {
+      "path": "/login",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/demo",
+      "status": 404,
+      "location": null
+    },
+    {
+      "path": "/demo/admin",
+      "status": 404,
+      "location": null
+    },
+    {
+      "path": "/demo/organization",
+      "status": 404,
+      "location": null
+    },
+    {
+      "path": "/admin",
+      "status": 307,
+      "location": "/login"
+    },
+    {
+      "path": "/api/session",
+      "status": 401,
+      "location": null
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-24",
+  "backend": "http://94.184.32.84:8090",
+  "accountsReady": 6,
+  "profilesComplete": 6,
+  "platformForbidden": 6,
+  "schoolRolesAssigned": 0,
+  "platformOwnerAssigned": false,
+  "unit": {
+    "passed": 59,
+    "failed": 0
+  },
+  "mockBrowser": {
+    "passed": 37,
+    "failed": 0
+  },
+  "liveBrowser": {
+    "passed": 6,
+    "failed": 0
+  },
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "localOtpTesting": true,
+  "ownerAdmissionStillFailsClosed": true,
+  "liveOwnerPositiveAcceptance": "not run; no owner principal available",
+  "accounts": [
+    {
+      "phoneNumber": "+12025550171",
+      "userId": "6c6fade9-3104-4ece-867e-3bc0737b6832",
+      "label": "تست ورود ماکان 1",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "+12025550172",
+      "userId": "a7bcb814-fff5-4c71-9264-d342d6a5b251",
+      "label": "تست ورود ماکان 2",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "+12025550173",
+      "userId": "066a8bec-e2ad-4264-b36c-7c566c6bbdc1",
+      "label": "تست ورود ماکان 3",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "+12025550174",
+      "userId": "c598bfbc-13fc-466e-bb72-50f019f7d6cd",
+      "label": "تست ورود ماکان 4",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "+12025550175",
+      "userId": "d67e45ef-5756-459d-b4e7-3b67bed4e56d",
+      "label": "تست ورود ماکان 5",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "+12025550176",
+      "userId": "4d3e6afa-77fc-4959-bcde-e462b66df206",
+      "label": "تست ورود ماکان 6",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    }
+  ]
+}

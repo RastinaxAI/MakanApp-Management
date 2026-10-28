@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-27",
+  "deleted": [
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\.next\\cache",
+      "Files": 38,
+      "Bytes": 103354994,
+      "deletionPerformed": true,
+      "currentlyAbsent": true
+    },
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\.makan-test-sessions",
+      "Files": 449,
+      "Bytes": 137800,
+      "deletionPerformed": true,
+      "currentlyAbsent": true
+    },
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\playwright-report",
+      "Files": 1,
+      "Bytes": 575280,
+      "deletionPerformed": true,
+      "currentlyAbsent": true
+    },
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\test-results",
+      "Files": 1,
+      "Bytes": 45,
+      "deletionPerformed": true,
+      "currentlyAbsent": false,
+      "note": "Recreated by subsequent Docker tests; listed again in pending cleanup."
+    },
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\reports\\__pycache__",
+      "Files": 1,
+      "Bytes": 16827,
+      "deletionPerformed": true,
+      "currentlyAbsent": true
+    }
+  ],
+  "deletedBytes": 104084946,
+  "pending": [
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\tmp",
+      "Files": 124,
+      "Bytes": 15109528,
+      "exists": true
+    },
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\test-results",
+      "Files": 1,
+      "Bytes": 45,
+      "exists": true
+    },
+    {
+      "Path": "C:\\Users\\OmidrezaBagheriyan\\Desktop\\MakanManagement\\tsconfig.tsbuildinfo",
+      "Files": 1,
+      "Bytes": 181256,
+      "exists": true
+    }
+  ],
+  "pendingBytes": 15290829,
+  "pendingReason": "Automatic approval review rejected the final literal-path cleanup command: blocked by policy. These targets were not deleted.",
+  "preserved": [
+    ".env.local",
+    ".env.docker",
+    ".makan-sessions",
+    "Docker session volume",
+    "node_modules",
+    "package-lock.json",
+    "delivered PDF and Word reports",
+    "handbook screenshots",
+    "assets/brand/makan-original.png"
+  ]
+}

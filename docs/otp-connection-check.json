@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-24T09:02:58.498Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "phoneNumber": "09100000000",
+  "original502Reproduced": false,
+  "unitPassed": 70,
+  "fixtureBrowserPassed": 37,
+  "dockerBrowserPassed": 8,
+  "dockerBrowserFailed": 0,
+  "containerHealth": "healthy",
+  "changes": [
+    "Separate OTP upstream failure, timeout and invalid response messages",
+    "Support trace IDs without logging OTPs, phones or tokens",
+    "No automatic retry of OTP mutations",
+    "Docker webpack build with 1536 MiB Node heaps and one page worker"
+  ],
+  "challengeStatus": 202,
+  "otpInputVisible": true,
+  "verifyStatus": 403,
+  "verifyCode": "PLATFORM_OWNER_REQUIRED",
+  "result": "OTP request succeeds in the actual browser against the running Docker image. The existing non-owner restriction remains enforced."
+}

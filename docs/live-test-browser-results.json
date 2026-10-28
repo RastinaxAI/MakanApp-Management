@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-24",
+  "baseUrl": "http://127.0.0.1:3000",
+  "backend": "http://94.184.32.84:8090",
+  "results": [
+    {
+      "account": "phone input rejects shorter, longer and international numbers before requesting OTP",
+      "status": "passed"
+    },
+    {
+      "account": "real non-owner 09100000000 is denied after successful OTP",
+      "status": "passed"
+    },
+    {
+      "account": "real non-owner 09100000001 is denied after successful OTP",
+      "status": "passed"
+    },
+    {
+      "account": "real non-owner 09100000002 is denied after successful OTP",
+      "status": "passed"
+    },
+    {
+      "account": "real non-owner 09100000003 is denied after successful OTP",
+      "status": "passed"
+    },
+    {
+      "account": "real non-owner 09100000004 is denied after successful OTP",
+      "status": "passed"
+    },
+    {
+      "account": "real non-owner 09100000005 is denied after successful OTP",
+      "status": "passed"
+    }
+  ],
+  "passed": 7,
+  "failed": 0
+}

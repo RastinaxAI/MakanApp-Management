@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-24T10:43:42.955Z",
+  "unit": {
+    "passed": 83,
+    "files": 11
+  },
+  "browser": {
+    "passed": 49,
+    "completeSingleRun": true,
+    "backend": "isolated fixture"
+  },
+  "docker": {
+    "passed": 11,
+    "completeSingleRun": true,
+    "health": "healthy",
+    "url": "http://127.0.0.1:3000",
+    "container": "makan-management-web-1",
+    "finalMobileCtaVerified": true
+  },
+  "typecheck": "passed on Windows and final Linux image",
+  "formatting": "passed for changed application files",
+  "contrast": {
+    "pairs": 11,
+    "allPassNormalText": true
+  },
+  "publicBackendContract": {
+    "status": 200,
+    "paths": 290,
+    "comparedSchemas": 4,
+    "differences": 0
+  },
+  "liveOwnerAcceptance": "pending user MFA and post-MFA role verification",
+  "backendMutationsPerformedThisTurn": false,
+  "adminMfaReset": "disabled until an explicit verified policy is provided",
+  "screenshots": [
+    "docs/screenshots/owner-panel-desktop.png",
+    "docs/screenshots/owner-panel-mobile.png",
+    "docs/screenshots/owner-setup-choices.png"
+  ]
+}

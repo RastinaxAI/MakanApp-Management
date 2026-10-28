@@ -1,0 +1,551 @@
+{
+  "date": "2026-10-25",
+  "startedAt": "2026-10-25T10:33:29.422Z",
+  "frontend": "http://127.0.0.1:3000",
+  "backend": "http://94.184.32.84:8090",
+  "transport": "independent HTTP sessions; browser interaction was blocked on the browser error tab",
+  "accounts": [
+    {
+      "role": "Student",
+      "phoneNumber": "09120000101",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000001",
+      "challengeStatus": 202,
+      "verifyStatus": 403,
+      "verifyCode": "PLATFORM_OWNER_REQUIRED",
+      "authenticated": false,
+      "mfaRequired": false,
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "owner-gate-denied",
+      "testSessionCleanupStatus": 401,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "Teacher",
+      "phoneNumber": "09120000102",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000002",
+      "challengeStatus": 202,
+      "verifyStatus": 403,
+      "verifyCode": "PLATFORM_OWNER_REQUIRED",
+      "authenticated": false,
+      "mfaRequired": false,
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "owner-gate-denied",
+      "testSessionCleanupStatus": 401,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "Parent",
+      "phoneNumber": "09120000103",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000003",
+      "challengeStatus": 202,
+      "verifyStatus": 403,
+      "verifyCode": "PLATFORM_OWNER_REQUIRED",
+      "authenticated": false,
+      "mfaRequired": false,
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "owner-gate-denied",
+      "testSessionCleanupStatus": 401,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "Manager",
+      "phoneNumber": "09120000104",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000004",
+      "challengeStatus": 202,
+      "verifyStatus": 403,
+      "verifyCode": "PLATFORM_OWNER_REQUIRED",
+      "authenticated": false,
+      "mfaRequired": false,
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "owner-gate-denied",
+      "testSessionCleanupStatus": 401,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "Operations",
+      "phoneNumber": "09120000106",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000006",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": false,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": false,
+        "sessionMfaVerified": false
+      },
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "MFA-gated; final role rejection not yet tested",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "Support",
+      "phoneNumber": "09120000107",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000007",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": false,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": false,
+        "sessionMfaVerified": false
+      },
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "MFA-gated; final role rejection not yet tested",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "Finance",
+      "phoneNumber": "09120000108",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000008",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": false,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": false,
+        "sessionMfaVerified": false
+      },
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "MFA-gated; final role rejection not yet tested",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "Content",
+      "phoneNumber": "09120000109",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000009",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": false,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": false,
+        "sessionMfaVerified": false
+      },
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "MFA-gated; final role rejection not yet tested",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "SecurityAudit",
+      "phoneNumber": "09120000110",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000010",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": false,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": false,
+        "sessionMfaVerified": false
+      },
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "MFA-gated; final role rejection not yet tested",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "AbuseReviewer",
+      "phoneNumber": "09120000111",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000011",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": false,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": false,
+        "sessionMfaVerified": false
+      },
+      "sessionStatus": 401,
+      "protectedPageStatus": 307,
+      "notAdmitted": true,
+      "outcome": "MFA-gated; final role rejection not yet tested",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false
+    },
+    {
+      "role": "PlatformOwner",
+      "phoneNumber": "09120000105",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000005",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": true,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": true,
+        "sessionMfaVerified": false
+      },
+      "mfaVerificationStatus": 200,
+      "admissionStatus": 200,
+      "sessionStatus": 200,
+      "observedUserId": "d3700000-0000-0000-0000-000000000005",
+      "identityMatches": true,
+      "observedRoles": ["PlatformOwner"],
+      "permissions": [
+        "platform.access",
+        "platform.ai.read",
+        "platform.audit.read",
+        "platform.commerce.manage",
+        "platform.commerce.read",
+        "platform.education.manage",
+        "platform.education.read",
+        "platform.finance.manage",
+        "platform.finance.read",
+        "platform.messaging.read_metadata",
+        "platform.moderation.enforce",
+        "platform.moderation.review",
+        "platform.notifications.read",
+        "platform.operations.manage",
+        "platform.operations.read",
+        "platform.organizations.manage",
+        "platform.organizations.read",
+        "platform.provisioning.manage",
+        "platform.provisioning.read",
+        "platform.roles.manage",
+        "platform.roles.read",
+        "platform.security.read",
+        "platform.sessions.manage",
+        "platform.users.manage",
+        "platform.users.read"
+      ],
+      "unboundOperationCount": 1,
+      "activeCookieHttpOnly": true,
+      "roleCatalog": [
+        {
+          "key": "AbuseReviewer",
+          "displayName": "Abuse Reviewer"
+        },
+        {
+          "key": "Content",
+          "displayName": "Content"
+        },
+        {
+          "key": "Finance",
+          "displayName": "Finance"
+        },
+        {
+          "key": "Operations",
+          "displayName": "Operations"
+        },
+        {
+          "key": "PlatformOwner",
+          "displayName": "Platform Owner"
+        },
+        {
+          "key": "SecurityAudit",
+          "displayName": "Security Audit"
+        },
+        {
+          "key": "Support",
+          "displayName": "Support"
+        }
+      ],
+      "outcome": "authenticated-owner",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false,
+      "activeCookieIssuedAfterMfa": true
+    }
+  ],
+  "reads": [
+    {
+      "path": "/api/admin/v1/me",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/v1/roles",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/v1/organizations?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 1
+    },
+    {
+      "path": "/api/admin/v1/users?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 24
+    },
+    {
+      "path": "/api/admin/v1/education/classes?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/education/teachers?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/education/enrollments?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/education/assignments?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/education/exams?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/commerce/plans?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/commerce/subscriptions?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/finance/orders?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/moderation/cases?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/messaging/conversations?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/provisioning?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 0
+    },
+    {
+      "path": "/api/admin/v1/operations/health",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/v1/operations/jobs",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/v1/operations/notifications",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/v1/audit-logs?page=1&pageSize=1",
+      "status": 200,
+      "totalCount": 9
+    },
+    {
+      "path": "/api/admin/v1/mfa",
+      "status": 200
+    },
+    {
+      "path": "/admin",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/organizations",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/users",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/education",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/roles",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/commerce",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/finance",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/moderation",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/messaging",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/operations",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/audit",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/admin/account",
+      "status": 200,
+      "location": null
+    }
+  ],
+  "mutations": [],
+  "limitations": [
+    "No business mutation was exercised; successful empty-list reads do not prove create/edit workflows.",
+    "Browser visual interaction was blocked by tool security policy; this run used independent HTTP sessions.",
+    "Six platform operator accounts did not complete MFA; their final post-MFA owner-role rejection remains untested on the live backend."
+  ],
+  "previousOwnerAttempts": [
+    {
+      "role": "PlatformOwner",
+      "phoneNumber": "09120000105",
+      "expectedUserId": "d3700000-0000-0000-0000-000000000005",
+      "challengeStatus": 202,
+      "verifyStatus": 200,
+      "authenticated": true,
+      "mfaRequired": true,
+      "mfa": {
+        "enrolled": true,
+        "sessionMfaVerified": false
+      },
+      "mfaVerificationStatus": 200,
+      "admissionStatus": 200,
+      "sessionStatus": 200,
+      "observedUserId": "d3700000-0000-0000-0000-000000000005",
+      "identityMatches": true,
+      "observedRoles": ["PlatformOwner"],
+      "permissions": [
+        "platform.access",
+        "platform.ai.read",
+        "platform.audit.read",
+        "platform.commerce.manage",
+        "platform.commerce.read",
+        "platform.education.manage",
+        "platform.education.read",
+        "platform.finance.manage",
+        "platform.finance.read",
+        "platform.messaging.read_metadata",
+        "platform.moderation.enforce",
+        "platform.moderation.review",
+        "platform.notifications.read",
+        "platform.operations.manage",
+        "platform.operations.read",
+        "platform.organizations.manage",
+        "platform.organizations.read",
+        "platform.provisioning.manage",
+        "platform.provisioning.read",
+        "platform.roles.manage",
+        "platform.roles.read",
+        "platform.security.read",
+        "platform.sessions.manage",
+        "platform.users.manage",
+        "platform.users.read"
+      ],
+      "unboundOperationCount": 1,
+      "activeCookieHttpOnly": true,
+      "roleCatalog": [
+        {
+          "key": "AbuseReviewer",
+          "displayName": "Abuse Reviewer"
+        },
+        {
+          "key": "Content",
+          "displayName": "Content"
+        },
+        {
+          "key": "Finance",
+          "displayName": "Finance"
+        },
+        {
+          "key": "Operations",
+          "displayName": "Operations"
+        },
+        {
+          "key": "PlatformOwner",
+          "displayName": "Platform Owner"
+        },
+        {
+          "key": "SecurityAudit",
+          "displayName": "Security Audit"
+        },
+        {
+          "key": "Support",
+          "displayName": "Support"
+        }
+      ],
+      "outcome": "authenticated-owner",
+      "testSessionCleanupStatus": 204,
+      "activeCookieIssuedAfterOtp": false,
+      "activeCookieIssuedAfterMfa": true
+    }
+  ],
+  "contractDiagnostics": [
+    {
+      "path": "/api/admin/v1/organizations?page=1&pageSize=1",
+      "status": 200,
+      "valid": true,
+      "issues": []
+    },
+    {
+      "path": "/api/admin/v1/users?page=1&pageSize=1",
+      "status": 200,
+      "valid": true,
+      "issues": []
+    },
+    {
+      "path": "/api/admin/v1/audit-logs?page=1&pageSize=1",
+      "status": 200,
+      "valid": true,
+      "issues": []
+    },
+    {
+      "path": "/api/admin/v1/mfa",
+      "status": 200,
+      "valid": true,
+      "issues": []
+    }
+  ],
+  "finishedAt": "2026-10-25T10:37:56.403Z",
+  "verification": {
+    "unitTestsPassed": 92,
+    "unitFilesPassed": 11,
+    "typecheck": "passed",
+    "dockerBuild": "passed",
+    "ownerRoleKey": "PlatformOwner",
+    "finalApiReadsPassed": 20,
+    "finalProtectedPagesPassed": 12
+  }
+}

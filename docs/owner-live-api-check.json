@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-24",
+  "baseUrl": "http://94.184.32.84:8090",
+  "swaggerStatus": 200,
+  "openApiStatus": 200,
+  "paths": 290,
+  "schemas": 554,
+  "authenticatedAcceptance": "not run: no owner phone or verified owner role key supplied",
+  "liveOtpRequests": 0,
+  "liveMutations": 0,
+  "checks": [
+    {
+      "path": "/api/admin/v1/me",
+      "status": 401,
+      "body": {
+        "type": "urn:makan:problem:auth-required",
+        "title": "Authentication required",
+        "status": 401,
+        "detail": "برای ادامه باید وارد شوید.",
+        "traceId": "00-47723239dbe3d5dcedcdff790140b935-78d877aca85f0ce2-00",
+        "correlationId": "47723239dbe3d5dcedcdff790140b935",
+        "code": "AUTH_REQUIRED"
+      }
+    },
+    {
+      "path": "/api/admin/v1/roles",
+      "status": 401,
+      "body": {
+        "type": "urn:makan:problem:auth-required",
+        "title": "Authentication required",
+        "status": 401,
+        "detail": "برای ادامه باید وارد شوید.",
+        "traceId": "00-a86b874c70e038ca95a6122210b8238f-deaeaa5af838926a-00",
+        "correlationId": "a86b874c70e038ca95a6122210b8238f",
+        "code": "AUTH_REQUIRED"
+      }
+    },
+    {
+      "path": "/api/v1/me",
+      "status": 401,
+      "body": {
+        "type": "urn:makan:problem:auth-required",
+        "title": "Authentication required",
+        "status": 401,
+        "detail": "برای ادامه باید وارد شوید.",
+        "traceId": "00-ef6511ec737458dd57915db8b8e28b1f-b06ee5afee3f76f9-00",
+        "correlationId": "ef6511ec737458dd57915db8b8e28b1f",
+        "code": "AUTH_REQUIRED"
+      }
+    }
+  ]
+}

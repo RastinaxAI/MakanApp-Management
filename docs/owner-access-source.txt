@@ -1,0 +1,569 @@
+PAGE 1
+MakanApp  سند اجرایی —2026-10-23Frontend —
+MakanApp
+راهنمای دسترسی Platform Owner
+فقط ناحیه Platform Administration  بدون دسترسی —Roleای  های مدرسه
+نسخه قرارداد: 2026-10-23  |OpenAPI زنده3.0.1   1.0.0Test | API v
+PAGE 2
+MakanApp  سند اجرایی —2026-10-23Frontend —
+تعریف مهم—در Contract مدرسه،OrganizationRole فقطStudent/Teacher/Parent/Manager است 
+سند به معنی Principal دارای Platform role/permission است و نباید باManager مدرسه یا Conversation Owner 
+اشتباه شود
+فهرست محتوای سند
+1. ورود بهPlatform
+2 .-  Permission driven UI
+3 . Platform IAM
+4 .Organizations
+5 .Users
+6 . Education Metadata
+7 .Commerce/Finance
+8 .Moderation
+9 .Operations/Audit
+10 .MFA
+11. قواعد ممنوعیت School Roles
+1. ورود بهPlatform
+ Frontend Platform باید پس ازSession عادی،1GET /api/admin/v /meعنوان  را بهGate اصلیPlatform اجرا کند. پاسخ 
+PlatformMeResult شاملroles وpermissions است. اگر درخواست401 403/ شد، هیچ Platform UI نمایش داده نشود
+PAGE 3
+MakanApp  سند اجرایی —2026-10-23Frontend —
+   Platform Entry / IAM
+Method Route Request DTO Success
+GET /api/admin/v1/me - 200 PlatformMeResult
+GET /api/admin/v1/roles - 200 PlatformRoleCatalogItem[]
+GET /api/admin/v1/role-assignments - 200 
+PlatformRoleAssignmentPage
+POST /api/admin/v1/role-assignments GrantPlatformRoleCommand 200/201 
+PlatformRoleMutationResult
+DELETE /api/admin/v1/role-
+assignments/{assignmentId}
+EndPlatformRoleAssignmentCom
+mand
+200 PlatformRoleMutationResult
+PlatformMeResult field استفادهFrontend
+userId/personId/displayName
+نمایش هویتoperator
+roles
+های  نقشPlatform جاری
+permissions
+ Feature gating دقیق
+قانون اصلی  —Frontend نباید فقط یکboolean به نامisOwnerها را باز کند  بسازد و همه قابلیتFeatureهای 
+Platform باید بر اساسpermissions برگشتی Backend gate شوند
+2 .-  Permission driven UI
+Permissionشده در کد های مشاهده/Artifactهایی مانند  فعلی شامل نمونه.platform access ،
+.. platform roles read/manage  ، .. platform organizations read/manage  ، .. platform users read  ،
+.. platform sessions manage  ، .. platform education read  ، .. platform finance read ،
+.. platform messaging read_metadata  ، .. platform moderation review/enforce  ، .. platform provisioning read/manage ، 
+.. platform notifications read و.. platform operations read هستندCatalog نهایی باید از1GET /api/admin/v /roles و 
+1GET /api/admin/v /me خوانده شود
+PAGE 4
+MakanApp  سند اجرایی —2026-10-23Frontend —
+اگرPermission موردنیازFeature درroles/permissions کاربر وجود ندارد، منو وAction مربوطه نمایش داده نشود؛Server 
+همچنان مرجع نهایی403 است
+3 . Platform IAM
+ Role Catalog وAssignment
+Method Route Request DTO Success
+GET /api/admin/v1/me - 200 PlatformMeResult
+GET /api/admin/v1/roles - 200 PlatformRoleCatalogItem[]
+GET /api/admin/v1/role-assignments - 200 
+PlatformRoleAssignmentPage
+POST /api/admin/v1/role-assignments GrantPlatformRoleCommand 200/201 
+PlatformRoleMutationResult
+DELETE /api/admin/v1/role-
+assignments/{assignmentId}
+EndPlatformRoleAssignmentCom
+mand
+200 PlatformRoleMutationResult
+ Grant/End Roleاند؛  عملیات حساسreason را ازUI بگیر و نتیجهServer/replayed را مرجع قرار بده
+4 . Platform Organizations
+ Organization Operations
+Method Route Request DTO Success
+GET /api/admin/v1/organizations - 200 PlatformOrganizationPage
+POST /api/admin/v1/organizations CreatePlatformOrganizationCom
+mand
+200 PlatformProvisioningResult
+GET /api/admin/v1/organizations/
+{organizationId}
+- 200 PlatformOrganizationDetail
+GET /api/admin/v1/organizations/
+{organizationId}/suspension-
+impact
+- 200 
+PlatformOrganizationImpactPrev
+iew
+POST /api/admin/v1/organizations/
+{organizationId}/suspend
+PlatformOrganizationStateComm
+and
+200 
+PlatformOrganizationMutationRe
+sult
+POST /api/admin/v1/organizations/
+{organizationId}/reactivate
+PlatformOrganizationStateComm
+and
+200 
+PlatformOrganizationMutationRe
+sult
+GET /api/admin/v1/organizations/
+{organizationId}/memberships
+- 200 PlatformMembershipPage
+POST /api/admin/v1/organizations/
+{organizationId}/invitations
+CreatePlatformInvitationComma
+nd
+200 PlatformInvitationResult
+PUT /api/admin/v1/organizations/
+{organizationId}/
+ChangePlatformMembershipRole
+Command
+200 
+PlatformMembershipMutationRe
+PAGE 5
+MakanApp  سند اجرایی —2026-10-23Frontend —
+Method Route Request DTO Success
+memberships/{membershipId}/
+role
+sult
+DELETE /api/admin/v1/organizations/
+{organizationId}/
+memberships/{membershipId}
+EndPlatformMembershipComma
+nd
+200 
+PlatformMembershipMutationRe
+sult
+Platformتواند  میOrganizationها را لیستایجادتعلیقفعال و /// Membership/Invitation را مدیریت کند. این قابلیت با 
+Manager مدرسه متفاوت است
+5 . Platform Users
+ User Operations
+Method Route Request DTO Success
+GET /api/admin/v1/users - 200 PlatformUserPage
+GET /api/admin/v1/users/{userId} - 200 PlatformUserDetail
+POST /api/admin/v1/users/{userId}/
+suspend
+PlatformUserStateCommand 200 PlatformUserMutationResult
+POST /api/admin/v1/users/{userId}/
+reactivate
+PlatformUserStateCommand 200 PlatformUserMutationResult
+POST /api/admin/v1/users/{userId}/
+sessions/revoke
+RevokePlatformSessionsComma
+nd
+200 
+PlatformSessionRevocationResul
+t
+POST /api/admin/v1/users/{userId}/
+sessions/{sessionId}/revoke
+RevokePlatformSessionsComma
+nd
+200 
+PlatformSessionRevocationResul
+t
+حساس—Suspend/Reactivate و revoke session عملیاتPlatform هستند؛Student/Parent/Teacher/Manager 
+نباید به این صفحات دسترسی داشته باشند
+6 .  Platform Education Metadata
+  Education Read APIs
+Method Route Request DTO Success
+GET /api/admin/v1/education/classes - 200 PlatformClassPage
+PAGE 6
+MakanApp  سند اجرایی —2026-10-23Frontend —
+Method Route Request DTO Success
+GET /api/admin/v1/education/
+classes/{classId}
+- 200 PlatformClassDetail
+GET /api/admin/v1/education/
+teachers
+- 200 
+PlatformTeacherAssignmentPag
+e
+GET /api/admin/v1/education/
+enrollments
+- 200 PlatformEnrollmentPage
+GET /api/admin/v1/education/
+assignments
+- 200 PlatformAssignmentPage
+GET /api/admin/v1/education/exams - 200 PlatformExamPage
+این بخش - Platform level visibilityها،  روی کلاسTeacherAssignment ،Enrollment ،Assignment وExam است و
+جایگزین  Teacher/Manager workspace نیست
+7 .   Platform Commerce & Finance
+  Commerce / Finance
+Method Route Request DTO Success
+GET /api/admin/v1/commerce/plans - 200 PlatformPlanPage
+POST /api/admin/v1/commerce/plans CreatePlatformPlanCommand 200 PlatformPlanDetail
+GET /api/admin/v1/commerce/plans/
+{planId}
+- 200 PlatformPlanDetail
+POST /api/admin/v1/commerce/plans/
+{planId}/versions
+CreatePlatformPlanVersionCom
+mand
+200 PlatformPlanVersionItem
+POST /api/admin/v1/commerce/plan-
+versions/{planVersionId}/
+publish
+PublishPlatformPlanVersionCom
+mand
+200 PlatformPlanVersionItem
+GET /api/admin/v1/commerce/
+subscriptions
+- 200 PlatformSubscriptionPage
+POST /api/admin/v1/commerce/
+organizations/{organizationId}/
+subscription-override
+OverridePlatformSubscriptionCo
+mmand
+200 
+PlatformSubscriptionOverrideRe
+sult
+GET /api/admin/v1/finance/orders - 200 PlatformOrderPage
+GET /api/admin/v1/finance/orders/
+{orderId}
+- 200 PlatformOrderItem
+PAGE 7
+MakanApp  سند اجرایی —2026-10-23Frontend —
+8 . Platform Moderation و Messaging Metadata
+  Moderation / Metadata
+Method Route Request DTO Success
+GET /api/admin/v1/messaging/
+conversations
+- 200 
+PlatformConversationMetadataP
+age
+GET /api/admin/v1/moderation/cases - 200 
+PlatformModerationCasePage
+GET /api/admin/v1/moderation/
+cases/{caseId}
+- 200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/expanded-
+context
+PlatformModerationVersionCom
+mand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/actions
+PlatformModerationActionComm
+and
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/start-review
+PlatformModerationVersionCom
+mand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/resolve
+PlatformCompleteModerationCo
+mmand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/dismiss
+PlatformCompleteModerationCo
+mmand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/enforce-content-
+removal
+PlatformModerationVersionCom
+mand
+200 
+PlatformModerationCaseDetail
+GET /api/admin/v1/moderation/
+cases/{caseId}/evidence/files/
+{fileAssetId}
+- 200 file
+  Platform metadata access به معنی اجازه استفاده از UI Messagingعنوان ای به   مدرسهParticipant نیست؛ Platform
+actions از مسیرهایadmin وpermissionشود های اختصاصی انجام می
+9 .Operations ،Provisioning وAudit
+  Operations / Audit
+Method Route Request DTO Success
+GET /api/admin/v1/provisioning - 200 PlatformProvisioningPage
+POST /api/admin/v1/provisioning ProvisionOrganizationCommand 200 PlatformProvisioningResult
+GET /api/admin/v1/operations/
+notifications
+- 200 
+PlatformNotificationOperations
+GET /api/admin/v1/operations/jobs - 200 PlatformJobOperations
+GET /api/admin/v1/operations/health - 200 PlatformSystemHealth
+GET /api/admin/v1/audit-logs - 200 AdminAuditLogPage
+PAGE 8
+MakanApp  سند اجرایی —2026-10-23Frontend —
+10 . Platform MFA
+MFA
+Method Route Request DTO Success
+GET /api/admin/v1/mfa - 200 PlatformMfaResult
+POST /api/admin/v1/mfa/enrollment - 200 PlatformMfaResult
+POST /api/admin/v1/mfa/enrollment/
+confirm
+ConfirmPlatformMfaCommand 200 PlatformMfaResult
+POST /api/admin/v1/mfa/verify VerifyPlatformMfaCommand 200 PlatformMfaResult
+POST /api/admin/v1/mfa/recovery/
+verify
+VerifyPlatformMfaCommand 200 PlatformMfaResult
+POST /api/admin/v1/mfa/recovery-
+codes/regenerate
+- 200 PlatformMfaResult
+POST /api/admin/v1/mfa/users/
+{userId}/reset
+ResetPlatformMfaCommand 200 PlatformMfaResult
+برای Platform frontend بایدstateهایenrollment ،confirm ،verify ،recovery وreset جدا طراحی شوند MFA
+platform را با OTP login عمومی یکی نکن
+11. چه کسانی به Platform UI دسترسی ندارند؟
+School Role /api/admin/v1/*  Platform UI
+Student NO مخفیمسدود /
+Parent NO مخفیمسدود /
+Teacher NO مخفیمسدود /
+Manager NO مخفیمسدود /
+Manager مدرسه Platform Admin نیست. داشتن Manager role درOrganization هرگز نباید باعث نمایش Platform
+dashboard شود
+PAGE 9
+MakanApp  سند اجرایی —2026-10-23Frontend —
+  School workspace pages به دلیل\ا نیز نباید صرف Platform Owner بودن باز شوند؛ Platform principal برای عملیات 
+Platform از/1api/admin/vکند. اگر همان  استفاده می/*User جداگانهMembershipای هم دارد، ورود به   مدرسه School
+workspace باید ازAccessContext همانMembership عبور کند
+12 .  Frontend Guard Pattern
+1) Authenticate user normally
+2) GET /api/admin/v1/me
+3) if 401/403 -> no Platform shell
+4) if 200 -> cache safe roles/permissions in application state
+5) gate each menu/action by required permission
+6) still handle 403 from every API as authoritative
+7) never infer school-role access from Platform role
+13. فهرست کامل Platform API
+   Platform Identity & Roles
+Method Route Request DTO Success
+GET /api/admin/v1/me - 200 PlatformMeResult
+GET /api/admin/v1/roles - 200 PlatformRoleCatalogItem[]
+GET /api/admin/v1/role-assignments - 200 
+PlatformRoleAssignmentPage
+POST /api/admin/v1/role-assignments GrantPlatformRoleCommand 200/201 
+PlatformRoleMutationResult
+DELETE /api/admin/v1/role-
+assignments/{assignmentId}
+EndPlatformRoleAssignmentCom
+mand
+200 PlatformRoleMutationResult
+ Platform Organizations
+Method Route Request DTO Success
+GET /api/admin/v1/organizations - 200 PlatformOrganizationPage
+POST /api/admin/v1/organizations CreatePlatformOrganizationCom
+mand
+200 PlatformProvisioningResult
+GET /api/admin/v1/organizations/
+{organizationId}
+- 200 PlatformOrganizationDetail
+GET /api/admin/v1/organizations/
+{organizationId}/suspension-
+impact
+- 200 
+PlatformOrganizationImpactPrev
+iew
+POST /api/admin/v1/organizations/
+{organizationId}/suspend
+PlatformOrganizationStateComm
+and
+200 
+PlatformOrganizationMutationRe
+PAGE 10
+MakanApp  سند اجرایی —2026-10-23Frontend —
+Method Route Request DTO Success
+sult
+POST /api/admin/v1/organizations/
+{organizationId}/reactivate
+PlatformOrganizationStateComm
+and
+200 
+PlatformOrganizationMutationRe
+sult
+GET /api/admin/v1/organizations/
+{organizationId}/memberships
+- 200 PlatformMembershipPage
+POST /api/admin/v1/organizations/
+{organizationId}/invitations
+CreatePlatformInvitationComma
+nd
+200 PlatformInvitationResult
+PUT /api/admin/v1/organizations/
+{organizationId}/
+memberships/{membershipId}/
+role
+ChangePlatformMembershipRole
+Command
+200 
+PlatformMembershipMutationRe
+sult
+DELETE /api/admin/v1/organizations/
+{organizationId}/
+memberships/{membershipId}
+EndPlatformMembershipComma
+nd
+200 
+PlatformMembershipMutationRe
+sult
+ Platform Users
+Method Route Request DTO Success
+GET /api/admin/v1/users - 200 PlatformUserPage
+GET /api/admin/v1/users/{userId} - 200 PlatformUserDetail
+POST /api/admin/v1/users/{userId}/
+suspend
+PlatformUserStateCommand 200 PlatformUserMutationResult
+POST /api/admin/v1/users/{userId}/
+reactivate
+PlatformUserStateCommand 200 PlatformUserMutationResult
+POST /api/admin/v1/users/{userId}/
+sessions/revoke
+RevokePlatformSessionsComma
+nd
+200 
+PlatformSessionRevocationResul
+t
+POST /api/admin/v1/users/{userId}/
+sessions/{sessionId}/revoke
+RevokePlatformSessionsComma
+nd
+200 
+PlatformSessionRevocationResul
+t
+ Platform Education
+Method Route Request DTO Success
+GET /api/admin/v1/education/classes - 200 PlatformClassPage
+GET /api/admin/v1/education/
+classes/{classId}
+- 200 PlatformClassDetail
+GET /api/admin/v1/education/
+teachers
+- 200 
+PlatformTeacherAssignmentPag
+e
+GET /api/admin/v1/education/
+enrollments
+- 200 PlatformEnrollmentPage
+GET /api/admin/v1/education/
+assignments
+- 200 PlatformAssignmentPage
+GET /api/admin/v1/education/exams - 200 PlatformExamPage
+PAGE 11
+MakanApp  سند اجرایی —2026-10-23Frontend —
+   Platform Commerce & Finance
+Method Route Request DTO Success
+GET /api/admin/v1/commerce/plans - 200 PlatformPlanPage
+POST /api/admin/v1/commerce/plans CreatePlatformPlanCommand 200 PlatformPlanDetail
+GET /api/admin/v1/commerce/plans/
+{planId}
+- 200 PlatformPlanDetail
+POST /api/admin/v1/commerce/plans/
+{planId}/versions
+CreatePlatformPlanVersionCom
+mand
+200 PlatformPlanVersionItem
+POST /api/admin/v1/commerce/plan-
+versions/{planVersionId}/
+publish
+PublishPlatformPlanVersionCom
+mand
+200 PlatformPlanVersionItem
+GET /api/admin/v1/commerce/
+subscriptions
+- 200 PlatformSubscriptionPage
+POST /api/admin/v1/commerce/
+organizations/{organizationId}/
+subscription-override
+OverridePlatformSubscriptionCo
+mmand
+200 
+PlatformSubscriptionOverrideRe
+sult
+GET /api/admin/v1/finance/orders - 200 PlatformOrderPage
+GET /api/admin/v1/finance/orders/
+{orderId}
+- 200 PlatformOrderItem
+    Platform Moderation & Messaging Metadata
+Method Route Request DTO Success
+GET /api/admin/v1/messaging/
+conversations
+- 200 
+PlatformConversationMetadataP
+age
+GET /api/admin/v1/moderation/cases - 200 
+PlatformModerationCasePage
+GET /api/admin/v1/moderation/
+cases/{caseId}
+- 200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/expanded-
+context
+PlatformModerationVersionCom
+mand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/actions
+PlatformModerationActionComm
+and
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/start-review
+PlatformModerationVersionCom
+mand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/resolve
+PlatformCompleteModerationCo
+mmand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/dismiss
+PlatformCompleteModerationCo
+mmand
+200 
+PlatformModerationCaseDetail
+POST /api/admin/v1/moderation/
+cases/{caseId}/enforce-content-
+removal
+PlatformModerationVersionCom
+mand
+200 
+PlatformModerationCaseDetail
+GET /api/admin/v1/moderation/
+cases/{caseId}/evidence/files/
+{fileAssetId}
+- 200 file
+PAGE 12
+MakanApp  سند اجرایی —2026-10-23Frontend —
+     Platform Provisioning / Operations / Audit
+Method Route Request DTO Success
+GET /api/admin/v1/provisioning - 200 PlatformProvisioningPage
+POST /api/admin/v1/provisioning ProvisionOrganizationCommand 200 PlatformProvisioningResult
+GET /api/admin/v1/operations/
+notifications
+- 200 
+PlatformNotificationOperations
+GET /api/admin/v1/operations/jobs - 200 PlatformJobOperations
+GET /api/admin/v1/operations/health - 200 PlatformSystemHealth
+GET /api/admin/v1/audit-logs - 200 AdminAuditLogPage
+ Platform MFA
+Method Route Request DTO Success
+GET /api/admin/v1/mfa - 200 PlatformMfaResult
+POST /api/admin/v1/mfa/enrollment - 200 PlatformMfaResult
+POST /api/admin/v1/mfa/enrollment/
+confirm
+ConfirmPlatformMfaCommand 200 PlatformMfaResult
+POST /api/admin/v1/mfa/verify VerifyPlatformMfaCommand 200 PlatformMfaResult
+POST /api/admin/v1/mfa/recovery/
+verify
+VerifyPlatformMfaCommand 200 PlatformMfaResult
+POST /api/admin/v1/mfa/recovery-
+codes/regenerate
+- 200 PlatformMfaResult
+POST /api/admin/v1/mfa/users/
+{userId}/reset
+ResetPlatformMfaCommand 200 PlatformMfaResult

@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-25",
+  "frontend": "http://127.0.0.1:3000",
+  "logo": {
+    "sourcePreserved": "assets/brand/makan-original.png",
+    "sourceSha256": "4193A14AD7CCCB33CA85400F1E495B75DA95C84A2ECA6CF5C3DEEB01B97FBE36",
+    "interfaceAsset": "/brand/makan-logo.png",
+    "installedIconPrefix": "/icons/makan-",
+    "publicCache": "makan-public-v2",
+    "artworkRedesigned": false
+  },
+  "handbook": {
+    "pdf": "output/pdf/MakanApp_User_Handbook_FA.pdf",
+    "html": "output/documents/MakanApp_User_Handbook_FA.html",
+    "servedUrl": "/guides/makan-owner-guide.pdf",
+    "pages": 19,
+    "paper": "A4 landscape",
+    "sha256": "AFE1D7B686C4552E037A9B874FA5B0669C408358FAC3BD6B77AA83D8FD869459",
+    "downloadedFromProductionMatchesOutput": true,
+    "screenshots": "Actual built frontend using isolated fixture data; identified as educational examples on cover",
+    "allPagesRenderedAndVisuallyReviewed": true,
+    "annotationCoordinates": "docs/guide-captures.json",
+    "preview": "docs/screenshots/handbook/guide-preview.png"
+  },
+  "checks": {
+    "typecheck": "passed",
+    "unitPassed": 100,
+    "targetedBrowserPassed": 20,
+    "responsiveWidths": [320, 375, 430, 768, 1024, 1440, 1920],
+    "dockerBuild": "passed",
+    "dockerProductionPassed": 5,
+    "containerHealth": "healthy",
+    "productionBrowser": "Reloaded login, verified supplied-logo asset and applied waiting PWA update"
+  },
+  "temporaryFixtureServer": "stopped; guide tab closed; viewport reset",
+  "liveCustomerDataUsedInHandbook": false,
+  "liveBusinessMutationsPerformed": false,
+  "publicDemoRoutesRestored": false,
+  "realWebPushProviderDelivery": "not tested by this change"
+}

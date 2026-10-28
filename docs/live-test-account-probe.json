@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-24",
+  "baseUrl": "http://94.184.32.84:8090",
+  "phoneNumber": "+12025550171",
+  "steps": [
+    {
+      "path": "otp/challenges",
+      "status": 202
+    },
+    {
+      "path": "otp/verify",
+      "status": 200,
+      "user": {
+        "id": "6c6fade9-3104-4ece-867e-3bc0737b6832",
+        "phoneNumber": "+12025550171",
+        "isProfileComplete": false,
+        "firstName": null,
+        "lastName": null,
+        "displayName": null,
+        "username": null
+      }
+    },
+    {
+      "path": "/api/v1/me",
+      "status": 200,
+      "data": {
+        "id": "6c6fade9-3104-4ece-867e-3bc0737b6832",
+        "phoneNumber": "+12025550171",
+        "isProfileComplete": false,
+        "firstName": null,
+        "lastName": null,
+        "displayName": null,
+        "username": null
+      }
+    },
+    {
+      "path": "/api/admin/v1/me",
+      "status": 403,
+      "data": null
+    },
+    {
+      "path": "auth/logout",
+      "status": 204
+    }
+  ]
+}

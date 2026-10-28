@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-24",
+  "backend": "http://94.184.32.84:8090",
+  "numbering": "09100000000 through 09100000005 as requested by user",
+  "phoneInput": {
+    "digits": 11,
+    "prefix": "09",
+    "internationalAccepted": false,
+    "enforcedIn": ["browser", "BFF"]
+  },
+  "accountsReady": 6,
+  "profilesComplete": 6,
+  "platformForbidden": 6,
+  "schoolRolesAssigned": 0,
+  "platformOwnerAssigned": false,
+  "unit": {
+    "passed": 64,
+    "failed": 0
+  },
+  "mockBrowser": {
+    "passed": 37,
+    "failed": 0
+  },
+  "liveBrowser": {
+    "passed": 7,
+    "failed": 0,
+    "realAccountLoginCases": 6,
+    "inputValidationCases": 1
+  },
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "localOtpTesting": true,
+  "ownerAdmissionStillFailsClosed": true,
+  "liveOwnerPositiveAcceptance": "not run; no owner principal available",
+  "accounts": [
+    {
+      "phoneNumber": "09100000000",
+      "userId": "fb071b1a-971b-493a-9014-62115912616d",
+      "label": "تست ورود ماکان 1",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "09100000001",
+      "userId": "4be8fe10-7f75-4fbb-9b86-e08a3bcbd230",
+      "label": "تست ورود ماکان 2",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "09100000002",
+      "userId": "35590714-b360-4534-b7da-bb8f57abdcc3",
+      "label": "تست ورود ماکان 3",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "09100000003",
+      "userId": "e5c6f98f-734a-468d-810f-f35bd8bb92a1",
+      "label": "تست ورود ماکان 4",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "09100000004",
+      "userId": "7862824c-17c2-44da-b613-8bda0291135a",
+      "label": "تست ورود ماکان 5",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    },
+    {
+      "phoneNumber": "09100000005",
+      "userId": "50de71fe-b087-4a54-a05c-58c22c143145",
+      "label": "تست ورود ماکان 6",
+      "actualRole": "ordinary personal account",
+      "expectedPanelAccess": "denied"
+    }
+  ]
+}

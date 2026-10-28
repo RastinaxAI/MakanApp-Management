@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Asia/Tehran",
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "unit": { "passed": 48, "failed": 0, "files": 7 },
+  "browser": {
+    "passed": 37,
+    "failed": 0,
+    "files": 3,
+    "ownerAccess": 13,
+    "existingFlows": 19,
+    "demo": 5,
+    "server": "next start after a successful next build",
+    "backend": "isolated HTTP fixture on 127.0.0.1:4100",
+    "browser": "installed Chrome",
+    "finalFullRun": true
+  },
+  "localProductionSmoke": {
+    "baseUrl": "http://127.0.0.1:3000",
+    "login": 200,
+    "protectedWithoutSession": { "status": 307, "location": "/login" },
+    "demo": 200,
+    "sessionWithoutCookie": 401,
+    "unconfiguredOwnerPolicy": {
+      "status": 503,
+      "code": "OWNER_ACCESS_NOT_CONFIGURED",
+      "payload": "empty object; no phone or OTP supplied"
+    },
+    "cookiesCreated": 0
+  },
+  "live": {
+    "baseUrl": "http://94.184.32.84:8090",
+    "swaggerStatus": 200,
+    "openApiStatus": 200,
+    "paths": 290,
+    "schemas": 554,
+    "selectedOperations": 114,
+    "unauthenticatedChecks": 3,
+    "allUnauthenticatedStatus": 401,
+    "authenticatedAcceptance": "not run: owner phone and confirmed owner role key not provided",
+    "otpRequests": 0,
+    "mutations": 0
+  },
+  "configuration": {
+    "ownerRoleKeys": [],
+    "unknownOwnerRoleFailsClosed": true,
+    "requiredEntryPermission": "platform.access",
+    "unverifiedOperationBindingsDisabled": true,
+    "testOtpNeverHardcodedInApplication": true
+  },
+  "developmentObservation": "Exploratory dev runs encountered HMR timing and an internal Turbopack error. Final acceptance runs against the production build, with all 37 scenarios passing in one run.",
+  "remaining": [
+    "Confirm exact backend platform owner role key and configure PLATFORM_OWNER_ROLE_KEYS",
+    "Provide an authorized owner phone for live OTP acceptance",
+    "Confirm operation permission bindings and MFA step-up codes",
+    "HTTPS or a verified secure network path for deployment"
+  ]
+}

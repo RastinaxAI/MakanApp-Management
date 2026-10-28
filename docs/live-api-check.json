@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/api/admin/v1/me",
+    "status": 401,
+    "body": "{\"type\":\"urn:makan:problem:auth-required\",\"title\":\"Authentication required\",\"status\":401,\"detail\":\"برای ادامه باید وارد شوید.\",\"traceId\":\"00-ea561f0abf2b836033884bd4295d4885-b2caaf47d4a46e4f-00\",\"code\":\"AUTH_REQUIRED\"}"
+  },
+  {
+    "path": "/api/admin/v1/roles",
+    "status": 401,
+    "body": "{\"type\":\"urn:makan:problem:auth-required\",\"title\":\"Authentication required\",\"status\":401,\"detail\":\"برای ادامه باید وارد شوید.\",\"traceId\":\"00-5df464cd36acf6e721cfc1ace7534e33-9c9044c2d8c4965e-00\",\"code\":\"AUTH_REQUIRED\"}"
+  },
+  {
+    "path": "/api/v1/workspaces/current",
+    "status": 401,
+    "body": "{\"type\":\"urn:makan:problem:auth-required\",\"title\":\"Authentication required\",\"status\":401,\"detail\":\"برای ادامه باید وارد شوید.\",\"traceId\":\"00-d2631895c8526e0028816d18aed2cf07-44d35baccf86cdd9-00\",\"code\":\"AUTH_REQUIRED\"}"
+  },
+  {
+    "path": "/api/admin/v1/operations/health",
+    "status": 401,
+    "body": "{\"type\":\"urn:makan:problem:auth-required\",\"title\":\"Authentication required\",\"status\":401,\"detail\":\"برای ادامه باید وارد شوید.\",\"traceId\":\"00-add677869fcbc08bbc1a8340f4bfb186-61cae63003ef6826-00\",\"code\":\"AUTH_REQUIRED\"}"
+  }
+]
