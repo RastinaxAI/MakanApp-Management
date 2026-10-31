@@ -56,3 +56,8 @@ describe('Errors and Persian boundaries', () => {
     expect(money(null, 'IRR')).toBe('—');
   });
 });
+it('maps a safe correlation id without exposing internal error details', () => {
+  const problem = parseProblem({ correlationId: 'support-123', detail: 'private backend detail' }, 500);
+  expect(problem.traceId).toBe('support-123');
+  expect(problem).not.toHaveProperty('detail');
+});

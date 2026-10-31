@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-30",
+  "guideSourceCommit": "42c51a3",
+  "guideRelease": "20261030-official-spaces-42c51a3",
+  "runtimeCommitVerified": false,
+  "openApiInfoVersion": "1.0.0",
+  "openApiSha256": "90b7f39e6b5091b3775504cb3bab06c2e0fa9cc284a2582e27981d893cad4e53",
+  "observedOfficialSpaceSchoolPaths": [
+    "/api/v1/organization/official-spaces",
+    "/api/v1/organization/classes/{classId}/official-spaces",
+    "/api/v1/organization/classes/{classId}/official-spaces/activities/{eventId}",
+    "/api/v1/organization/classes/{classId}/official-spaces/activities"
+  ],
+  "adminPaths": 59,
+  "adminPathsAdded": [],
+  "adminPathsRemoved": [],
+  "adminPathsChanged": [],
+  "runtimeOperations": 80,
+  "runtimeContractUnchanged": true,
+  "ownerPolicy": "Exact PlatformOwner AND platform.access; independent permissions for each operation",
+  "typecheck": "passed",
+  "unitTests": 125,
+  "fixtureBrowserTests": 28,
+  "productionBuild": "passed in fixture browser run",
+  "businessWrites": "Fixture only; live backend checks limited to authentication, permitted reads and logout",
+  "dockerDeployment": "healthy at http://127.0.0.1:3000/login",
+  "dockerBuild": "passed",
+  "dockerImage": "sha256:4c4535bb0654b5672ceb6b116c354016894b8fa27cca20bab2be8573c2614de7",
+  "dockerBrowserTests": 6,
+  "liveBackend": {
+    "date": "2026-10-30",
+    "reads": [
+      {
+        "feature": "organizations",
+        "status": 200
+      },
+      {
+        "feature": "organization detail",
+        "status": 200
+      },
+      {
+        "feature": "role catalog",
+        "status": 200
+      },
+      {
+        "feature": "users",
+        "status": 200
+      },
+      {
+        "feature": "owner detail",
+        "status": 200
+      },
+      {
+        "feature": "education metadata",
+        "status": 200
+      },
+      {
+        "feature": "plan catalog",
+        "status": 200
+      },
+      {
+        "feature": "commercial summary",
+        "status": 200
+      },
+      {
+        "feature": "finance orders",
+        "status": 200
+      },
+      {
+        "feature": "moderation queue",
+        "status": 200
+      },
+      {
+        "feature": "conversation metadata",
+        "status": 200
+      },
+      {
+        "feature": "provisioning",
+        "status": 200
+      },
+      {
+        "feature": "notification operations",
+        "status": 200
+      },
+      {
+        "feature": "jobs",
+        "status": 200
+      },
+      {
+        "feature": "health",
+        "status": 200
+      },
+      {
+        "feature": "audit logs",
+        "status": 200
+      }
+    ],
+    "ownerVerify": 200,
+    "ownerSession": 200,
+    "ownerRoles": [
+      "PlatformOwner"
+    ],
+    "platformAccess": true,
+    "removedMfa": 404,
+    "ownerLogout": 204,
+    "nonOwnerVerify": 403,
+    "nonOwnerDeniedCode": "PLATFORM_OWNER_REQUIRED",
+    "nonOwnerSession": 401
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "mode": "CLIENT FIXTURES ONLY: mocked message history, read cursor and file content in isolated Playwright context; not real delivery.",
+  "checks": {
+    "file": "Cancel, explicit retry after 503, save and byte equality passed against local fixture.",
+    "video": "Local MP4 fixture decoded with native controls; not a real server video.",
+    "image": "Lazy authenticated-transport UI and blob preview render the local PNG fixture.",
+    "mobileContainment": "Media stays inside its message bubble."
+  },
+  "errors": []
+}

@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-29",
+  "guideRelease": "20261028-final-6f274767",
+  "ownerPolicy": "PlatformOwner plus platform.access; per-operation permissions",
+  "unitTests": 111,
+  "fixtureBrowserTests": 20,
+  "adminPaths": 51,
+  "runtimeOperations": 72,
+  "clientArchive": "archive/client-before-admin-20261029",
+  "landingModified": false,
+  "routes": [
+    {
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "path": "/enter",
+      "status": 404
+    },
+    {
+      "path": "/personal",
+      "status": 404
+    },
+    {
+      "path": "/organization",
+      "status": 404
+    },
+    {
+      "path": "/about",
+      "status": 404
+    },
+    {
+      "path": "/api/client/session",
+      "status": 404
+    },
+    {
+      "path": "/api/auth/mfa",
+      "status": 404
+    }
+  ],
+  "live": {
+    "challengeStatus": 202,
+    "verifyStatus": 200,
+    "sessionStatus": 200,
+    "roles": [
+      "PlatformOwner"
+    ],
+    "hasPlatformAccess": true,
+    "schoolContextAbsent": true,
+    "reads": [
+      {
+        "path": "/api/admin/v1/organizations?page=1&pageSize=1",
+        "status": 200
+      },
+      {
+        "path": "/api/admin/v1/users?page=1&pageSize=1",
+        "status": 200
+      },
+      {
+        "path": "/api/admin/v1/operations/health",
+        "status": 200
+      }
+    ],
+    "logoutStatus": 204
+  },
+  "dockerBrowserTests": 6,
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "dockerBuild": "passed",
+  "container": "healthy"
+}

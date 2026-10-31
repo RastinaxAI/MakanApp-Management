@@ -86,8 +86,12 @@ export function MessagingPage() {
     <>
       <PageHeader
         title="اطلاعات پیام‌رسان"
-        description="فقط metadata مجاز گفتگوها؛ دسترسی عمومی به متن Direct خصوصی وجود ندارد."
+        description="فهرست مجاز گفتگوها برای بررسی وضعیت؛ محتوای گفتگوهای خصوصی در این صفحه نمایش داده نمی‌شود."
       />
+      <p className="notice">
+        مشاهده این فهرست، مجوز ورود به گفتگو یا مدیریت اعضای گروه و کانال رسمی نیست. رسمی‌بودن گفتگو
+        از روی نام یا سازنده آن تعیین نمی‌شود.
+      </p>
       <ListView
         title="فراداده گفتگوها"
         endpoint="/api/admin/v1/messaging/conversations"

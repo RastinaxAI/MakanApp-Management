@@ -7,10 +7,10 @@ Docker Desktop با Linux containers و WSL2 لازم است. برنامه فق�
 در این رایانه `.env.docker` آماده است؛ آن را بازنویسی نکنید:
 
 ```powershell
-docker compose --env-file .env.docker up -d --build --wait --wait-timeout 120
+docker compose --env-file .env.docker up -d --wait --wait-timeout 240
 ```
 
-پس از موفقیت بررسی سلامت، [ورود پنل](http://127.0.0.1:3000/login) را باز کنید. مرورگر خودکار باز نمی‌شود. دانلود و ساخت نخست ممکن است چند دقیقه طول بکشد.
+پس از موفقیت بررسی سلامت، [ورود پنل](http://127.0.0.1:3000/login) را باز کنید. این دستور نسخه ساخته‌شده را اجرا می‌کند؛ برای تغییر کد، `--build` را اضافه کنید. مرورگر خودکار باز نمی‌شود.
 
 ## آماده‌سازی اولیه
 
@@ -37,26 +37,27 @@ MAKAN_PORT=3000
 BACKEND_BASE_URL=http://94.184.32.84:8090
 APP_ORIGIN=http://127.0.0.1:3000
 COOKIE_SECURE=false
-PLATFORM_OWNER_ROLE_KEYS='["PlatformOwner"]'
-ALLOW_UNCONFIGURED_OWNER_OTP_TESTING=false
-PERMISSION_BINDINGS='{}'
 ```
 
-کلید تولیدشده را در `SESSION_SECRET` نگه دارید. فایل env و کلید را منتشر نکنید. برای `.env.local` تازه نیز همین روش تولید کلید با نام فایل مربوط به آن قابل استفاده است؛ اجرای محلی به `MAKAN_PORT` وابسته نیست.
+کلید تولیدشده را در `SESSION_SECRET` نگه دارید. فایل env و کلید را منتشر نکنید. برای نصب اولیه سپس اجرا کنید:
 
-`PERMISSION_BINDINGS={}` نگاشت‌های همراه برنامه در `contracts/platform-permissions.json` را حفظ می‌کند. نقش و مجوز واقعی هر حساب در سرور کنترل می‌شود؛ OTP صحیح برای نقش‌های غیرمالک مجوز ورود نیست.
+```powershell
+docker compose --env-file .env.docker up -d --build --wait --wait-timeout 240
+```
+
+برای `.env.local` تازه نیز همین روش تولید کلید با نام فایل مربوط به آن قابل استفاده است؛ اجرای محلی به `MAKAN_PORT` وابسته نیست.
 
 ## دستورهای روزمره
 
-| کار | دستور |
-| --- | --- |
-| ساخت و اجرا | `docker compose --env-file .env.docker up -d --build --wait --wait-timeout 120` |
-| اجرای نسخه ساخته‌شده | `docker compose --env-file .env.docker up -d --wait --wait-timeout 120` |
-| وضعیت و سلامت | `docker compose --env-file .env.docker ps` |
-| مشاهده لاگ‌ها | `docker compose --env-file .env.docker logs -f --tail 100 web` |
-| توقف با حفظ نشست‌ها | `docker compose --env-file .env.docker down` |
-| اعمال تنظیمات تازه | `docker compose --env-file .env.docker up -d --force-recreate --wait --wait-timeout 120` |
-| اعمال کد و تنظیمات تازه | `docker compose --env-file .env.docker up -d --build --force-recreate --wait --wait-timeout 120` |
+| کار                     | دستور                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
+| ساخت و اجرا             | `docker compose --env-file .env.docker up -d --build --wait --wait-timeout 240`                  |
+| اجرای نسخه ساخته‌شده    | `docker compose --env-file .env.docker up -d --wait --wait-timeout 240`                          |
+| وضعیت و سلامت           | `docker compose --env-file .env.docker ps`                                                       |
+| مشاهده لاگ‌ها           | `docker compose --env-file .env.docker logs -f --tail 100 web`                                   |
+| توقف با حفظ نشست‌ها     | `docker compose --env-file .env.docker down`                                                     |
+| اعمال تنظیمات تازه      | `docker compose --env-file .env.docker up -d --force-recreate --wait --wait-timeout 240`         |
+| اعمال کد و تنظیمات تازه | `docker compose --env-file .env.docker up -d --build --force-recreate --wait --wait-timeout 240` |
 
 Ctrl+C فقط مشاهده لاگ را می‌بندد. `restart` فایل env را دوباره نمی‌خواند؛ برای تغییر تنظیمات از `up --force-recreate` استفاده کنید. پس از تغییر کد، `--build` لازم است.
 
@@ -69,7 +70,7 @@ MAKAN_PORT=3001
 APP_ORIGIN=http://127.0.0.1:3001
 ```
 
-دستور اعمال تنظیمات تازه را بزنید و `http://127.0.0.1:3001/login` را باز کنید. در صورت اشغال پورت، فرایند دیگری خودکار بسته نمی‌شود. تغییر پورت نشست‌های مرورگر را پاک نمی‌کند.
+دستور اعمال تنظیمات تازه را بزنید و `http://127.0.0.1:3001/enter` را باز کنید. در صورت اشغال پورت، فرایند دیگری خودکار بسته نمی‌شود. تغییر پورت نشست‌های مرورگر را پاک نمی‌کند.
 
 ## اجزای کانتینر و نگه‌داری
 
@@ -95,5 +96,3 @@ Dockerfile با `npm ci` و Webpack خروجی standalone می‌سازد. فق�
 ```powershell
 npx playwright test --config playwright.docker.config.ts
 ```
-
-این دستور کانتینر موجود را بررسی می‌کند و بک‌اند ساختگی اجرا نمی‌کند. بررسی سلامت کانتینر به‌تنهایی سلامت بک‌اند یا مجازبودن حساب مالک را تضمین نمی‌کند.

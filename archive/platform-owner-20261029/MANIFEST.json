@@ -1,0 +1,329 @@
+{
+  "reason": "User explicitly removed platform-owner functionality from this client; preserved prior changes outside active source/tests/routes.",
+  "files": [
+    {
+      "path": "src\\app\\(protected)\\admin\\[[...section]]\\page.tsx",
+      "sha256": "f11a6f6390e9397fc79a636ec03e7bfac8538e8a31b638f97fac0ea3ce60d782"
+    },
+    {
+      "path": "src\\app\\(protected)\\layout.tsx",
+      "sha256": "c7fba2d22bad4cd259618bc083efc2bf4020231e3cd847eb9fdce613981599a8"
+    },
+    {
+      "path": "src\\app\\(protected)\\organization\\[[...section]]\\page.tsx",
+      "sha256": "4d7f958bcc921a76efa7ed95d0b58a15ce6464ac48623758f568dcfba4482661"
+    },
+    {
+      "path": "src\\app\\login\\page.tsx",
+      "sha256": "041b3e7e2a35d19b6664ae779a85b78a2ce3ddc7d0fa6b558d18dc7c7de2c006"
+    },
+    {
+      "path": "src\\app\\api\\auth\\[action]\\route.ts",
+      "sha256": "bef8b24bdabe8f7ce64d4809058a3239d20cc05b5b779bd53556df69e3188449"
+    },
+    {
+      "path": "src\\app\\api\\backend\\[...path]\\route.ts",
+      "sha256": "4581c0aefd4d65ad2e61324426ca2fd01c6bde28ed6c044c9f8f17f4b4330161"
+    },
+    {
+      "path": "src\\app\\api\\session\\route.ts",
+      "sha256": "4638e3f1770d2f7b2adb866b2186fe01581f49725c8a198c5ae9f637ee51083c"
+    },
+    {
+      "path": "src\\app\\design-review\\layout.tsx",
+      "sha256": "a7da28e30bdedc067c28ab7e9c2eee11c0dbd4243b381ce39b0f582e0dc685a9"
+    },
+    {
+      "path": "src\\app\\design-review\\page.tsx",
+      "sha256": "d9650d60615a01acfa05df90d591f2797b48888c9eeed791000b9ffd60be2b0d"
+    },
+    {
+      "path": "src\\app\\design-review\\[direction]\\[screen]\\page.tsx",
+      "sha256": "5e7ad5ca9215461c4a037e8595ed3c970ef728f75ea76531899f338e09228a91"
+    },
+    {
+      "path": "src\\features\\access-context\\provider.tsx",
+      "sha256": "c2b26e05005da2ba5d48506263e86342690364a281efe202170817a606947b93"
+    },
+    {
+      "path": "src\\features\\commerce\\atlas-plan-catalog.module.css",
+      "sha256": "cac029c1c88ec6013d32aefecaf4e2208c8a261a52c3e787c4a8f15a1f034e84"
+    },
+    {
+      "path": "src\\features\\commerce\\atlas-plan-catalog.tsx",
+      "sha256": "5c7d9106bf9c50c2a137c319cec257ebe6fed0aaa09a91571d0f561569e14de1"
+    },
+    {
+      "path": "src\\features\\commerce\\pages.tsx",
+      "sha256": "78d5fb9f19ae05a23c70e650631c84cd893040de33df52c75013273058a0e571"
+    },
+    {
+      "path": "src\\features\\design-review\\isolation.ts",
+      "sha256": "20b4009b9ed2994f8a644ee3a07d145bd3c6e1b40798415d2cd8cdb0066c36e1"
+    },
+    {
+      "path": "src\\features\\design-review\\model.ts",
+      "sha256": "0c441364d70f9d5d461b0418d0b73d29540bf56c29bd69e004eb67257bfc1854"
+    },
+    {
+      "path": "src\\features\\design-review\\review.module.css",
+      "sha256": "beea9ae34a6255a1eae1e548eecfa4af4332850a240aa06453547b8173922a0e"
+    },
+    {
+      "path": "src\\features\\design-review\\review.tsx",
+      "sha256": "a5e5886f782f9e962e978d3045eb12e6463ffb6c1af4e6d1d9c70cc2b5dcad12"
+    },
+    {
+      "path": "src\\features\\education\\pages.tsx",
+      "sha256": "df3b8218c2c730e6764a9d56f9207a7f5b1aa4f214a914af1c86b5a3612ed5dc"
+    },
+    {
+      "path": "src\\features\\iam\\pages.tsx",
+      "sha256": "501c03ecb2cc301ed83bfa579d144ba0a40e5f7cc7e9c1c299e45a51566d1865"
+    },
+    {
+      "path": "src\\features\\moderation\\pages.tsx",
+      "sha256": "b29b437dead7d713ac27b279f60ff368d198f2131b8e3521b34c3582443c6efc"
+    },
+    {
+      "path": "src\\features\\navigation\\admin-route.tsx",
+      "sha256": "62fa9aca8704201d2d42e84bc7d73c274739292884a3b751deeb767d0003a48b"
+    },
+    {
+      "path": "src\\features\\navigation\\organization-route.tsx",
+      "sha256": "e27c816a72ef16699b0bedef7fe316b2e0295a7646513fd3fdc64c21159a3a5b"
+    },
+    {
+      "path": "src\\features\\operations\\pages.tsx",
+      "sha256": "a27ba013f8b03ad97dea72af9922ed20b9a141c4163f20affd249b6aa6aa9840"
+    },
+    {
+      "path": "src\\features\\organization\\pages.tsx",
+      "sha256": "a630f1c0f80a593c991eceed805b0ad53f60f021cc67ab458eea57be0d2069ed"
+    },
+    {
+      "path": "src\\features\\organization\\sessions.tsx",
+      "sha256": "146b68257543a57ea68966999b023718a0dc7d35f59de8d23a83bec9cd55d8e1"
+    },
+    {
+      "path": "src\\features\\organizations\\pages.tsx",
+      "sha256": "8482d5403bf755ee92977b495e229fcd0eb16c4e868054a61f76591f0c5603c7"
+    },
+    {
+      "path": "src\\features\\organizations\\provisioning-state.ts",
+      "sha256": "75cee931d390e221eae2f9e5f7b7c651803e38c6a98ad3604216b1fbd3fed584"
+    },
+    {
+      "path": "src\\features\\organizations\\provisioning.tsx",
+      "sha256": "65844f940c0aa420a78a2310994e98fe7664fe541d16c7f50896bd26b48aff06"
+    },
+    {
+      "path": "src\\features\\overview\\dashboard.tsx",
+      "sha256": "c65466f4e60e7a022599137a19b03cdd0807f8570877aff96f1e9f3f83d51130"
+    },
+    {
+      "path": "src\\features\\users\\pages.tsx",
+      "sha256": "3e3cda7a31c571d6d65b67da4143b1455a3a6b40ce57f1faf2b1acfbebe17f3d"
+    },
+    {
+      "path": "src\\components\\layout\\atlas.module.css",
+      "sha256": "7d7108a274292809681d3f64a82f94ea203bcbaf2b4443ddbf62a67228929d36"
+    },
+    {
+      "path": "src\\components\\layout\\global-search.tsx",
+      "sha256": "13c2d8496c1deeab8066eef164adb60f05448b7cedc4ebdb413f37c232e54580"
+    },
+    {
+      "path": "src\\components\\layout\\page-header.tsx",
+      "sha256": "9aa9baecda3e6eef7a385bc1579ef77e5f3c66e17214abc2c8c521d288cb7d5b"
+    },
+    {
+      "path": "src\\components\\layout\\shell.tsx",
+      "sha256": "c31c8bb9e0b6ebc0762687449347e05733dbe1822cbc45f46165198785479b52"
+    },
+    {
+      "path": "src\\components\\ui\\command-dialog.tsx",
+      "sha256": "48c4798e2520a71b20e2baf7157388baa4efd81b1bfe9f0e0de70d9c41628a18"
+    },
+    {
+      "path": "src\\components\\ui\\entity-picker.tsx",
+      "sha256": "ffe52278c0e626d9f95eda59231f4d94ca1e9dd15372c807f51a3c8b0dc9c681"
+    },
+    {
+      "path": "src\\components\\ui\\list-view.tsx",
+      "sha256": "345b397fe89dc81ee4b8b5c20491f8dddac1d3d129ea002292b3ffd6b38989be"
+    },
+    {
+      "path": "src\\features\\pwa\\notifications.tsx",
+      "sha256": "fb203807b9c1e9f460adf59f272b045febbde0508d34eba828afab81832c12ad"
+    },
+    {
+      "path": "src\\features\\pwa\\push-client.ts",
+      "sha256": "fa37f2f860b73dd5dd2f4a895e28bd698dbf81f90b300023eada3a8ff64b7e85"
+    },
+    {
+      "path": "src\\lib\\api\\hooks.ts",
+      "sha256": "697b16d8999e2e8066fa78d94959d977f9a54479f97ef0149e290ba547f83d82"
+    },
+    {
+      "path": "src\\lib\\owner-policy.ts",
+      "sha256": "6d100f4b6aaa2c4b6b5a78c6e4ea40c3bc27dc1090eb21dbdf4afef1f938ec6a"
+    },
+    {
+      "path": "src\\lib\\permissions.ts",
+      "sha256": "6d2d55cafce178a47e0ee567c02a8fb0d93da11096c9fc6539ad1b56693d59f5"
+    },
+    {
+      "path": "src\\lib\\server\\owner-page.ts",
+      "sha256": "ad1d7335c269437dc7e73d6540408b0a714f7fd1ffdbae6fc00ec0c80708a8bd"
+    },
+    {
+      "path": "tests\\e2e\\admin.spec.ts",
+      "sha256": "d420fa0aafb87e88e2ad4d6821e436c6153544077cdce8f0a0f13770718989a9"
+    },
+    {
+      "path": "tests\\e2e\\otp-performance.spec.ts",
+      "sha256": "959dbb866a7f573d69c240d5122f4cb0561919ac565b3ed40d679be9fb89e6f5"
+    },
+    {
+      "path": "tests\\e2e\\owner-access.spec.ts",
+      "sha256": "70117fe7d656737313140c2fc94f71d7253948533ebe3b9d1be5f568b029b947"
+    },
+    {
+      "path": "tests\\e2e\\owner-workflows.spec.ts",
+      "sha256": "e1782fbedc5c5aa25a5259fada2668a9319d1c2d58c0873d6c925bdb027f9228"
+    },
+    {
+      "path": "tests\\e2e\\pwa.spec.ts",
+      "sha256": "66371a82db47cf9d607c503d03053f28c862f1bde19710122dade2dd2aec87ac"
+    },
+    {
+      "path": "tests\\e2e\\responsive.spec.ts",
+      "sha256": "0be82f2205de216da32237c4aee8afb3a73679e6a866045bde5e47962880d005"
+    },
+    {
+      "path": "tests\\live\\accounts.spec.ts",
+      "sha256": "83e9b13f3500207269407ea735c29c86a8889856bfe4c4d257bea3127b48aa03"
+    },
+    {
+      "path": "playwright.live.config.ts",
+      "sha256": "a23fb2fab5f4363b92c2274d682aca0ed15a488f68f558e2bec235bab9eaf108"
+    },
+    {
+      "path": "tests\\unit\\design-review.test.ts",
+      "sha256": "d86a70ba4e4dcb64e752b0ffd8b4594223d37c33208b2da73a7aa252918be875"
+    },
+    {
+      "path": "tests\\unit\\documented-permissions.test.ts",
+      "sha256": "c267f82d5b8a9b9e18636157f1188e6be35013fcec7eb9959dcb0ec1c809c5ba"
+    },
+    {
+      "path": "tests\\unit\\owner-policy.test.ts",
+      "sha256": "649d734bf12ddcc5c5c81d86b8e3af239dc037a4cdb70ba31ab4dfd3a67fb7a2"
+    },
+    {
+      "path": "tests\\unit\\owner-server.test.ts",
+      "sha256": "6a55e39be7d59bbb5b1685643ef70b12fada7083c9535025f1f79719cf56e94c"
+    },
+    {
+      "path": "tests\\unit\\permissions.test.ts",
+      "sha256": "326a7cc0a300f8bd1e9277dca193c684a19a47587f37f22728d300d748728398"
+    },
+    {
+      "path": "tests\\unit\\provisioning.test.ts",
+      "sha256": "8a92b5b7fda15c64e1e154999ec92d26984e25b2c469cfe5587c41216e278786"
+    },
+    {
+      "path": "tests\\unit\\pwa-push-client.test.ts",
+      "sha256": "29a03fccaac9c9faf6a3f56d949177155cd6eecbe4af8161f9e07a395b6aadb9"
+    },
+    {
+      "path": "scripts\\mock-backend.mjs",
+      "sha256": "d717ad810e9bf299dbe808d9b82cda95c3a8f0eeeefc32dc1195cef66d2e195d"
+    },
+    {
+      "path": "scripts\\test-server.mjs",
+      "sha256": "37911ec3ee11c1afabeda7362ff894044d7f1f254666a0665df4359bffca0b9b"
+    },
+    {
+      "path": "scripts\\build-user-handbook.cjs",
+      "sha256": "7393abf6f47388757e41bc9709f206bf355e0a211dc7da521544c0cf2391539b"
+    },
+    {
+      "path": "scripts\\build-visual-handbook.cjs",
+      "sha256": "6a1bff702182b99cfb8fbc7d57b7e95cce4575237065688303ee77fe2e650506"
+    },
+    {
+      "path": "scripts\\check-contrast.mjs",
+      "sha256": "466f13961d320c20223ce6905cf62cfd4d575bc4a1a447a94d19b8386b4e523d"
+    },
+    {
+      "path": "contracts\\platform-permissions.json",
+      "sha256": "9e7b9675a68e839605ce93f922d84111d3b3b847fb29a8eca3d8b2c4e429d4b5"
+    },
+    {
+      "path": "contracts\\owner-live-openapi.json",
+      "sha256": "a56cd7d54763e044581e7a380ba176c428de43f6d65679b1bb70ec10123aba43"
+    },
+    {
+      "path": "src\\features\\auth\\login.tsx",
+      "sha256": "0e1117a1587c3bb5dcfb0e2e93b70571468316a96057fad8a23e2a00eee12d58"
+    },
+    {
+      "path": "src\\lib\\server\\backend.ts",
+      "sha256": "14b38388cf36b968895ba7617765c9c56651a74e3c8033ee8f1be8d7676270b4"
+    },
+    {
+      "path": "src\\lib\\server\\config.ts",
+      "sha256": "df2b97af6dccd1ca0fee91df413c749b11c7a0e31c3c87e843e8369a7cc37960"
+    },
+    {
+      "path": "src\\lib\\server\\session.ts",
+      "sha256": "f51262d45f8a36823ddf8dcbe56f7d389ecfc0537507a72c792556d2429220dd"
+    },
+    {
+      "path": "src\\generated\\api\\contract.json",
+      "sha256": "fe0cb7cec31d23eb6a178033513fd5262b765ef00446e8e16faacd0745f4dca5"
+    },
+    {
+      "path": "src\\generated\\api\\schema.d.ts",
+      "sha256": "0152272f9b76facf6e411a5c6580205ed5691c31e5a7892a96ca13a3724670cb"
+    },
+    {
+      "path": "scripts\\generate-contract.mjs",
+      "sha256": "29d85d5f4b59d79d60f1e950c0b48080233ab326af59ee85cb44bb1eaaff560e"
+    },
+    {
+      "path": "scripts\\generate-client-contract.mjs",
+      "sha256": "68ddd8e779930d5c4ae1ba30b3a52af42393196b6a81aaff9244fcc4ccd414b3"
+    },
+    {
+      "path": "src\\lib\\api\\client.ts",
+      "sha256": "1c7adaa0dc9fcf2c644466069deada374a040ee6b8422dc266324b8a9c78267e"
+    },
+    {
+      "path": "README.md",
+      "sha256": "80fbbcc259e71ed9d34e35583790cc285179262e4b31984345906376f18146a6"
+    },
+    {
+      "path": "playwright.config.ts",
+      "sha256": "ccfd80d4cb3d597601ab434060127a0d08522999f7dbe112d5fe811164ffa716"
+    },
+    {
+      "path": "tests\\unit\\contract.test.ts",
+      "sha256": "f839479cb57dbe3cd845573636c4697dc8a8025ed0e3682420927e0496dc843b"
+    },
+    {
+      "path": "public/guides/makan-owner-guide.pdf",
+      "sha256": "5f40b5e0cd986f0f5b46c4596aee4a3daaf760b204c22eef5eb72b66e78e9337"
+    },
+    {
+      "path": "docs/docker.md",
+      "sha256": "be6870872cc62f780657f700ebf7fb9514a4dd8a297b0a914a0a0949ea312120"
+    },
+    {
+      "path": "docs/deployment.md",
+      "sha256": "29e107b0ef785ae92faf40db96a94f1a1ff5590c4c535f8c9c852839f6cefba6"
+    }
+  ]
+}

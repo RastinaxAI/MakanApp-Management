@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-31",
+  "changes": [
+    "Public login providers separated from authenticated API catalog and query cache",
+    "Admin feature bundles loaded per section",
+    "11-digit national mobile starting 09 and six-digit OTP validated in UI and BFF",
+    "README Windows Docker and Node startup instructions",
+    "Illustrated Persian end-user handbook refreshed"
+  ],
+  "typecheck": "passed",
+  "unitTests": 135,
+  "fixtureBrowserTests": {
+    "passed": 54,
+    "failed": 0
+  },
+  "ownerPolicy": "PlatformOwner and platform.access, independent operation permissions; every protected read still checks owner identity",
+  "performance": {
+    "metric": "Decoded JavaScript response bytes in fresh Chrome contexts on the same Docker URL; timing is a single sample, not an SLA",
+    "before": {
+      "loginReadyMs": 2433,
+      "loginJsBytes": 891755,
+      "loginJsFiles": 18,
+      "ownerDashboardReadyMs": 3927,
+      "additionalAdminJsBytes": 146001,
+      "additionalAdminJsFiles": 2
+    },
+    "beforeDockerImage": "sha256:d95e5577906d985ff5f2960f5c92f63a8f631f5d04e324505bab3ae4e70d5061",
+    "after": {
+      "loginReadyMs": 713,
+      "loginJsBytes": 660647,
+      "loginJsFiles": 12,
+      "ownerDashboardReadyMs": 4180,
+      "additionalAdminJsBytes": 340728,
+      "additionalAdminJsFiles": 11,
+      "ownerRoles": ["PlatformOwner"],
+      "platformAccess": true,
+      "readStatuses": {
+        "organizations": 200,
+        "users": 200,
+        "commerce/plans": 200,
+        "operations/health": 200
+      },
+      "handbookStatus": 200,
+      "handbookSha256": "cad97e02b35dad9dc687b1ed8b4482d32d70027d8a8a57b62652bcd9e2b644b1"
+    },
+    "loginJsReductionPercent": 25.9,
+    "firstDashboardTotalJsBefore": 1037756,
+    "firstDashboardTotalJsAfter": 1001375,
+    "firstDashboardTotalJsReductionPercent": 3.5
+  },
+  "pdf": {
+    "file": "output/pdf/MakanApp_Visual_User_Guide_FA.pdf",
+    "pages": 12,
+    "textPages": 12,
+    "links": 22,
+    "bytes": 1624898,
+    "sha256": "cad97e02b35dad9dc687b1ed8b4482d32d70027d8a8a57b62652bcd9e2b644b1",
+    "visualReview": "All 12 pages rendered with Poppler and inspected; no clipping or overlap",
+    "publicCopyMatches": true,
+    "screenshots": "Actual app with isolated fixture data; no public demo routes enabled",
+    "deployedCopyMatches": true
+  },
+  "dockerDeployment": "healthy at http://127.0.0.1:3000/login",
+  "businessWrites": "Fixture only; real checks limited to authentication, allowed reads and logout",
+  "intermediateCleanup": "Automatic approval review rejected temporary file deletion; ignored tmp files retained",
+  "startup": {
+    "observation": "After the heavy Docker build, initial health probes timed out; the same container recovered without an application change",
+    "warmLoginResponseMs": [71, 82, 48, 23, 19],
+    "change": "120-second startup grace for health checks; README waits up to 240 seconds. Successful probes can mark healthy immediately; runtime timeouts and retries unchanged."
+  },
+  "dockerBuild": "passed",
+  "dockerImage": "sha256:817cc42e687a1635d315b6d2f9d35c2c00b0a739f63c0e26c3f800285d4c53ce",
+  "dockerBrowserTests": {
+    "passed": 7,
+    "failed": 0
+  }
+}

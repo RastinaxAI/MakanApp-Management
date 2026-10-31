@@ -1,0 +1,202 @@
+{
+  "checkedAt": "2026-10-28T13:51:55.319Z",
+  "application": "Next.js production on http://127.0.0.1:3130",
+  "backend": "http://94.184.32.84:8090",
+  "data": "Real seeded Student and PlatformOwner; screenshots are not design-review fixtures.",
+  "screens": [
+    {
+      "name": "messenger-desktop",
+      "url": "http://127.0.0.1:3130/personal/messages/d68c2b5d-9bbe-48a4-bbd1-39fc60d685ea",
+      "bodyHeight": 1000,
+      "composer": [
+        {
+          "bottom": 971,
+          "clientHeight": 44,
+          "fontSize": "14px",
+          "scrollHeight": 44,
+          "top": 927
+        }
+      ],
+      "height": 1000,
+      "scrollWidth": 1425,
+      "theme": "light",
+      "width": 1440,
+      "file": "screenshots/upgrade-live-atlas/messenger-desktop.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": true
+    },
+    {
+      "name": "messenger-tablet",
+      "url": "http://127.0.0.1:3130/personal/messages/d68c2b5d-9bbe-48a4-bbd1-39fc60d685ea?filter=All&page=1&pageSize=30",
+      "bodyHeight": 1180,
+      "composer": [
+        {
+          "bottom": 1151,
+          "clientHeight": 44,
+          "fontSize": "14px",
+          "scrollHeight": 44,
+          "top": 1107
+        }
+      ],
+      "height": 1180,
+      "scrollWidth": 805,
+      "theme": "light",
+      "width": 820,
+      "file": "screenshots/upgrade-live-atlas/messenger-tablet.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": true
+    },
+    {
+      "name": "messenger-mobile",
+      "url": "http://127.0.0.1:3130/personal/messages/d68c2b5d-9bbe-48a4-bbd1-39fc60d685ea",
+      "bodyHeight": 844,
+      "composer": [
+        {
+          "bottom": 823,
+          "clientHeight": 44,
+          "fontSize": "16px",
+          "scrollHeight": 44,
+          "top": 779
+        }
+      ],
+      "height": 844,
+      "scrollWidth": 375,
+      "theme": "light",
+      "width": 390,
+      "file": "screenshots/upgrade-live-atlas/messenger-mobile.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": true
+    },
+    {
+      "name": "inbox-mobile",
+      "url": "http://127.0.0.1:3130/personal/messages?filter=Group&page=1",
+      "bodyHeight": 844,
+      "composer": [],
+      "height": 844,
+      "scrollWidth": 375,
+      "theme": "light",
+      "width": 390,
+      "file": "screenshots/upgrade-live-atlas/inbox-mobile.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": null
+    },
+    {
+      "name": "plans-mobile",
+      "url": "http://127.0.0.1:3130/admin/commerce",
+      "bodyHeight": 1023,
+      "composer": [],
+      "height": 844,
+      "scrollWidth": 375,
+      "theme": "light",
+      "width": 390,
+      "file": "screenshots/upgrade-live-atlas/plans-mobile.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": null
+    },
+    {
+      "name": "plans-tablet",
+      "url": "http://127.0.0.1:3130/admin/commerce",
+      "bodyHeight": 1180,
+      "composer": [],
+      "height": 1180,
+      "scrollWidth": 805,
+      "theme": "light",
+      "width": 820,
+      "file": "screenshots/upgrade-live-atlas/plans-tablet.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": null
+    },
+    {
+      "name": "plans-desktop",
+      "url": "http://127.0.0.1:3130/admin/commerce",
+      "bodyHeight": 1000,
+      "composer": [],
+      "height": 1000,
+      "scrollWidth": 1425,
+      "theme": "light",
+      "width": 1440,
+      "file": "screenshots/upgrade-live-atlas/plans-desktop.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": null
+    },
+    {
+      "name": "profile-desktop",
+      "url": "http://127.0.0.1:3130/personal/profile",
+      "bodyHeight": 1033,
+      "composer": [],
+      "height": 1000,
+      "scrollWidth": 1425,
+      "theme": "light",
+      "width": 1440,
+      "file": "screenshots/upgrade-live-atlas/profile-desktop.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": null
+    },
+    {
+      "name": "profile-mobile",
+      "url": "http://127.0.0.1:3130/personal/profile",
+      "bodyHeight": 1178,
+      "composer": [],
+      "height": 844,
+      "scrollWidth": 375,
+      "theme": "light",
+      "width": 390,
+      "file": "screenshots/upgrade-live-atlas/profile-mobile.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": null
+    },
+    {
+      "name": "messenger-mobile-dark",
+      "url": "http://127.0.0.1:3130/personal/messages/d68c2b5d-9bbe-48a4-bbd1-39fc60d685ea?filter=All&page=1&pageSize=30",
+      "bodyHeight": 844,
+      "composer": [
+        {
+          "bottom": 823,
+          "clientHeight": 44,
+          "fontSize": "16px",
+          "scrollHeight": 44,
+          "top": 779
+        }
+      ],
+      "height": 844,
+      "scrollWidth": 375,
+      "theme": "dark",
+      "width": 390,
+      "file": "screenshots/upgrade-live-atlas/messenger-mobile-dark.jpg",
+      "horizontalOverflow": false,
+      "composerWithinViewport": true
+    }
+  ],
+  "verified": {
+    "ownerPlanRead": "Succeeded; zero plans. No catalog mutation.",
+    "profile": "Read and PATCH with unchanged values succeeded.",
+    "workspace": "Student organization selected; Student dashboard read. Personal group returned after selecting Personal again.",
+    "contacts": "Read succeeded; no saved contacts initially. Teacher lookup had no visible profile.",
+    "privacy": "Read succeeded for six audiences; blocked list empty. No privacy mutation.",
+    "group": "Private Personal group created: d68c2b5d-9bbe-48a4-bbd1-39fc60d685ea",
+    "messages": "Two text messages including a reply; server-backed history persisted after reload.",
+    "transport": "SignalR negotiation, JSON handshake and conversation subscription connected. Events trigger authorized REST reads.",
+    "filters": "Direct returned empty; Group returned the test group, using server query parameters.",
+    "composer": "Six-line draft grew to 120px, clearing returned to 44px. Draft was not sent.",
+    "ownerMenuFocus": "Escape closes the sheet and restores focus to باز کردن منو after the final fix.",
+    "theme": "Dark messenger inspected; restored to light."
+  },
+  "notVerified": [
+    "Two-account direct send/receive and peer read status",
+    "Receiver-side realtime event and reconnect delivery",
+    "Privacy/block mutation and negative enforcement",
+    "Channel creation",
+    "Messaging attachments and other remaining frontend tools",
+    "Multi-role, multi-child and live revocation",
+    "Payment, Source processing, AI and native mobile"
+  ],
+  "accountPreparation": {
+    "studentVerificationStatus": "Unverified",
+    "studentEffectiveAgeCategory": "Unknown",
+    "studentNextAction": "VerificationRequired",
+    "privateGroupCreation": "Allowed by returned actions and succeeded.",
+    "teacherLookup": "No visible profile. Exact policy cause not established.",
+    "next": "User is preparing Student and Teacher in backend; no ready confirmation received."
+  },
+  "productionConsole": []
+}

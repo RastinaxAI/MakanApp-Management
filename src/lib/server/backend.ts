@@ -34,7 +34,9 @@ export async function backendFetch(path: string, init: RequestInit = {}, token?:
     headers,
     cache: 'no-store',
     redirect: 'error',
-    signal: AbortSignal.timeout(25000),
+    signal: init.signal
+      ? AbortSignal.any([AbortSignal.timeout(25000), init.signal])
+      : AbortSignal.timeout(25000),
   });
 }
 export async function authenticatedFetch(
@@ -90,6 +92,7 @@ export async function authenticatedFetch(
 export async function safeResponse(
   response: Response,
   schema: Parameters<typeof validator>[0] | null = null,
+  validate: typeof validator = validator,
 ) {
   const headers = new Headers({ 'Cache-Control': 'no-store, private', Vary: 'Cookie' });
   const retry = response.headers.get('retry-after');
@@ -100,11 +103,20 @@ export async function safeResponse(
       body = await response.json();
     } catch {}
     const p = parseProblem(body, response.status, retry);
+    p.traceId ??=
+      response.headers.get('x-correlation-id') ?? response.headers.get('x-request-id') ?? undefined;
 
     return NextResponse.json(p, { status: response.status, headers });
   }
   if (response.status === 204) return new NextResponse(null, { status: 204, headers });
   const content = response.headers.get('content-type') ?? '';
+  if (!schema && !content.includes('json') && !content.includes('octet-stream')) {
+    const body = await response.arrayBuffer();
+    if (!body.byteLength) return new NextResponse(null, { status: response.status, headers });
+    headers.set('Content-Type', 'application/octet-stream');
+    headers.set('Content-Disposition', 'attachment; filename="evidence.bin"');
+    return new NextResponse(body, { status: response.status, headers });
+  }
   if (content.includes('json') || schema) {
     let body: unknown;
     try {
@@ -113,7 +125,7 @@ export async function safeResponse(
       return problem(502, 'INVALID_JSON');
     }
     if (schema) {
-      const parsed = validator(schema).safeParse(body);
+      const parsed = validate(schema).safeParse(body);
       if (!parsed.success) return problem(502, 'CONTRACT_MISMATCH');
       body = parsed.data;
     }
@@ -179,14 +191,6 @@ export async function getAuthorizedState(id: string) {
   if (!user.success) throw new ApiError(502);
   const latest = await readSession(id);
   if (!latest) return null;
-  const workspaceResponse = await authenticatedFetch(id, latest, '/api/v1/workspaces/current');
-  if (!workspaceResponse.response.ok && ![403, 404].includes(workspaceResponse.response.status))
-    throw new ApiError(workspaceResponse.response.status);
-  const workspace = workspaceResponse.response.ok
-    ? validator({ $ref: '#/components/schemas/AccessContext' }).safeParse(
-        await workspaceResponse.response.json(),
-      )
-    : null;
   const platform = owner.platform;
   const capabilities = Object.entries(serverConfig().bindings)
     .filter(([operation]) =>
@@ -196,7 +200,7 @@ export async function getAuthorizedState(id: string) {
   return {
     user: user.data,
     platform,
-    context: workspace?.success ? workspace.data : null,
+    context: null,
     revision: (await readSession(id))?.revision ?? latest.revision,
     capabilities,
     unboundOperationCount: contract.operations.filter(

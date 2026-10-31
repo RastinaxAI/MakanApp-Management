@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-30",
+  "scope": "PlatformOwner admin UI redesign; navy navigation, light workspace, Makan blue",
+  "ownerPolicy": "Exact PlatformOwner AND platform.access; independent permissions for each operation",
+  "typecheck": "passed",
+  "unitTests": 126,
+  "fixtureBrowserSuite": {
+    "passed": 52,
+    "failed": 0
+  },
+  "finalVisualSuite": {
+    "passed": 4,
+    "failed": 0
+  },
+  "responsiveWidths": [320, 375, 430, 768, 1024, 1440, 1920],
+  "visualReview": [
+    "login",
+    "desktop dashboard",
+    "mobile dashboard",
+    "dark dashboard",
+    "organizations",
+    "mobile setup"
+  ],
+  "screenshots": "docs/screenshots/redesign-20261030",
+  "screenshotsUse": "Isolated fixture data in the real application; no public demo routes enabled",
+  "privatePagesCached": false,
+  "businessWrites": "Fixture only",
+  "previousUiBackup": "archive/ui-before-redesign-20261030",
+  "dockerDeployment": "healthy at http://127.0.0.1:3000/login",
+  "liveBackend": {
+    "date": "2026-10-30",
+    "reads": [
+      {
+        "feature": "organizations",
+        "status": 200
+      },
+      {
+        "feature": "users",
+        "status": 200
+      },
+      {
+        "feature": "plans",
+        "status": 200
+      },
+      {
+        "feature": "health",
+        "status": 200
+      }
+    ],
+    "ownerVerify": 200,
+    "ownerSession": 200,
+    "ownerRoles": ["PlatformOwner"],
+    "platformAccess": true,
+    "ownerLogout": 204,
+    "nonOwnerVerify": 403,
+    "nonOwnerDeniedCode": "PLATFORM_OWNER_REQUIRED",
+    "nonOwnerSession": 401
+  },
+  "dockerBuild": "passed",
+  "dockerImage": "sha256:d95e5577906d985ff5f2960f5c92f63a8f631f5d04e324505bab3ae4e70d5061",
+  "dockerBrowserTests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "manifest": {
+    "theme": "#11213a",
+    "background": "#f4f6fa"
+  }
+}

@@ -76,6 +76,41 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
   );
 }
 const statuses: Record<string, string> = {
+  Private: 'خصوصی',
+  Public: 'عمومی',
+  Healthy: 'سالم',
+  Degraded: 'نیازمند بررسی',
+  Unhealthy: 'اختلال',
+  Individual: 'فردی',
+  Gregorian: 'میلادی',
+  Persian: 'شمسی',
+  NoSubscription: 'بدون اشتراک',
+  PendingPayment: 'در انتظار پرداخت',
+  QuotaWarning: 'هشدار سهمیه',
+  QuotaExceeded: 'سهمیه تکمیل شده',
+  GracePeriod: 'مهلت تمدید',
+  ScheduledDowngrade: 'کاهش پلن برای دوره بعد',
+  LegacyPendingContract: 'در انتظار قرارداد معتبر',
+  NotApplicable: 'مشمول نیست',
+  AwaitingValidContract: 'در انتظار قرارداد معتبر',
+  CurrentCapacity: 'ظرفیت فعلی',
+  PeriodicConsumption: 'مصرف دوره‌ای',
+  ActiveLearners: 'فراگیر فعال',
+  ActiveClasses: 'کلاس فعال',
+  StorageBytes: 'فضای ذخیره‌سازی',
+  ReportExports: 'خروجی گزارش',
+  AiTextRequests: 'درخواست متنی هوش مصنوعی',
+  SourceCount: 'تعداد منابع',
+  AssignmentFileBytes: 'حجم فایل آموزشی',
+  Academic: 'آموزش',
+  Assignments: 'تکالیف',
+  Exams: 'آزمون‌ها',
+  Messaging: 'پیام‌رسانی',
+  Reports: 'گزارش‌ها',
+  Storage: 'ذخیره‌سازی',
+  Ai: 'هوش مصنوعی',
+  PersonalClassHosting: 'میزبانی کلاس شخصی',
+  PersonalSources: 'منابع شخصی',
   Active: 'فعال',
   Suspended: 'معلق',
   Inactive: 'غیرفعال',
@@ -118,11 +153,21 @@ export function label(value: string) {
 }
 export function StatusBadge({ value }: { value: unknown }) {
   const text = String(value ?? 'نامشخص');
-  const tone = ['Active', 'Completed', 'Published', 'Paid', 'Resolved', 'Present'].includes(text)
+  const tone = [
+    'Active',
+    'Completed',
+    'Published',
+    'Paid',
+    'Resolved',
+    'Present',
+    'Healthy',
+  ].includes(text)
     ? 'success'
-    : ['Suspended', 'Failed', 'Revoked', 'Cancelled', 'Absent'].includes(text)
+    : ['Suspended', 'Failed', 'Revoked', 'Cancelled', 'Absent', 'Unhealthy'].includes(text)
       ? 'danger'
-      : ['Pending', 'NeedsAttention', 'Open', 'InReview', 'Requested', 'Late'].includes(text)
+      : ['Pending', 'NeedsAttention', 'Open', 'InReview', 'Requested', 'Late', 'Degraded'].includes(
+            text,
+          )
         ? 'warning'
         : 'neutral';
   return (

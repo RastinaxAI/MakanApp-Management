@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Building2,
   GraduationCap,
-  LockKeyhole,
   Smartphone,
   ArrowRight,
 } from 'lucide-react';
@@ -20,7 +19,7 @@ import { request } from '@/lib/api/client';
 import { ApiError } from '@/lib/api/errors';
 import { latinDigits, number } from '@/lib/formatting';
 import type { components } from '@/generated/api/schema';
-import { phoneInputSchema } from '@/lib/auth-input';
+import { phoneInputSchema, otpInputSchema } from '@/lib/auth-input';
 
 const schema = z.object({
   phoneNumber: phoneInputSchema,
@@ -69,11 +68,12 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
         setNow(Date.now());
         setTimeout(() => document.getElementById('otp-code')?.focus(), 50);
       } else {
-        const code = latinDigits(values.code ?? '').replace(/\s/g, '');
-        if (!/^\d{4,8}$/.test(code)) {
-          form.setError('code', { message: 'کد ورود را با ارقام معتبر وارد کنید.' });
+        const parsedCode = otpInputSchema.safeParse(values.code ?? '');
+        if (!parsedCode.success) {
+          form.setError('code', { message: 'کد ورود باید دقیقاً ۶ رقم باشد.' });
           return;
         }
+        const code = parsedCode.data;
         await request<{ authenticated: true }>('/api/auth/verify', {
           method: 'POST',
           body: JSON.stringify({
@@ -125,29 +125,40 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
           </span>
         </div>
         <div className="login-hero">
-          <div className="login-eyebrow">MAKAN MANAGEMENT</div>
+          <div className="login-eyebrow">فضای مدیریت ماکان</div>
           <h1>
-            نگاهی روشن‌تر،
+            مدیریت یکپارچه
             <br />
-            مدیریتی یکپارچه‌تر.
+            پلتفرم ماکان
           </h1>
-          <p>فضایی منظم برای مدیریت سازمان‌ها، همراهی با افراد و نظارت بر جریان آموزش.</p>
+          <p>سازمان‌ها، حساب‌ها و خدمات آموزشی را در یک فضای منظم مدیریت کنید.</p>
           <div className="login-hero-features">
             <div>
               <Building2 size={20} />
-              مدیریت متمرکز سازمان‌ها
+              <span>
+                <strong>سازمان‌ها</strong>
+                <small>مدیریت، راه‌اندازی و پیگیری</small>
+              </span>
             </div>
             <div>
               <GraduationCap size={20} />
-              اطلاعات آموزشی در یک نگاه
+              <span>
+                <strong>آموزش</strong>
+                <small>مرور وضعیت کلاس‌ها و فعالیت‌ها</small>
+              </span>
             </div>
             <div>
               <ShieldCheck size={20} />
-              ورود اختصاصی مالک پلتفرم
+              <span>
+                <strong>دسترسی‌ها</strong>
+                <small>کنترل نقش‌ها و امنیت حساب‌ها</small>
+              </span>
             </div>
           </div>
         </div>
-        <div className="login-brand-footer">ماکان · پنل مالک پلتفرم</div>
+        <div className="login-brand-footer">
+          <ShieldCheck size={16} /> ویژه مالک پلتفرم
+        </div>
       </aside>
       <main className="login-main">
         <div className="login-form-wrap">
@@ -155,17 +166,29 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
             <BrandMark />
             ماکان
           </div>
-          <div className="login-lock">
-            <LockKeyhole size={24} />
+          <div className="login-progress" aria-label="مراحل ورود">
+            <span
+              className={!challenge ? 'current' : 'complete'}
+              aria-current={!challenge ? 'step' : undefined}
+            >
+              ۱<span>شماره همراه</span>
+            </span>
+            <i />
+            <span
+              className={challenge ? 'current' : ''}
+              aria-current={challenge ? 'step' : undefined}
+            >
+              ۲<span>کد ورود</span>
+            </span>
           </div>
-          <h2>{challenge ? 'کد ورود را وارد کنید' : 'ورود مالک پلتفرم'}</h2>
+          <h2>{challenge ? 'کد ورود را وارد کنید' : 'ورود به پنل مدیریت'}</h2>
           <p className="login-intro">
             {challenge ? (
               <>
                 کد ارسال‌شده به <bdi dir="ltr">{form.getValues('phoneNumber')}</bdi> را وارد کنید.
               </>
             ) : (
-              'شماره همراه حساب مالک پلتفرم را وارد کنید. سایر نقش‌ها اجازه ورود به این پنل را ندارند.'
+              'با شماره همراه حساب مالک پلتفرم وارد شوید.'
             )}
           </p>
           {accessTesting && (
@@ -189,8 +212,10 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
                   dir="ltr"
                   type="tel"
                   autoComplete="tel"
-                  inputMode="tel"
-                  placeholder="0912 345 6789"
+                  inputMode="numeric"
+                  maxLength={11}
+                  pattern="09[0-9]{9}"
+                  placeholder="09123456789"
                   autoFocus
                   aria-invalid={!!form.formState.errors.phoneNumber}
                   {...form.register('phoneNumber')}
@@ -199,10 +224,7 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
                   <span className="field-error">{form.formState.errors.phoneNumber.message}</span>
                 )}
                 <span className="field-help">
-                  داشتن نقش مدیر مدرسه، معلم، والد یا دانش‌آموز مجوز ورود نیست.
-                </span>
-                <span className="field-help">
-                  شماره همراه ۱۱ رقمی، مانند 09100000000، وارد کنید.
+                  شماره همراه باید ۱۱ رقم باشد و با 09 شروع شود؛ مانند 09100000000.
                 </span>
               </label>
             ) : (
@@ -211,17 +233,23 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
                   کد ورود
                   <input
                     id="otp-code"
+                    aria-label="کد ورود"
                     className="otp-input"
                     dir="ltr"
                     autoComplete="one-time-code"
                     inputMode="numeric"
-                    maxLength={8}
+                    maxLength={6}
+                    pattern="[0-9]{6}"
+                    aria-describedby="otp-help"
                     aria-invalid={!!form.formState.errors.code}
                     {...form.register('code')}
                   />
                   {form.formState.errors.code && (
                     <span className="field-error">{form.formState.errors.code.message}</span>
                   )}
+                  <span id="otp-help" className="field-help">
+                    کد ۶ رقمی ارسال‌شده را وارد کنید.
+                  </span>
                 </label>
                 <div className="timer">
                   <span>
@@ -277,10 +305,7 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
           <InstallPanel compact />
           <div className="login-security">
             <ShieldCheck size={17} />
-            <span>
-              پس از تأیید کد، مالک‌بودن حساب در سرور بررسی می‌شود. هر عملیات به مجوز اختصاصی خود
-              نیاز دارد.
-            </span>
+            <span>ورود به این فضا فقط برای مالک پلتفرم مجاز است.</span>
           </div>
         </div>
       </main>

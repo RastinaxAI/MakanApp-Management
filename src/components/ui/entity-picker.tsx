@@ -202,11 +202,13 @@ export function PlanVersionPicker({
   onChange,
   title = 'نسخه پلن',
   nullable = true,
+  audience,
 }: {
   value: string | null;
   onChange: (choice: Choice | null) => void;
   title?: string;
   nullable?: boolean;
+  audience?: 'Individual' | 'Organization';
 }) {
   const [plan, setPlan] = useState<Choice | null>(null);
   const { can } = useAccess();
@@ -214,6 +216,7 @@ export function PlanVersionPicker({
   const q = useApi<unknown>(path, !!plan);
   const rows =
     isRecord(q.data) && Array.isArray(q.data.versions) ? q.data.versions.filter(isRecord) : [];
+  const matchesAudience = !audience || (isRecord(q.data) && q.data.audience === audience);
   return (
     <div className="plan-picker">
       <EntityPicker
@@ -251,6 +254,7 @@ export function PlanVersionPicker({
             >
               <option value="">{nullable ? 'بدون انتخاب نسخه' : 'نسخه را انتخاب کنید'}</option>
               {rows
+                .filter(() => matchesAudience)
                 .filter((r) => r.status === 'Published')
                 .map((r) => (
                   <option key={String(r.planVersionId)} value={String(r.planVersionId)}>
@@ -258,6 +262,11 @@ export function PlanVersionPicker({
                   </option>
                 ))}
             </select>
+            {audience && !matchesAudience && (
+              <p className="field-error">
+                مخاطب این پلن با قرارداد {label(audience)} مطابقت ندارد؛ پلن دیگری انتخاب کنید.
+              </p>
+            )}
             {!rows.some((r) => r.status === 'Published') && (
               <p className="field-help">این پلن نسخه منتشرشده‌ای ندارد.</p>
             )}

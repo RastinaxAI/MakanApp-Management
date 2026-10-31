@@ -109,7 +109,7 @@ test('owner status never grants a school Manager workspace', async ({ page }) =>
   const result = await page.request.get('/api/backend/api/v1/organization/people', {
     headers: { 'X-Makan-Context': state.revision },
   });
-  expect(result.status()).toBe(403);
-  expect((await result.json()).code).toBe('MANAGER_CONTEXT_REQUIRED');
+  expect(result.status()).toBe(404);
+  for (const path of ['/organization', '/personal', '/enter', '/about']) expect((await page.request.get(path)).status()).toBe(404);
   expect(state.platform.userId).toBe(userId);
 });

@@ -1,0 +1,15 @@
+{
+  "guide": "20261028-final-6f274767",
+  "date": "2026-10-28",
+  "mode": "REAL HTTP SERVICE PROBES — no mocked response",
+  "baseUrl": "http://94.184.32.84:8090",
+  "openapi": { "status": 200, "paths": 284, "addedPath": "/api/v1/me/profile-photo", "releaseBinaryHashesVerified": false },
+  "authentication": [
+    { "account": "Support", "via": "Next.js BFF", "challengeStatus": 202, "verifyStatus": 500, "code": "UNEXPECTED_ERROR", "traceId": "00-e135d7629252faf9361fa318a6c9dc78-2caf4f45575de2f6-00" },
+    { "account": "Student", "via": "direct backend HTTP; national phone format", "challengeStatus": 202, "verifyStatus": 500, "code": "UNEXPECTED_ERROR", "traceId": "00-695042ab9174c1eec6448f1e63bff473-d47a4f531f58ee0f-00" },
+    { "account": "Support", "via": "direct backend HTTP; international phone format", "challengeStatus": 202, "verifyStatus": 500, "code": "UNEXPECTED_ERROR", "traceId": "00-4ce9f21297d7a4345f777e9207dac7f8-a0249fe6281879f8-00" }
+  ],
+  "authenticatedAcceptance": "BLOCKED at OTP verification; profile/avatar/guardian/peer-image delivery not verified on the updated real server.",
+  "realAccountDataChanged": false,
+  "sensitiveValuesLogged": false
+}

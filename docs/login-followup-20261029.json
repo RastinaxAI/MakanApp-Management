@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-29T03:42:03.606Z",
+  "clientDate": "2026-10-29",
+  "base": "http://94.184.32.84:8090",
+  "account": "authorized Student seed",
+  "reportedTrace": "00-4ef9c0fc8287200a63d9b0c890dd5d06-60ca6fc7f9164f21-00",
+  "reportedTraceInternalException": "requires backend logs",
+  "challenge": {
+    "status": 202
+  },
+  "verification": {
+    "status": 500,
+    "code": "UNEXPECTED_ERROR",
+    "traceId": "00-8a9b45e66363995906572cd7e3dc4f2d-6abed82078fa774b-00"
+  },
+  "tokensLogged": false
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { phoneInputSchema } from '@/lib/auth-input';
+import { phoneInputSchema, otpInputSchema } from '@/lib/auth-input';
 describe('Iranian 11-digit mobile login numbers', () => {
   it.each([
     ['۰۹۱۲ ۳۴۵ ۶۷۸۹', '09123456789'],
@@ -18,5 +18,14 @@ describe('Iranian 11-digit mobile login numbers', () => {
     '<script>',
   ])('rejects invalid identifier %s', (input) => {
     expect(phoneInputSchema.safeParse(input).success).toBe(false);
+  });
+});
+
+describe('six-digit login code', () => {
+  it.each(['123456', '۱۲۳۴۵۶', '١٢٣٤٥٦'])('accepts six numeric digits: %s', (code) => {
+    expect(otpInputSchema.parse(code)).toBe('123456');
+  });
+  it.each(['', '12345', '1234567', 'abcdef', '12345a', '12.456'])('rejects %s', (code) => {
+    expect(otpInputSchema.safeParse(code).success).toBe(false);
   });
 });

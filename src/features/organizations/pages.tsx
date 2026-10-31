@@ -16,6 +16,7 @@ import { ProvisionOrganization } from './provisioning';
 import { subscriptionReady } from './provisioning-state';
 import { CheckCircle2, Circle } from 'lucide-react';
 import Link from '@/components/ui/app-link';
+import { CommercialSummary } from '@/features/commerce/commercial-contracts';
 export const organizationColumns: ListColumn[] = [
   { key: 'name', title: 'سازمان', link: (r) => '/admin/organizations/' + r.id },
   { key: 'status', title: 'وضعیت' },
@@ -92,8 +93,12 @@ export function OrganizationDetail({ id }: { id: string }) {
           { key: 'overview', label: 'اطلاعات سازمان' },
           ...(can(endpoint + '/memberships') ? [{ key: 'members', label: 'اعضا و عضویت‌ها' }] : []),
           ...(can('/api/admin/v1/education/classes') ? [{ key: 'classes', label: 'کلاس‌ها' }] : []),
+          ...(can(`/api/admin/v1/commerce/organizations/${id}/subscription`)
+            ? [{ key: 'commercial', label: 'قرارداد و سهمیه‌ها' }]
+            : []),
         ]}
       />
+      {tab === 'commercial' && <CommercialSummary kind="organization" id={id} name={org.name} />}
       {tab === 'overview' && (
         <>
           <OrganizationReadiness org={org} />
@@ -250,6 +255,10 @@ function OrganizationReadiness({
         ))}
       </ul>
       <div className="readiness-actions">
+        <p className="field-help">
+          این بررسی، آماده‌بودن گروه و کانال رسمی را تأیید نمی‌کند. در صورت دسترس‌نبودن آن‌ها، موضوع
+          را با پشتیبانی پیگیری کنید؛ سازمان را دوباره نسازید.
+        </p>
         {can(path) && (
           <Link className="text-primary" href={`/admin/organizations/${org.id}?tab=members`}>
             بررسی اعضا و دعوت مدیر ←

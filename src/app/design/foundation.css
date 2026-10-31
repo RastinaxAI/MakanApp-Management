@@ -1,0 +1,274 @@
+:root {
+  --primary: #1765dc;
+  --primary-hover: #1154c0;
+  --primary-soft: #edf4ff;
+  --bg: #f4f6fa;
+  --surface: #fff;
+  --surface-raised: #f8fafc;
+  --text: #1b2a41;
+  --muted: #627189;
+  --border: #e2e7ef;
+  --danger: #bd3434;
+  --danger-soft: #fdf0f0;
+  --success: #187650;
+  --success-soft: #eaf7f0;
+  --warning: #93600c;
+  --warning-soft: #fff7e7;
+  --teal: #15827c;
+  --nav: #11213a;
+  --nav-muted: #9cacc4;
+  --radius: 14px;
+  --nav-width: 252px;
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  --primary: #8db5ff;
+  --primary-hover: #b1ceff;
+  --primary-soft: #1c3153;
+  --bg: #101827;
+  --surface: #172234;
+  --surface-raised: #1d2a3d;
+  --text: #e6edf8;
+  --muted: #a2b1c7;
+  --border: #2a3a51;
+  --danger: #ffaaa4;
+  --danger-soft: #3c262c;
+  --success: #8cdbb3;
+  --success-soft: #1c382e;
+  --warning: #f2c66d;
+  --warning-soft: #3a3022;
+  --teal: #7cd7cc;
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  font:
+    14px/1.8 'Vazirmatn Variable',
+    sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1 {
+  font-size: 26px;
+  line-height: 1.55;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+}
+h2 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.7;
+}
+h3 {
+  font-size: 14px;
+  font-weight: 650;
+}
+small {
+  font-size: 11px;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+svg {
+  flex-shrink: 0;
+}
+:focus-visible {
+  outline: 3px solid #76a5fa;
+  outline-offset: 3px;
+}
+::selection {
+  background: #b7d2ff;
+  color: #11213a;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 13px;
+  transition:
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #b4c2d6;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 0;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 13%, transparent);
+}
+input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+input::placeholder,
+textarea::placeholder {
+  color: #8794a8;
+}
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+input[type='checkbox'],
+input[type='radio'] {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  accent-color: #1765dc;
+  vertical-align: middle;
+  margin: 8px;
+}
+label {
+  font-size: 12px;
+  font-weight: 550;
+  display: block;
+}
+label > input,
+label > select,
+label > textarea {
+  margin-top: 7px;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: normal;
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    transform 0.16s;
+}
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.button-primary {
+  background: #1765dc;
+  color: white;
+  box-shadow: 0 3px 5px #1765dc12;
+}
+.button-primary:hover:not(:disabled) {
+  background: #1154c0;
+}
+.button-outline {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+.button-outline:hover:not(:disabled) {
+  background: var(--surface-raised);
+  border-color: #b7c6dc;
+}
+.button-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+.button-ghost:hover:not(:disabled) {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+.button-danger {
+  color: white;
+  background: #bd3434;
+}
+.button-danger:hover:not(:disabled) {
+  background: #a52828;
+}
+.button-sm {
+  min-height: 36px;
+  padding: 7px 12px;
+  font-size: 12px;
+}
+.button-icon {
+  width: 44px;
+  min-height: 44px;
+  height: 44px;
+  padding: 9px;
+  flex-shrink: 0;
+}
+.wide-button {
+  width: 100%;
+  margin-top: 16px;
+}
+.text-primary {
+  color: var(--primary);
+}
+.text-muted {
+  color: var(--muted);
+}
+.text-danger {
+  color: var(--danger);
+}
+.text-success {
+  color: var(--success);
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 1s linear infinite;
+}

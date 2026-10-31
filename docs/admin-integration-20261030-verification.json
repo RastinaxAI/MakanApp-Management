@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-30",
+  "guideRelease": "20261030-e11d4ec",
+  "adminPaths": 59,
+  "runtimeOperations": 80,
+  "ownerPolicy": "PlatformOwner AND platform.access; independent operation permissions",
+  "unitTests": 115,
+  "ownerRegressionTests": 20,
+  "newCommercialBrowserTests": 6,
+  "typecheck": "passed",
+  "fixtureProductionBuild": "passed",
+  "liveBackend": {
+    "date": "2026-10-30",
+    "release": "20261030-e11d4ec",
+    "reads": [
+      {
+        "feature": "owner identity",
+        "status": 200
+      },
+      {
+        "feature": "plan catalog",
+        "status": 200
+      },
+      {
+        "feature": "individual contract",
+        "status": 200
+      },
+      {
+        "feature": "organization catalog",
+        "status": 200
+      },
+      {
+        "feature": "organization contract",
+        "status": 200
+      }
+    ],
+    "challenge": 202,
+    "verify": 200,
+    "owner": true,
+    "commercePermissions": [
+      "platform.commerce.manage",
+      "platform.commerce.read"
+    ],
+    "individualState": "NoSubscription",
+    "individualHasVersion": true,
+    "removedMfa": 404,
+    "logout": 204
+  },
+  "businessWrites": "Fixture only; real backend checks used login, reads and logout",
+  "deployment": "healthy; http://127.0.0.1:3000/login",
+  "dockerBuild": "passed",
+  "dockerImage": "sha256:9ae2ca8646505ddbe687faff0ac5ee099da3c3fae0a6ec7f29dd1528f8850059",
+  "dockerBrowserTests": {
+    "passed": 6,
+    "note": "5 initial passes; PWA activation timed out once and passed isolated rerun in 4.4s"
+  },
+  "localBffLive": {
+    "date": "2026-10-30",
+    "reads": [
+      {
+        "feature": "plan catalog",
+        "status": 200
+      },
+      {
+        "feature": "individual commercial summary",
+        "status": 200
+      },
+      {
+        "feature": "organization catalog",
+        "status": 200
+      },
+      {
+        "feature": "organization commercial summary",
+        "status": 200
+      },
+      {
+        "feature": "commercial history",
+        "status": 200
+      }
+    ],
+    "challenge": 202,
+    "verify": 200,
+    "session": 200,
+    "roles": [
+      "PlatformOwner"
+    ],
+    "platformAccess": true,
+    "planCount": 0,
+    "hasCommercialVersion": true,
+    "logout": 204,
+    "entitlementsObjectReceived": true
+  }
+}

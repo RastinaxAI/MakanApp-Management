@@ -1,5 +1,5 @@
 /* Only public offline assets are cached. Authenticated pages and APIs are network-only. */
-const CACHE = 'makan-public-v2';
+const CACHE = 'makan-admin-public-v5';
 const PUBLIC_ASSETS = [
   '/offline.html',
   '/icons/makan-192.png',
@@ -38,7 +38,11 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       for (const key of await caches.keys())
-        if (key.startsWith('makan-public-') && key !== CACHE) await caches.delete(key);
+        if (
+          (key.startsWith('makan-public-') || key.startsWith('makan-admin-public-')) &&
+          key !== CACHE
+        )
+          await caches.delete(key);
       await self.clients.claim();
     })(),
   );

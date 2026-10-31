@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-10-28T14:59:41.735Z",
+  "mode": "Isolated Playwright project QA; real seeded Student API. No browser cookies or JWTs exported.",
+  "checks": {
+    "authenticated": true,
+    "initialWorkspace": "Personal",
+    "cookieFlags": [
+      {
+        "name": "makan_client_session",
+        "secure": false,
+        "domain": "127.0.0.1",
+        "path": "/",
+        "sameSite": "Strict"
+      }
+    ],
+    "mobileNavigation": [
+      "آموزشگاه",
+      "دستیار ماکان",
+      "پیام‌ها",
+      "حساب من"
+    ],
+    "mobileHeader": "Brand and context/role only; at least 84px tall.",
+    "theme": "Dark saved across reload, restored to light through account settings.",
+    "separateSettings": "Privacy and blocked accounts use distinct routes; no privacy write or block change.",
+    "assistant": "Explicit sample mode; source selection, sample chat, citation focus and flashcard work. No AI call or billing.",
+    "camera": "Native capture input configured; no physical camera or permission tested.",
+    "multiplePreview": "Two images previewed; removal and focus restoration checked without upload.",
+    "mediaWrites": "Skipped: enable MAKAN_RUN_MEDIA_WRITE_TESTS=1 for the authorized QA group.",
+    "browserErrors": []
+  },
+  "screens": [
+    {
+      "name": "education-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "settings-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "privacy-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "assistant-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "assistant-tablet",
+      "width": 820,
+      "height": 1180,
+      "scrollWidth": 805,
+      "headerHeight": 88
+    },
+    {
+      "name": "assistant-desktop",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "assistant-dark-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "attachment-menu-desktop",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "preview-multiple-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 0
+    },
+    {
+      "name": "messenger-desktop",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "messenger-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 0
+    }
+  ],
+  "media": [],
+  "network": [],
+  "errors": []
+}

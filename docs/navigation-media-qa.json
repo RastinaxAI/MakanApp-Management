@@ -1,0 +1,199 @@
+{
+  "checkedAt": "2026-10-28T14:52:15.234Z",
+  "mode": "Isolated Playwright project QA; real seeded Student API. No browser cookies or JWTs exported.",
+  "checks": {
+    "authenticated": true,
+    "initialWorkspace": "Personal",
+    "cookieFlags": [
+      {
+        "name": "makan_client_session",
+        "secure": false,
+        "domain": "127.0.0.1",
+        "path": "/",
+        "sameSite": "Strict"
+      }
+    ],
+    "mobileNavigation": [
+      "آموزشگاه",
+      "دستیار ماکان",
+      "پیام‌ها",
+      "حساب من"
+    ],
+    "mobileHeader": "Brand and context/role only; at least 84px tall.",
+    "theme": "Dark saved across reload, restored to light through account settings.",
+    "separateSettings": "Privacy and blocked accounts use distinct routes; no privacy write or block change.",
+    "assistant": "Explicit sample mode; source selection, sample chat, citation focus and flashcard work. No AI call or billing.",
+    "camera": "Native capture input configured; no physical camera or permission tested.",
+    "browserErrors": []
+  },
+  "screens": [
+    {
+      "name": "education-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "settings-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "privacy-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "assistant-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 88
+    },
+    {
+      "name": "assistant-tablet",
+      "width": 820,
+      "height": 1180,
+      "scrollWidth": 805,
+      "headerHeight": 88
+    },
+    {
+      "name": "assistant-desktop",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "attachment-menu-desktop",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "preview-image",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "preview-video",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "upload-failure-video",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "preview-file",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "messenger-desktop",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1425,
+      "headerHeight": 76
+    },
+    {
+      "name": "messenger-mobile",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "headerHeight": 0
+    }
+  ],
+  "media": [
+    {
+      "kind": "image",
+      "uploadSucceeded": true,
+      "fileId": "9c3c5235-fc27-4d18-97c4-d79e6e1f04e5",
+      "downloadStatus": 404,
+      "downloadBlockedBy": "FILE_NOT_FOUND",
+      "downloadTraceId": "00-b1cff4274cce1f2a5b57b4924697080f-2e78319c7dd19627-00",
+      "messagePersisted": false,
+      "blockedBy": "MESSAGE_SAFETY_REVIEW_REQUIRED",
+      "traceId": "00-cdfbfeea4ce2743f6c980905bc90e376-5288c283c1f884b8-00"
+    },
+    {
+      "kind": "video",
+      "uploadSucceeded": false,
+      "uiFailure": "سرویس این قالب فایل را نمی‌پذیرد. فایل دیگری انتخاب کنید.",
+      "blockedBy": "FILE_TYPE_NOT_ALLOWED",
+      "traceId": "00-6e0b507ce9e4e6f55f6832c52e6e1e2d-e1eed87299148be3-00"
+    },
+    {
+      "kind": "file",
+      "uploadSucceeded": true,
+      "fileId": "b9da0781-2d07-4a89-b76c-afbf34c18641",
+      "downloadStatus": 404,
+      "downloadBlockedBy": "FILE_NOT_FOUND",
+      "downloadTraceId": "00-17dc53fedde551394e992d6916b3fa57-5159cb2c16dd0e8a-00",
+      "messagePersisted": false,
+      "blockedBy": "MESSAGE_SAFETY_REVIEW_REQUIRED",
+      "traceId": "00-70059690ef6443a25aa0ee87153b144b-e4156692696c4a24-00"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/client/files",
+      "method": "POST",
+      "status": 201,
+      "fileStatus": "Ready",
+      "fileId": "9c3c5235-fc27-4d18-97c4-d79e6e1f04e5",
+      "sizeBytes": 22839
+    },
+    {
+      "path": "/api/client/backend/api/v1/conversations/d68c2b5d-9bbe-48a4-bbd1-39fc60d685ea/messages",
+      "method": "POST",
+      "status": 422,
+      "code": "MESSAGE_SAFETY_REVIEW_REQUIRED",
+      "traceId": "00-cdfbfeea4ce2743f6c980905bc90e376-5288c283c1f884b8-00",
+      "errors": {},
+      "fileStatus": 422
+    },
+    {
+      "path": "/api/client/files",
+      "method": "POST",
+      "status": 415,
+      "code": "FILE_TYPE_NOT_ALLOWED",
+      "traceId": "00-6e0b507ce9e4e6f55f6832c52e6e1e2d-e1eed87299148be3-00",
+      "errors": {},
+      "fileStatus": 415
+    },
+    {
+      "path": "/api/client/files",
+      "method": "POST",
+      "status": 201,
+      "fileStatus": "Ready",
+      "fileId": "b9da0781-2d07-4a89-b76c-afbf34c18641",
+      "sizeBytes": 94
+    },
+    {
+      "path": "/api/client/backend/api/v1/conversations/d68c2b5d-9bbe-48a4-bbd1-39fc60d685ea/messages",
+      "method": "POST",
+      "status": 422,
+      "code": "MESSAGE_SAFETY_REVIEW_REQUIRED",
+      "traceId": "00-70059690ef6443a25aa0ee87153b144b-e4156692696c4a24-00",
+      "errors": {},
+      "fileStatus": 422
+    }
+  ],
+  "errors": []
+}

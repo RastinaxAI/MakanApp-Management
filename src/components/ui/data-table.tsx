@@ -2,6 +2,7 @@
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useSyncExternalStore } from 'react';
 import { EmptyState } from './states';
+import { ChevronDown } from 'lucide-react';
 const mobileQuery = '(max-width: 640px)';
 function subscribeMobile(onChange: () => void) {
   const media = window.matchMedia(mobileQuery);
@@ -10,7 +11,19 @@ function subscribeMobile(onChange: () => void) {
 }
 const mobileSnapshot = () => window.matchMedia(mobileQuery).matches;
 const serverSnapshot = () => false;
-export function DataTable<T>({ data, columns }: { data: T[]; columns: ColumnDef<T>[] }) {
+export function DataTable<T>({
+  data,
+  columns,
+  emptyTitle,
+  emptyDescription,
+  mobileLimit,
+}: {
+  data: T[];
+  columns: ColumnDef<T>[];
+  emptyTitle?: string;
+  emptyDescription?: string;
+  mobileLimit?: number;
+}) {
   const mobile = useSyncExternalStore(subscribeMobile, mobileSnapshot, serverSnapshot);
   const table = useReactTable({
     data,
@@ -19,29 +32,61 @@ export function DataTable<T>({ data, columns }: { data: T[]; columns: ColumnDef<
     manualPagination: true,
     manualSorting: true,
   });
-  if (!data.length) return <EmptyState />;
+  if (!data.length) return <EmptyState title={emptyTitle} description={emptyDescription} />;
   if (mobile)
     return (
       <div className="data-cards" role="list" aria-label="داده‌های فهرست">
-        {table.getRowModel().rows.map((row) => (
-          <div key={row.id} className="data-card" role="listitem">
-            <dl>
-              {row.getVisibleCells().map((cell, index) => {
-                const header = table.getFlatHeaders().find((h) => h.column.id === cell.column.id)!;
-                return (
-                  <div
-                    key={cell.id}
-                    className="data-card-field"
-                    data-primary={index === 0 || undefined}
-                  >
-                    <dt>{flexRender(cell.column.columnDef.header, header.getContext())}</dt>
-                    <dd>{flexRender(cell.column.columnDef.cell, cell.getContext())}</dd>
-                  </div>
-                );
-              })}
-            </dl>
-          </div>
-        ))}
+        {table
+          .getRowModel()
+          .rows.slice(0, mobileLimit)
+          .map((row) => (
+            <div key={row.id} className="data-card" role="listitem">
+              <dl>
+                {row
+                  .getVisibleCells()
+                  .slice(0, 3)
+                  .map((cell, index) => {
+                    const header = table
+                      .getFlatHeaders()
+                      .find((h) => h.column.id === cell.column.id)!;
+                    return (
+                      <div
+                        key={cell.id}
+                        className="data-card-field"
+                        data-primary={index === 0 || undefined}
+                      >
+                        <dt>{flexRender(cell.column.columnDef.header, header.getContext())}</dt>
+                        <dd>{flexRender(cell.column.columnDef.cell, cell.getContext())}</dd>
+                      </div>
+                    );
+                  })}
+              </dl>
+              {row.getVisibleCells().length > 3 && (
+                <details className="card-details">
+                  <summary>
+                    اطلاعات بیشتر
+                    <ChevronDown size={15} />
+                  </summary>
+                  <dl>
+                    {row
+                      .getVisibleCells()
+                      .slice(3)
+                      .map((cell) => {
+                        const header = table
+                          .getFlatHeaders()
+                          .find((h) => h.column.id === cell.column.id)!;
+                        return (
+                          <div key={cell.id} className="data-card-field">
+                            <dt>{flexRender(cell.column.columnDef.header, header.getContext())}</dt>
+                            <dd>{flexRender(cell.column.columnDef.cell, cell.getContext())}</dd>
+                          </div>
+                        );
+                      })}
+                  </dl>
+                </details>
+              )}
+            </div>
+          ))}
       </div>
     );
   return (

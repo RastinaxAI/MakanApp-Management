@@ -178,16 +178,17 @@ test('backend registration failure cleans the new subscription and does not clai
   await request.post('http://127.0.0.1:4100/__control', {
     data: {
       failPath: '/devices/web-push',
+      failMethod: 'POST',
       status: 503,
       code: 'PROVIDER_UNAVAILABLE',
       errorOnce: true,
     },
   });
   await page.getByRole('button', { name: 'فعال‌سازی اعلان مرورگر', exact: true }).click();
-  await expect(page.getByRole('alert')).toBeVisible();
+  await expect(page.locator('.form-message.error[role="alert"]')).toBeVisible();
   await expect(page.getByText('اعلان‌ها روی این مرورگر فعال‌اند.', { exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('makan-push-device'))).toBeNull();
-  expect(await page.evaluate(() => (window as any).__pushCalls.unsubscribe)).toBe(1);
+  await expect.poll(() => page.evaluate(() => (window as any).__pushCalls.unsubscribe)).toBe(1);
 });
 
 test('logout revokes the push device and unsubscribes before the owner session ends', async ({

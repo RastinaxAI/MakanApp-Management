@@ -1,0 +1,58 @@
+{
+  "checks": {
+    "TeacherUnassignedClassHidden": true,
+    "StudentUnassignedClassHidden": true,
+    "teacherSessionCreated": true,
+    "teacherCanCreateClass": false,
+    "managerCanResolveParent": false
+  },
+  "responses": [
+    {
+      "name": "teacher organization directory denied",
+      "status": 403,
+      "code": "WORKSPACE_NOT_ALLOWED",
+      "traceId": "00-073b07ce163d1a45b01471ab40c61d78-8d9c4b97d9b04a2c-00"
+    },
+    {
+      "name": "student answer-key editor denied",
+      "status": 403,
+      "code": "EXAM_NOT_ALLOWED",
+      "traceId": "00-06b37f95e50a6edb781c4a9b0c13eb07-a6020d7c1241e51a-00"
+    },
+    {
+      "name": "parent general classes denied",
+      "status": 403,
+      "code": "ACADEMIC_READ_NOT_ALLOWED",
+      "traceId": "00-9560dbe0784ae2ffeba4e6dcf1bdb794-1a72e0087e358e43-00"
+    },
+    {
+      "name": "parent without selected child",
+      "status": 404,
+      "code": "CHILD_CONTEXT_NOT_FOUND",
+      "traceId": "00-df5cbd4c9c13e6361b1c21196adb10af-b053955e6b4e5ed9-00"
+    },
+    {
+      "name": "teacher creates assigned-class session",
+      "status": 201
+    },
+    {
+      "name": "teacher creates school class",
+      "status": 403,
+      "code": "MANAGER_ROLE_REQUIRED",
+      "traceId": "00-8805431729bbc4ac789ee3e51687695b-4a952bf27b915b2a-00"
+    },
+    {
+      "name": "manager resolves seeded parent identity",
+      "status": 200
+    },
+    {
+      "name": "personal workspace school BFF denied",
+      "status": 403,
+      "code": "ORGANIZATION_WORKSPACE_REQUIRED"
+    }
+  ],
+  "limitations": [
+    "teacherCanCreateClass is not supported by this backend behavior; not a passing server capability.",
+    "managerCanResolveParent is not supported by this backend behavior; not a passing server capability."
+  ]
+}

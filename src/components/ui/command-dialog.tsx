@@ -63,6 +63,7 @@ function CommandForm({
   onSuccess,
   onReload,
   resultView,
+  disabled,
 }: CommandProps & { close: () => void }) {
   const { guard, session } = useAccess();
   const cache = useQueryClient();
@@ -75,17 +76,19 @@ function CommandForm({
         key,
         key in defaults
           ? defaults[key]
-          : key === 'clientOperationId'
-            ? crypto.randomUUID()
-            : resolve(value).nullable
-              ? null
-              : resolve(value).type === 'boolean'
-                ? false
-                : resolve(value).type === 'array'
-                  ? []
-                  : resolve(value).type === 'number' || resolve(value).type === 'integer'
-                    ? 0
-                    : (resolve(value).enum?.[0] ?? ''),
+          : resolve(value).default !== undefined
+            ? resolve(value).default
+            : key === 'clientOperationId'
+              ? crypto.randomUUID()
+              : resolve(value).nullable
+                ? null
+                : resolve(value).type === 'boolean'
+                  ? false
+                  : resolve(value).type === 'array'
+                    ? []
+                    : resolve(value).type === 'number' || resolve(value).type === 'integer'
+                      ? 0
+                      : (resolve(value).enum?.[0] ?? ''),
       ]),
     ),
   );
@@ -114,6 +117,7 @@ function CommandForm({
     [waitUntil, setWaitUntil] = useState(0),
     [tick, setTick] = useState(Date.now());
   const inFlight = useRef(false);
+  const [needsReload, setNeedsReload] = useState(false);
   useEffect(() => {
     if (waitUntil <= Date.now()) return;
     const timer = setInterval(() => setTick(Date.now()), 1000);
@@ -121,13 +125,14 @@ function CommandForm({
   }, [waitUntil]);
   const versions = [
     'expectedVersion',
+    'expectedCurrentVersion',
     'expectedRowVersion',
     'expectedPersonRowVersion',
     'clientOperationId',
     ...hidden,
   ];
   async function submit(data: Record<string, unknown>) {
-    if (Date.now() < waitUntil || inFlight.current) return;
+    if (disabled || Date.now() < waitUntil || inFlight.current || needsReload) return;
     inFlight.current = true;
     setError(null);
     try {
@@ -147,6 +152,7 @@ function CommandForm({
     } catch (e) {
       const err = e instanceof ApiError ? e : new ApiError(503);
       setError(err);
+      if ([409, 412].includes(err.status) && onReload) setNeedsReload(true);
       for (const [key, messages] of Object.entries(err.problem.errors ?? {}))
         form.setError(key, { message: messages.join(' ') });
       if (err.status === 429) {
@@ -193,6 +199,16 @@ function CommandForm({
                   : kind === 'class'
                     ? 'کلاس'
                     : (formLabels[key] ?? fieldLabels[key] ?? key);
+          if (s.type === 'array')
+            return (
+              <div key={key}>
+                <span className="field-title">{fieldTitle}</span>
+                <ArrayEditor name={key} schema={s.items ?? {}} form={form} />
+                {form.formState.errors[key] && (
+                  <p className="field-error">اطلاعات ردیف‌ها را بررسی کنید.</p>
+                )}
+              </div>
+            );
           if (path.startsWith('/api/admin/') && s.format === 'date-time')
             return (
               <div key={key}>
@@ -241,6 +257,13 @@ function CommandForm({
                       />
                     ) : (
                       <PlanVersionPicker
+                        audience={
+                          path.endsWith('/commercial-contracts')
+                            ? path.includes('/commerce/users/')
+                              ? 'Individual'
+                              : 'Organization'
+                            : undefined
+                        }
                         value={typeof controlled.value === 'string' ? controlled.value : null}
                         nullable={!!s.nullable}
                         onChange={(c) => controlled.onChange(c?.value ?? null)}
@@ -257,22 +280,29 @@ function CommandForm({
             <div key={key}>
               <label htmlFor={'command-' + key}>
                 {formLabels[key] ?? fieldLabels[key] ?? key}
-                {s.type === 'array' ? (
-                  <ArrayEditor name={key} schema={s.items ?? {}} form={form} />
-                ) : s.enum ? (
-                  <select id={'command-' + key} {...form.register(key)}>
+                {s.enum ? (
+                  <select
+                    id={'command-' + key}
+                    aria-label={fieldTitle}
+                    {...form.register(key, {
+                      setValueAs: (v) => (v === '' && s.nullable ? null : v),
+                    })}
+                  >
                     {s.nullable && <option value="">بدون مقدار</option>}
-                    {s.enum.map((v) => (
-                      <option value={v} key={v}>
-                        {label(v)}
-                      </option>
-                    ))}
+                    {s.enum
+                      .filter((v) => typeof v === 'string')
+                      .map((v) => (
+                        <option value={v} key={v}>
+                          {label(v)}
+                        </option>
+                      ))}
                   </select>
                 ) : s.type === 'boolean' ? (
                   <input id={'command-' + key} type="checkbox" {...form.register(key)} />
                 ) : key === 'reason' || key === 'internalNote' || key === 'description' ? (
                   <textarea
                     id={'command-' + key}
+                    aria-label={fieldTitle}
                     {...form.register(key, {
                       setValueAs: (v) => (v === '' && s.nullable ? null : v),
                     })}
@@ -280,6 +310,7 @@ function CommandForm({
                 ) : (
                   <input
                     id={'command-' + key}
+                    aria-label={fieldTitle}
                     dir={
                       s.format === 'uuid' ||
                       s.format === 'date-time' ||
@@ -292,7 +323,7 @@ function CommandForm({
                     autoComplete="off"
                     {...form.register(key, {
                       setValueAs: (v) =>
-                        v === '' && s.nullable
+                        (v == null || v === '') && s.nullable
                           ? null
                           : s.type === 'number' || s.type === 'integer'
                             ? Number(latinDigits(String(v)))
@@ -326,17 +357,28 @@ function CommandForm({
               {error.problem.traceId}
             </small>
           )}
-          {[409, 412].includes(error.status) && onReload && (
+          {needsReload && onReload && (
             <Button
               type="button"
               variant="outline"
               size="sm"
               className="mt-3"
               onClick={() =>
-                void onReload().then((values) => {
-                  for (const [key, value] of Object.entries(values)) form.setValue(key, value);
-                  setError(null);
-                })
+                void onReload()
+                  .then((values) => {
+                    if (
+                      Object.entries(values).some(
+                        ([key, value]) =>
+                          value === undefined ||
+                          (key !== 'expectedCurrentVersion' && value === null),
+                      )
+                    )
+                      throw new ApiError(409);
+                    for (const [key, value] of Object.entries(values)) form.setValue(key, value);
+                    setNeedsReload(false);
+                    setError(null);
+                  })
+                  .catch((e) => setError(e instanceof ApiError ? e : new ApiError(503)))
               }
             >
               دریافت نسخه تازه و حفظ ورودی
@@ -354,7 +396,12 @@ function CommandForm({
         <Button type="button" variant="ghost" onClick={close}>
           انصراف
         </Button>
-        <Button type="submit" disabled={form.formState.isSubmitting || Date.now() < waitUntil}>
+        <Button
+          type="submit"
+          disabled={
+            disabled || form.formState.isSubmitting || Date.now() < waitUntil || needsReload
+          }
+        >
           {form.formState.isSubmitting
             ? 'در حال ثبت…'
             : tick < waitUntil
@@ -407,7 +454,13 @@ function ArrayEditor({
             const p = `${name}.${index}.${key}`;
             return (
               <label key={p}>
-                {fieldLabels[key] ?? key}
+                {key === 'key'
+                  ? name === 'entitlements'
+                    ? 'قابلیت'
+                    : name === 'quotas'
+                      ? 'سهمیه'
+                      : 'نوع'
+                  : (fieldLabels[key] ?? key)}
                 {field.enum ? (
                   <select {...form.register(p)}>
                     {field.enum.map((v) => (
@@ -427,13 +480,18 @@ function ArrayEditor({
                     }
                     {...form.register(p, {
                       setValueAs: (v) =>
-                        v === '' && field.nullable
+                        (v == null || v === '') && field.nullable
                           ? null
                           : field.type === 'number' || field.type === 'integer'
                             ? Number(v)
                             : v,
                     })}
                   />
+                )}
+                {form.getFieldState(p, form.formState).error && (
+                  <span className="field-error">
+                    {form.getFieldState(p, form.formState).error?.message}
+                  </span>
                 )}
               </label>
             );
@@ -465,4 +523,24 @@ function ArrayEditor({
   );
 }
 
-const formLabels: Record<string,string> = {name:"نام سازمان",organizationName:"نام سازمان",reason:"دلیل این اقدام",fromRole:"نقش فعلی برای تغییر",toRole:"نقش جدید",roleKey:"کلید نقش از کاتالوگ",initialManagerUserId:"شناسه حساب مدیر اولیه",subscriptionEndsAtUtc:"پایان اشتراک (UTC)",invitationExpiresAtUtc:"انقضای دعوت (UTC)",destinationUserId:"شناسه حساب مقصد دعوت",learnerOrganizationPersonId:"شناسه پرونده سازمانی فراگیر",teacherMembershipId:"شناسه عضویت معلم",restrictedUntilUtc:"پایان محدودیت (UTC)",expectedRowVersion:"نسخه پرونده",expectedPersonRowVersion:"نسخه شخص",activateImmediately:"فعال‌سازی فوری",startsAtUtc:"شروع (UTC)",endsAtUtc:"پایان (UTC)",enrollmentId:"شناسه ثبت‌نام"};
+const formLabels: Record<string, string> = {
+  name: 'نام سازمان',
+  organizationName: 'نام سازمان',
+  reason: 'دلیل این اقدام',
+  fromRole: 'نقش فعلی برای تغییر',
+  toRole: 'نقش جدید',
+  roleKey: 'کلید نقش از کاتالوگ',
+  initialManagerUserId: 'شناسه حساب مدیر اولیه',
+  subscriptionEndsAtUtc: 'پایان اشتراک',
+  invitationExpiresAtUtc: 'انقضای دعوت',
+  destinationUserId: 'شناسه حساب مقصد دعوت',
+  learnerOrganizationPersonId: 'شناسه پرونده سازمانی فراگیر',
+  teacherMembershipId: 'شناسه عضویت معلم',
+  restrictedUntilUtc: 'پایان محدودیت',
+  expectedRowVersion: 'نسخه پرونده',
+  expectedPersonRowVersion: 'نسخه شخص',
+  activateImmediately: 'فعال‌سازی فوری',
+  startsAtUtc: 'شروع',
+  endsAtUtc: 'پایان',
+  enrollmentId: 'شناسه ثبت‌نام',
+};

@@ -1,6 +1,6 @@
 {
   "source": "MakanApp-Frontend-Backend-Contract.pdf",
-  "reviewedAt": "2026-10-24",
+  "reviewedAt": "2026-10-30",
   "pages": {
     "DELETE /api/admin/v1/organizations/{organizationId}/memberships/{membershipId}": 163,
     "DELETE /api/admin/v1/role-assignments/{assignmentId}": 147,
@@ -66,5 +66,47 @@
       164,
       165
     ]
+  },
+  "sections": {
+    "GET /api/admin/v1/commerce/users/{ownerId}/subscription": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    },
+    "GET /api/admin/v1/commerce/organizations/{ownerId}/subscription": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    },
+    "PUT /api/admin/v1/commerce/plans/{planId}/availability": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    },
+    "PUT /api/admin/v1/commerce/plan-versions/{versionId}/draft": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    },
+    "GET /api/admin/v1/commerce/plan-versions/{versionId}/validation": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    },
+    "POST /api/admin/v1/commerce/organizations/{ownerId}/commercial-contracts": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    },
+    "POST /api/admin/v1/commerce/users/{ownerId}/commercial-contracts": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    },
+    "GET /api/admin/v1/commerce/history/{targetId}": {
+      "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
+      "section": "10.3",
+      "release": "20261030-e11d4ec"
+    }
   }
 }

@@ -1,0 +1,281 @@
+{
+  "checkedOn": "2026-10-28",
+  "source": "http://94.184.32.84:8090/openapi/v1.json",
+  "paths": 283,
+  "operations": 318,
+  "schemas": 547,
+  "semanticEqualToCheckedInContract": false,
+  "documentReportedSchemas": 549,
+  "integrationVerification": "contract-read-only; no authenticated operation tested in this stage",
+  "selectedSchemas": {
+    "CompleteProfileCommand": {
+      "required": ["firstName", "lastName", "displayName", "username"],
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string",
+          "nullable": true
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "VerifyCommunicationAgeCommand": {
+      "required": ["verifiedBirthDate", "expectedVersion", "reason"],
+      "type": "object",
+      "properties": {
+        "verifiedBirthDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "expectedVersion": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "SelectWorkspaceCommand": {
+      "required": ["workspaceType", "membershipId", "role"],
+      "type": "object",
+      "properties": {
+        "workspaceType": {
+          "$ref": "#/components/schemas/WorkspaceType"
+        },
+        "membershipId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "role": {
+          "$ref": "#/components/schemas/NullableOfOrganizationRole"
+        }
+      }
+    },
+    "WorkspaceType": {
+      "enum": ["Personal", "Organization"],
+      "type": "string"
+    },
+    "CreatePlatformPlanCommand": {
+      "required": ["code", "displayName", "reason"],
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "CreatePlatformPlanVersionCommand": {
+      "required": ["priceAmount", "currency", "entitlements", "quotas", "reason"],
+      "type": "object",
+      "properties": {
+        "priceAmount": {
+          "type": "number",
+          "format": "double"
+        },
+        "currency": {
+          "$ref": "#/components/schemas/CurrencyCode"
+        },
+        "entitlements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/PlatformPlanEntitlementItem"
+          }
+        },
+        "quotas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/PlatformPlanQuotaItem"
+          }
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "QuotaKey": {
+      "enum": ["ActiveLearners", "ActiveClasses", "StorageBytes", "ReportExports"],
+      "type": "string"
+    },
+    "CommerceQuotaDto": {
+      "required": [
+        "key",
+        "limit",
+        "currentUsage",
+        "remaining",
+        "isUnlimited",
+        "isOverQuota",
+        "usageSource"
+      ],
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/components/schemas/QuotaKey"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64",
+          "nullable": true
+        },
+        "currentUsage": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "remaining": {
+          "type": "integer",
+          "format": "int64",
+          "nullable": true
+        },
+        "isUnlimited": {
+          "type": "boolean"
+        },
+        "isOverQuota": {
+          "type": "boolean"
+        },
+        "usageSource": {
+          "$ref": "#/components/schemas/QuotaUsageSource"
+        }
+      }
+    },
+    "SendAiChatCommand": {
+      "required": ["message", "conversationId"],
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "conversationId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        }
+      }
+    },
+    "MessagingStatusResult": {
+      "required": [
+        "verificationStatus",
+        "effectiveAgeCategory",
+        "allowedActions",
+        "nextAction",
+        "version"
+      ],
+      "type": "object",
+      "properties": {
+        "verificationStatus": {
+          "$ref": "#/components/schemas/CommunicationAgeVerificationStatus"
+        },
+        "effectiveAgeCategory": {
+          "$ref": "#/components/schemas/CommunicationAgeCategory"
+        },
+        "allowedActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/PersonalMessagingAction"
+          }
+        },
+        "nextAction": {
+          "$ref": "#/components/schemas/MessagingNextAction"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "PrivacyAudience": {
+      "enum": ["Everyone", "Contacts", "Nobody"],
+      "type": "string"
+    },
+    "SafeMessagingIdentityResult": {
+      "required": ["userId", "username", "displayName"],
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "username": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        }
+      }
+    },
+    "ConversationOrganizationBadgeResult": {
+      "required": ["organizationId", "organizationName"],
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "organizationName": {
+          "type": "string"
+        }
+      },
+      "nullable": true
+    }
+  },
+  "conversationQueryParameters": [
+    {
+      "name": "filter",
+      "in": "query",
+      "schema": {
+        "enum": ["All", "Direct", "Group", "Channel", "Unread", "Archived", "Saved"],
+        "type": "string",
+        "default": "All"
+      }
+    },
+    {
+      "name": "page",
+      "in": "query",
+      "schema": {
+        "type": "integer",
+        "format": "int32",
+        "default": 1
+      }
+    },
+    {
+      "name": "pageSize",
+      "in": "query",
+      "schema": {
+        "type": "integer",
+        "format": "int32",
+        "default": 30
+      }
+    },
+    {
+      "name": "q",
+      "in": "query",
+      "schema": {
+        "type": "string",
+        "default": null
+      }
+    },
+    {
+      "name": "folderId",
+      "in": "query",
+      "schema": {
+        "type": "string",
+        "format": "uuid",
+        "default": null
+      }
+    }
+  ],
+  "pathsAndComponentsEqualToCheckedInContract": true,
+  "changedRootKeys": ["x-makan-snapshot"]
+}

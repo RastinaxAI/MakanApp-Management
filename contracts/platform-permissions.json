@@ -53,5 +53,13 @@
   "POST /api/admin/v1/users/{userId}/sessions/revoke": "platform.sessions.manage",
   "POST /api/admin/v1/users/{userId}/sessions/{sessionId}/revoke": "platform.sessions.manage",
   "POST /api/admin/v1/users/{userId}/suspend": "platform.users.manage",
-  "PUT /api/admin/v1/organizations/{organizationId}/memberships/{membershipId}/role": "platform.organizations.manage"
+  "PUT /api/admin/v1/organizations/{organizationId}/memberships/{membershipId}/role": "platform.organizations.manage",
+  "GET /api/admin/v1/commerce/users/{ownerId}/subscription": "platform.commerce.read",
+  "GET /api/admin/v1/commerce/organizations/{ownerId}/subscription": "platform.commerce.read",
+  "PUT /api/admin/v1/commerce/plans/{planId}/availability": "platform.commerce.manage",
+  "PUT /api/admin/v1/commerce/plan-versions/{versionId}/draft": "platform.commerce.manage",
+  "GET /api/admin/v1/commerce/plan-versions/{versionId}/validation": "platform.commerce.read",
+  "POST /api/admin/v1/commerce/organizations/{ownerId}/commercial-contracts": "platform.commerce.manage",
+  "POST /api/admin/v1/commerce/users/{ownerId}/commercial-contracts": "platform.commerce.manage",
+  "GET /api/admin/v1/commerce/history/{targetId}": "platform.commerce.read"
 }

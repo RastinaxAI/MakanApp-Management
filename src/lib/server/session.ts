@@ -13,6 +13,8 @@ export type Session = {
   refreshExpiresAtUtc: string;
   revision: string;
   userId?: string;
+  contextSignature?: string;
+  messagingConnections?: { hash: string; revision: string; createdAt: number }[];
 };
 export function validSessionId(id: string | undefined): id is string {
   return !!id && /^[0-9a-f-]{36}$/.test(id);

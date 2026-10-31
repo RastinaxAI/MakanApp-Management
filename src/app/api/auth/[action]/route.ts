@@ -20,7 +20,7 @@ import {
 import { validator } from '@/lib/api/contract';
 import { serverConfig } from '@/lib/server/config';
 import { ownerPolicyConfigured } from '@/lib/owner-policy';
-import { phoneInputSchema } from '@/lib/auth-input';
+import { phoneInputSchema, otpInputSchema } from '@/lib/auth-input';
 
 export const runtime = 'nodejs';
 function challengeFailure(
@@ -70,6 +70,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ act
     const input = parsed.data as Record<string, unknown>;
     const phone = phoneInputSchema.safeParse(input.phoneNumber);
     if (!phone.success) return problem(400, 'VALIDATION_ERROR');
+    if (action === 'verify') {
+      const code = otpInputSchema.safeParse(input.code);
+      if (!code.success) return problem(400, 'VALIDATION_ERROR');
+      input.code = code.data;
+    }
     const response = await backendFetch(
       `/api/v1/auth/otp/${action === 'challenge' ? 'challenges' : 'verify'}`,
       {

@@ -69,7 +69,12 @@ export function parseProblem(value: unknown, status: number, retry?: string | nu
   return {
     status,
     code: typeof p.code === 'string' ? p.code : undefined,
-    traceId: typeof p.traceId === 'string' ? p.traceId : undefined,
+    traceId:
+      typeof p.traceId === 'string'
+        ? p.traceId
+        : typeof p.correlationId === 'string'
+          ? p.correlationId
+          : undefined,
     errors,
     retryAfter: retryAfter(retry ?? null),
   };

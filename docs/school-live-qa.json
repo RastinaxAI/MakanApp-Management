@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-28T18:43:40.172Z",
+  "checks": {
+    "manager": "Created actual course, date-only period and active class; enrolled seeded Student and assigned seeded Teacher via UI.",
+    "teacherAssignment": "Teacher created and published an actual assignment for the assigned class.",
+    "studentAssignment": "Student saved and finalized a real text submission; receipt displayed.",
+    "teacherExam": "Teacher created actual descriptive and single-choice questions and published the exam.",
+    "studentExam": "Student started, saved descriptive and single-choice server-versioned answers and finalized; real receipt displayed.",
+    "examReload": "Finalized attempt remains visible after reload; max-attempt start disabled and real receipt recovered.",
+    "parent": "Manager created/activated a real relation with known authorized seed identity through API; parent selected the child through UI and read the actual assignment report."
+  },
+  "errors": [],
+  "failures": [
+    {
+      "role": "Manager",
+      "path": "/api/client/backend/api/v1/academic/schedule",
+      "status": 400,
+      "code": "SESSION_TIME_INVALID",
+      "traceId": "00-5954bbee8e92e0c18ee3dc9b1cbafb78-6495e796b0c45e81-00"
+    },
+    {
+      "role": "Teacher",
+      "path": "/api/client/backend/api/v1/academic/schedule",
+      "status": 400,
+      "code": "SESSION_TIME_INVALID",
+      "traceId": "00-1f040cc3842cffc3089401dbf2c60620-e5c2de68e0d1b505-00"
+    },
+    {
+      "role": "Teacher",
+      "path": "/api/client/backend/api/v1/academic/schedule",
+      "status": 400,
+      "code": "SESSION_TIME_INVALID",
+      "traceId": "00-6d0e93f2ec84e9885288c4af7b1094db-44b3f2b42b660921-00"
+    },
+    {
+      "role": "Student",
+      "path": "/api/client/backend/api/v1/academic/exams/268f1249-639c-42db-ae9b-caf083d8965f/attempts/me/active",
+      "status": 404,
+      "code": "EXAM_ATTEMPT_NOT_FOUND",
+      "traceId": "00-3d7729c404a55d7400f0233ee67a4874-c9f67cbd72c45015-00"
+    },
+    {
+      "role": "Student",
+      "path": "/api/client/backend/api/v1/academic/exams/268f1249-639c-42db-ae9b-caf083d8965f/attempts/me/active",
+      "status": 404,
+      "code": "EXAM_ATTEMPT_NOT_FOUND",
+      "traceId": "00-9497a205cd1e884c57e50efe47eae8d6-6521fb3986086cab-00"
+    },
+    {
+      "role": "Student",
+      "path": "/api/client/backend/api/v1/academic/exams/268f1249-639c-42db-ae9b-caf083d8965f/attempts/me/active",
+      "status": 404,
+      "code": "EXAM_ATTEMPT_NOT_FOUND",
+      "traceId": "00-d0314dac7a3019844ebfd03d2dc37c59-f81fad597e3fcd4f-00"
+    }
+  ],
+  "ids": {
+    "classId": "9dcb16f0-2448-4c1a-9706-004f2c61e9d5",
+    "assignmentId": "0e5573c3-0673-42ee-9b8e-1d4bff84abde",
+    "examId": "268f1249-639c-42db-ae9b-caf083d8965f",
+    "guardianRelationId": "dd8e098e-6332-4bb4-bec4-0c1bf0bda14f"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "role": "Manager",
+      "view": "desktop",
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    {
+      "role": "Manager",
+      "view": "tablet",
+      "scrollWidth": 805,
+      "width": 820
+    },
+    {
+      "role": "Manager",
+      "view": "mobile",
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "role": "Teacher",
+      "view": "desktop",
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    {
+      "role": "Teacher",
+      "view": "tablet",
+      "scrollWidth": 805,
+      "width": 820
+    },
+    {
+      "role": "Teacher",
+      "view": "mobile",
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "role": "Student",
+      "view": "desktop",
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    {
+      "role": "Student",
+      "view": "tablet",
+      "scrollWidth": 805,
+      "width": 820
+    },
+    {
+      "role": "Student",
+      "view": "mobile",
+      "scrollWidth": 375,
+      "width": 390
+    },
+    {
+      "role": "Parent",
+      "view": "desktop",
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    {
+      "role": "Parent",
+      "view": "tablet",
+      "scrollWidth": 805,
+      "width": 820
+    },
+    {
+      "role": "Parent",
+      "view": "mobile",
+      "scrollWidth": 375,
+      "width": 390
+    }
+  ],
+  "schedule": [
+    {
+      "role": "Manager",
+      "status": 200,
+      "from": "2026-10-27T20:30:00.000Z",
+      "to": "2026-11-03T20:29:59.999Z"
+    },
+    {
+      "role": "Teacher",
+      "status": 200,
+      "from": "2026-10-27T20:30:00.000Z",
+      "to": "2026-11-03T20:29:59.999Z"
+    },
+    {
+      "role": "Student",
+      "status": 200,
+      "from": "2026-10-27T20:30:00.000Z",
+      "to": "2026-11-03T20:29:59.999Z"
+    }
+  ],
+  "errors": [],
+  "failures": [
+    {
+      "role": "Student",
+      "path": "/api/client/backend/api/v1/academic/exams/268f1249-639c-42db-ae9b-caf083d8965f/attempts/me/active",
+      "status": 404,
+      "code": "EXAM_ATTEMPT_NOT_FOUND",
+      "traceId": "00-9d93da423782a04752c691203705b689-9cb7708bc98b3dc4-00"
+    },
+    {
+      "role": "Student",
+      "path": "/api/client/backend/api/v1/academic/exams/268f1249-639c-42db-ae9b-caf083d8965f/attempts/me/active",
+      "status": 404,
+      "code": "EXAM_ATTEMPT_NOT_FOUND",
+      "traceId": "00-8111b6bafbbd21c01798806ceacee1f4-0ef995e5f568f6f0-00"
+    }
+  ]
+}

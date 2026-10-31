@@ -76,6 +76,10 @@ test('phone cards preserve all fields, and changing viewport restores a real tab
   ).toBeVisible();
   await expect(
     page.locator('.data-card').first().getByText('تاریخ ثبت‌نام', { exact: true }),
+  ).not.toBeVisible();
+  await page.locator('.data-card').first().locator('summary').click();
+  await expect(
+    page.locator('.data-card').first().getByText('تاریخ ثبت‌نام', { exact: true }),
   ).toBeVisible();
   await expect(page.locator('table')).toHaveCount(0);
   await page.setViewportSize({ width: 1024, height: 768 });

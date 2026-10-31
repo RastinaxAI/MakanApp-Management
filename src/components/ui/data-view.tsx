@@ -5,6 +5,50 @@ import { date, number } from '@/lib/formatting';
 import { isRecord } from '@/lib/api/errors';
 import { label, StatusBadge, EmptyState } from './states';
 export const fieldLabels: Record<string, string> = {
+  audience: 'مخاطب پلن',
+  catalogVisible: 'نمایش در کاتالوگ',
+  newPurchaseAvailable: 'فروش جدید فعال',
+  renewalAvailable: 'تمدید فعال',
+  priceToman: 'قیمت به تومان',
+  explicitlyFree: 'تأیید صریح رایگان بودن',
+  calendar: 'تقویم دوره',
+  saleTermsReference: 'مرجع شرایط فروش',
+  warningPercent: 'آستانه هشدار (درصد)',
+  criticalWarningPercent: 'آستانه هشدار بحرانی (درصد)',
+  ownerType: 'نوع صاحب قرارداد',
+  ownerId: 'شناسه صاحب قرارداد',
+  state: 'وضعیت قرارداد',
+  migrationStatus: 'وضعیت انتقال قرارداد',
+  commercialControlEnabled: 'کنترل تجاری فعال',
+  commercialEnforcementFromUtc: 'آغاز اعمال کنترل تجاری',
+  hasVerifiedCommercialContract: 'قرارداد تجاری معتبر دارد',
+  legacySubscriptionId: 'شناسه اشتراک قبلی',
+  periodStartsAtUtc: 'شروع دوره',
+  periodEndsAtUtc: 'پایان دوره',
+  graceEndsAtUtc: 'پایان مهلت',
+  planDisplayName: 'نام پلن',
+  monthlyPriceToman: 'قیمت ماهانه به تومان',
+  renewalPriceToman: 'قیمت تمدید به تومان',
+  displayCurrency: 'واحد نمایش قیمت',
+  autoRenew: 'تمدید خودکار',
+  renewalMode: 'روش تمدید',
+  hasPendingPayment: 'پرداخت در انتظار دارد',
+  renewalPlanVersionId: 'نسخه پلن تمدید',
+  scheduledPlanVersionId: 'نسخه پلن دوره بعد',
+  billingAnchorUtc: 'مبدأ دوره قرارداد',
+  billingPeriodIndex: 'شماره دوره قرارداد',
+  missingFields: 'اطلاعات نیازمند تکمیل',
+  canPublish: 'آماده انتشار',
+  before: 'قبل از تغییر',
+  after: 'بعد از تغییر',
+  consumed: 'مصرف‌شده',
+  reserved: 'رزروشده',
+  remaining: 'باقی‌مانده',
+  kind: 'نوع سهمیه',
+  unit: 'واحد',
+  isUsageAvailable: 'مصرف قابل دریافت است',
+  isUnlimited: 'نامحدود',
+  warningLevel: 'سطح هشدار',
   startDate: 'تاریخ شروع',
   endDate: 'تاریخ پایان',
   verifiedBirthDate: 'تاریخ تولد بررسی‌شده',
@@ -186,7 +230,6 @@ export const fieldLabels: Record<string, string> = {
   sentAtUtc: 'زمان ارسال',
   senderUserId: 'شناسه فرستنده',
   sequence: 'ترتیب',
-  kind: 'نوع',
   organizationName: 'نام سازمان',
   clientOperationId: 'شناسه عملیات',
   failureCode: 'کد خطا',
@@ -314,18 +357,31 @@ export function DataView({
       !hide.includes(key) &&
       !['accessToken', 'refreshToken', 'setupUri', 'recoveryCodes'].includes(key),
   );
-  return (
+  const technical = entries.filter(([key]) => /(?:^id$|Id$|^version$|RowVersion$)/.test(key));
+  const primary = entries.filter((entry) => !technical.includes(entry));
+  const grid = (items: typeof entries) => (
     <div className="view-grid">
-      {entries.map(([key, v]) => (
+      {items.map(([key, v]) => (
         <div
           key={key}
           className={`view-field ${typeof v === 'object' && v !== null ? 'wide' : ''}`}
         >
-          <span>{fieldLabels[key] ?? key}</span>
+          <span>{fieldLabels[key] ?? label(key)}</span>
           <Value value={v} name={key} />
         </div>
       ))}
     </div>
+  );
+  return (
+    <>
+      {grid(primary)}
+      {technical.length > 0 && (
+        <details className="technical-details">
+          <summary>شناسه‌ها و اطلاعات پیگیری</summary>
+          {grid(technical)}
+        </details>
+      )}
+    </>
   );
 }
 export function Panel({

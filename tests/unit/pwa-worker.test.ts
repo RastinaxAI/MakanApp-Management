@@ -41,6 +41,20 @@ function worker() {
   return { listeners, self, context, caches, cache, showNotification, openWindow, navigate };
 }
 describe('PWA cache and notification boundaries', () => {
+  it('replaces older public caches while retaining the current cache and unrelated apps', async () => {
+    const w = worker();
+    w.caches.keys.mockResolvedValue([
+      'makan-public-v1',
+      'makan-admin-public-v4',
+      'makan-admin-public-v5',
+      'another-app',
+    ]);
+    let pending;
+    w.listeners.activate({ waitUntil: (p: Promise<unknown>) => (pending = p) });
+    await pending;
+    expect(w.caches.delete.mock.calls).toEqual([['makan-public-v1'], ['makan-admin-public-v4']]);
+    expect(w.self.clients.claim).toHaveBeenCalledOnce();
+  });
   it('preloads only public assets and never cached user pages or APIs', async () => {
     const w = worker();
     let pending;

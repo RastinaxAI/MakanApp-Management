@@ -100,6 +100,39 @@ test('container keeps real pages and APIs protected without a session', async ({
   expect(session.headers()['set-cookie'] ?? '').not.toContain('makan_session=');
 });
 
+test('production auth rejects non-national mobiles and non-six-digit login codes', async ({
+  request,
+  baseURL,
+  page,
+}) => {
+  await page.goto('/login');
+  await expect(page.getByLabel('شماره همراه', { exact: true })).toHaveAttribute('maxlength', '11');
+  for (const phoneNumber of ['08120000105', '0912000010', '091200001050', '+989120000105']) {
+    expect(
+      (
+        await request.post('/api/auth/challenge', {
+          headers: { Origin: baseURL! },
+          data: { phoneNumber },
+        })
+      ).status(),
+    ).toBe(400);
+  }
+  for (const code of ['12345', '1234567', 'abcdef']) {
+    expect(
+      (
+        await request.post('/api/auth/verify', {
+          headers: { Origin: baseURL! },
+          data: {
+            phoneNumber: '09120000105',
+            challengeId: '00000000-0000-4000-8000-000000000001',
+            code,
+          },
+        })
+      ).status(),
+    ).toBe(400);
+  }
+});
+
 test('failed OTP delivery preserves the phone and recovers only after an explicit retry', async ({
   page,
 }) => {

@@ -9,12 +9,18 @@ type GetResult<P extends GetPaths> = paths[P] extends {
 export type ContextGuard = {
   revision: string;
   onContextChanged?: () => void;
+  isCurrent?: () => boolean;
 };
 export async function request<T>(
   path: string,
   init: RequestInit = {},
   guard?: ContextGuard,
 ): Promise<T> {
+  const ensureCurrent = () => {
+    if (guard?.isCurrent && !guard.isCurrent())
+      throw new DOMException('The request belongs to an earlier account or context.', 'AbortError');
+  };
+  ensureCurrent();
   let response: Response;
   try {
     response = await fetch(path, {
@@ -28,14 +34,17 @@ export async function request<T>(
       },
     });
   } catch (error) {
+    ensureCurrent();
     if (error instanceof Error && error.name === 'AbortError') throw error;
     throw new ApiError(503, { code: 'NETWORK_ERROR' });
   }
+  ensureCurrent();
   if (!response.ok) {
     let body: unknown;
     try {
       body = await response.json();
     } catch {}
+    ensureCurrent();
     const p = parseProblem(body, response.status, response.headers.get('Retry-After'));
     if (p.code === 'CONTEXT_CHANGED') guard?.onContextChanged?.();
     if (
@@ -46,9 +55,18 @@ export async function request<T>(
     throw new ApiError(response.status, p);
   }
   if (response.status === 204) return undefined as T;
-  if (response.headers.get('Content-Type')?.includes('octet-stream'))
-    return (await response.blob()) as T;
-  return (await response.json()) as T;
+  // Some documented command endpoints return 200 with no response body.
+  if (!response.headers.get('Content-Type')?.includes('octet-stream')) {
+    const text = await response.text();
+    ensureCurrent();
+    if (!text.trim()) return undefined as T;
+    return JSON.parse(text) as T;
+  }
+  const result = response.headers.get('Content-Type')?.includes('octet-stream')
+    ? await response.blob()
+    : await response.json();
+  ensureCurrent();
+  return result as T;
 }
 export function get<P extends GetPaths>(
   template: P,

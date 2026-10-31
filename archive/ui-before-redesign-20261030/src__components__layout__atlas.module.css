@@ -1,0 +1,183 @@
+/* Approved Atlas direction; existing theme variables and brand assets remain authoritative. */
+.shell {
+  --radius: 18px;
+  --atlas-nav-width: 224px;
+}
+.shell :global(.workspace) {
+  margin-inline-start: var(--atlas-nav-width);
+  width: calc(100% - var(--atlas-nav-width));
+}
+.shell :global(.sidebar) {
+  width: 224px;
+  padding: 28px 16px 16px;
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
+}
+.shell :global(.brand) {
+  padding: 0 8px 24px;
+  gap: 10px;
+}
+.shell :global(.brand-mark) {
+  width: 40px;
+  height: 40px;
+}
+.shell :global(.brand-version) {
+  display: none;
+}
+.shell :global(.brand-sub) {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 4px;
+}
+.shell :global(.sidebar-label) {
+  padding: 16px 12px 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.shell :global(.nav-list) {
+  gap: 5px;
+}
+.shell :global(.nav-item) {
+  padding: 12px;
+  border-radius: 12px;
+  min-height: 46px;
+  gap: 12px;
+  font-size: 12px;
+  border-color: transparent;
+}
+.shell :global(.nav-item.active) {
+  background: var(--primary-soft);
+  color: var(--primary);
+  box-shadow: none;
+  border-color: transparent;
+  font-weight: 700;
+}
+.shell :global(.sidebar-bottom) {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin: 20px 0 0;
+  padding: 16px 12px;
+  font-size: 11px;
+  gap: 10px;
+}
+.shell :global(.sidebar-bottom strong) {
+  font-size: 11px;
+  font-weight: 600;
+}
+.shell :global(.sidebar-bottom span) {
+  font-size: 10px;
+  line-height: 1.9;
+}
+.shell :global(.topbar) {
+  min-height: 72px;
+  padding: 12px 32px;
+  background: var(--surface);
+  box-shadow: none;
+  border-bottom: 1px solid var(--border);
+}
+.shell :global(.main-content) {
+  padding: 32px;
+  max-width: 1600px;
+  width: 100%;
+  margin-inline: auto;
+}
+.shell :global(.page-header) {
+  margin-bottom: 28px;
+  gap: 24px;
+  align-items: center;
+}
+.shell :global(.page-header h1) {
+  font-size: 28px;
+  font-weight: 750;
+  line-height: 1.5;
+  letter-spacing: -0.6px;
+}
+.shell :global(.page-header p) {
+  font-size: 12px;
+  line-height: 1.9;
+  max-width: 72ch;
+  margin-top: 8px;
+}
+.shell :global(.button) {
+  border-radius: 12px;
+  min-height: 44px;
+}
+.shell :global(.panel),
+.shell :global(.list-panel) {
+  box-shadow: none;
+  border-radius: 18px;
+}
+.shell :global(.section-tabs) {
+  margin-bottom: 24px;
+}
+.shell :global(.app-footer) {
+  padding: 20px 32px;
+  color: var(--muted);
+  font-size: 10px;
+}
+@media (max-width: 1100px) {
+  .shell {
+    --atlas-nav-width: 200px;
+  }
+  .shell :global(.sidebar) {
+    width: 200px;
+    padding-inline: 12px;
+  }
+  .shell :global(.main-content) {
+    padding: 24px;
+  }
+  .shell :global(.topbar) {
+    padding-inline: 24px;
+  }
+}
+@media (max-width: 900px) {
+  .shell {
+    --atlas-nav-width: 0px;
+  }
+  .shell :global(.sidebar) {
+    display: none;
+  }
+  .shell :global(.mobile-menu) {
+    display: inline-flex;
+  }
+  .shell :global(.main-content) {
+    padding: 24px;
+  }
+  .shell :global(.page-header h1) {
+    font-size: 25px;
+  }
+  .shell :global(.topbar) {
+    padding-inline: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .shell :global(.main-content) {
+    padding: 24px 16px;
+  }
+  .shell :global(.topbar) {
+    min-height: 64px;
+    padding: 10px 16px;
+  }
+  .shell :global(.page-header) {
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .shell :global(.page-header h1) {
+    font-size: 23px;
+  }
+  .shell :global(.page-header p) {
+    font-size: 12px;
+  }
+  .shell :global(.app-footer) {
+    padding: 16px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .shell :global(.button) {
+    min-height: 44px;
+  }
+}

@@ -53,6 +53,7 @@ test('owner provisions using named user and published plan choices, then checks 
   await expect(d.getByText(/پلن آزمایشی · نسخه/)).toBeVisible();
   await d.getByRole('button', { name: 'ثبت نهایی سازمان', exact: true }).click();
   await expect(d.getByText(/دعوت ایجاد شده؛ پذیرش مدیر هنوز/)).toBeVisible();
+  await expect(d.getByText(/شناسه پیگیری همین درخواست را به پشتیبانی/)).toBeVisible();
   const event = (await inspect()).events.find((e) => e.path === '/api/admin/v1/provisioning');
   expect(event?.body.initialManagerUserId).toBe(userId);
   expect(event?.body.planVersionId).toBe('00000000-0000-4000-8000-000000000003');

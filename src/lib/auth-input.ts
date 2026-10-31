@@ -6,3 +6,8 @@ export const phoneInputSchema = z
   .string()
   .transform((value) => latinDigits(value).replace(/[\s-]/g, ''))
   .pipe(z.string().regex(/^09\d{9}$/, 'شماره همراه باید ۱۱ رقم باشد و با ۰۹ شروع شود.'));
+
+export const otpInputSchema = z
+  .string()
+  .transform((value) => latinDigits(value).replace(/\s/g, ''))
+  .pipe(z.string().regex(/^\d{6}$/, 'کد ورود باید دقیقاً ۶ رقم باشد.'));

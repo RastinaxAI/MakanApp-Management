@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import '@fontsource-variable/vazirmatn';
 import './globals.css';
-import { RootProviders } from '@/features/access-context/provider';
+import { RootProviders } from '@/features/access-context/root-providers';
 export const metadata: Metadata = {
   title: { default: 'ماکان | پنل مدیریت', template: '%s | مدیریت ماکان' },
   description: 'پنل مدیریت فارسی پلتفرم آموزشی ماکان',
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#1169b8',
+  themeColor: '#11213a',
   viewportFit: 'cover',
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {

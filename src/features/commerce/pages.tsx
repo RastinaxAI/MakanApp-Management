@@ -1,6 +1,5 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
-import { Info } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
 import { ListView } from '@/components/ui/list-view';
 import { Panel, DataView } from '@/components/ui/data-view';
@@ -13,6 +12,9 @@ import { useAccess } from '@/features/access-context/provider';
 import { ApiError } from '@/lib/api/errors';
 import { money } from '@/lib/formatting';
 import Link from '@/components/ui/app-link';
+import { PlanCatalog } from './plan-catalog';
+import { CommercialContracts, CommercialHistory } from './commercial-contracts';
+import { PlanVersion } from './plan-version';
 export function CommercePage() {
   const { can } = useAccess();
   const defaultTab = can('/api/admin/v1/commerce/plans')
@@ -25,17 +27,13 @@ export function CommercePage() {
     <>
       <PageHeader
         title="پلن‌ها و اشتراک‌ها"
-        description="کاتالوگ پلن، نسخه‌های انتشار و اشتراک سازمان‌ها"
+        description="پلن‌های فردی و سازمانی، قراردادهای تجاری و سهمیه‌ها"
         action={
           tab === 'plans' ? (
             <CommandDialog title="ایجاد پلن" path="/api/admin/v1/commerce/plans" resultView />
           ) : undefined
         }
       />
-      <div className="notice">
-        <Info size={18} />
-        مدیریت پلن و سفارش در دسترس است؛ موفقیت پرداخت واقعی در این Release تأیید نشده است.
-      </div>
       <SectionTabs
         defaultTab={defaultTab}
         tabs={[
@@ -43,27 +41,16 @@ export function CommercePage() {
           ...(can('/api/admin/v1/commerce/subscriptions')
             ? [{ key: 'subscriptions', label: 'اشتراک‌ها' }]
             : []),
+          ...(can('/api/admin/v1/commerce/users/00000000-0000-0000-0000-000000000001/subscription')
+            ? [{ key: 'contracts', label: 'قراردادها و سهمیه‌ها' }]
+            : []),
           ...(can('/api/admin/v1/provisioning')
             ? [{ key: 'provisioning', label: 'درخواست‌های ایجاد سازمان' }]
             : []),
         ]}
       />
-      {tab === 'plans' && (
-        <ListView
-          title="پلن‌های پلتفرم"
-          endpoint="/api/admin/v1/commerce/plans"
-          columns={[
-            {
-              key: 'displayName',
-              title: 'پلن',
-              sub: 'code',
-              link: (r) => '/admin/commerce/' + r.planId,
-            },
-            { key: 'createdAtUtc', title: 'تاریخ ایجاد' },
-            { key: 'planId', title: 'شناسه پلن' },
-          ]}
-        />
-      )}
+      {tab === 'plans' && <PlanCatalog />}
+      {tab === 'contracts' && <CommercialContracts />}
       {tab === 'subscriptions' && (
         <ListView
           title="اشتراک سازمان‌ها"
@@ -127,31 +114,49 @@ export function PlanDetail({ id }: { id: string }) {
         parent={{ href: '/admin/commerce', label: 'پلن‌ها' }}
         action={<CommandDialog title="نسخه جدید پلن" path={path + '/versions'} resultView />}
       />
+      <Panel
+        title="شرایط ارائه پلن"
+        action={
+          <CommandDialog
+            title="تنظیم فروش و تمدید"
+            method="PUT"
+            path={path + '/availability'}
+            disabled={!q.data.version}
+            defaults={{
+              catalogVisible: q.data.catalogVisible,
+              newPurchaseAvailable: q.data.newPurchaseAvailable,
+              renewalAvailable: q.data.renewalAvailable,
+              expectedVersion: q.data.version,
+            }}
+            preview={
+              <p className="notice">
+                {q.data.displayName}؛ {q.data.code}؛ {q.data.planId}
+              </p>
+            }
+            onReload={async () => {
+              const r = await q.refetch({ throwOnError: true });
+              return { expectedVersion: r.data?.version };
+            }}
+          />
+        }
+      >
+        <DataView
+          value={q.data}
+          fields={['audience', 'catalogVisible', 'newPurchaseAvailable', 'renewalAvailable']}
+        />
+      </Panel>
       {q.data.versionsTruncated && <div className="notice">فهرست نسخه‌های پلن محدود شده است.</div>}
       {q.data.versions.map((v) => (
-        <Panel
-          title={'نسخه ' + v.versionNumber}
+        <PlanVersion
           key={v.planVersionId}
-          description={money(v.priceAmount, v.currency)}
-          action={
-            <CommandDialog
-              title="انتشار نسخه"
-              path={'/api/admin/v1/commerce/plan-versions/' + v.planVersionId + '/publish'}
-              defaults={{ expectedVersion: v.version }}
-              disabled={v.status !== 'Draft'}
-              onReload={async () => {
-                const r = await q.refetch();
-                return {
-                  expectedVersion: r.data?.versions.find((x) => x.planVersionId === v.planVersionId)
-                    ?.version,
-                };
-              }}
-            />
-          }
-        >
-          <DataView value={v} hide={['priceAmount', 'currency']} />
-        </Panel>
+          version={v}
+          reload={async () => {
+            const r = await q.refetch({ throwOnError: true });
+            return r.data?.versions.find((x) => x.planVersionId === v.planVersionId);
+          }}
+        />
       ))}
+      <CommercialHistory id={id} />
     </>
   );
 }

@@ -58,6 +58,7 @@ function reset() {
     refresh: 0,
     events: [],
     failPath: null,
+    failMethod: null,
     status: 0,
     code: null,
     errorOnce: false,
@@ -67,6 +68,12 @@ function reset() {
     masked: '0912***1234',
     provisions: [],
     provisioningStatus: 'Requested',
+    draftCanPublish: true,
+    draftVersion: 'draft-v1',
+    planVersion: 'plan-v1',
+    planAudience: 'Individual',
+    commercialVersion: null,
+    commercialHistory: [],
   };
 }
 reset();
@@ -96,12 +103,19 @@ export function createMockBackend() {
       const snapshot = state;
       snapshot.activeReads++;
       snapshot.maxConcurrentReads = Math.max(snapshot.maxConcurrentReads, snapshot.activeReads);
-      res.once('finish', () => { snapshot.activeReads--; });
-      if (snapshot.readDelayMs) await new Promise(resolve => setTimeout(resolve, snapshot.readDelayMs));
+      res.once('finish', () => {
+        snapshot.activeReads--;
+      });
+      if (snapshot.readDelayMs)
+        await new Promise((resolve) => setTimeout(resolve, snapshot.readDelayMs));
     }
     if (req.method !== 'GET' && !url.pathname.startsWith('/api/v1/auth'))
       state.events.push({ method: req.method, path: url.pathname, body });
-    if (state.failPath && url.pathname.includes(state.failPath)) {
+    if (
+      state.failPath &&
+      url.pathname.includes(state.failPath) &&
+      (!state.failMethod || req.method === state.failMethod)
+    ) {
       const status = state.status,
         code = state.code;
       if (state.errorOnce) state.failPath = null;
@@ -434,6 +448,15 @@ export function createMockBackend() {
           named('PlatformConversationMetadataItem', {
             conversationId: ids.user,
             organization: null,
+            ...(state.excessConversationData
+              ? {
+                  title: 'گروه رسمی آزمایشی',
+                  isOfficial: true,
+                  officialSpace: { sourceId: ids.org },
+                  messages: [{ text: 'PRIVATE_CONTENT_NOT_FOR_METADATA' }],
+                  attachments: [{ fileAssetId: ids.class }],
+                }
+              : {}),
           }),
         ],
       });
@@ -457,12 +480,28 @@ export function createMockBackend() {
       result = named('PlatformPlanDetail', {
         planId: ids.user,
         displayName: 'پلن آزمایشی',
+        audience: state.planAudience,
+        catalogVisible: true,
+        newPurchaseAvailable: false,
+        renewalAvailable: true,
+        version: state.planVersion,
         versions: [
           named('PlatformPlanVersionItem', {
             planVersionId: ids.user,
             status: 'Draft',
             priceAmount: 120000,
             currency: 'Irr',
+            priceToman: 12000,
+            calendar: 'Persian',
+            saleTermsReference: 'terms-v1',
+            warningPercent: 80,
+            criticalWarningPercent: 95,
+            entitlements: [
+              { key: 'Academic', enabled: true },
+              { key: 'Ai', enabled: false },
+            ],
+            quotas: [{ key: 'StorageBytes', limit: null }],
+            version: state.draftVersion,
           }),
           named('PlatformPlanVersionItem', {
             planVersionId: ids.otherOrg,
@@ -473,6 +512,71 @@ export function createMockBackend() {
           }),
         ],
       });
+    if (op.path === '/api/admin/v1/commerce/plans/{planId}/availability') {
+      if (body.expectedVersion !== state.planVersion)
+        return send(409, { code: 'VERSION_CONFLICT' });
+      state.planVersion = 'plan-v2';
+      return send(200, undefined, { 'Content-Type': 'text/plain' });
+    }
+    if (op.path === '/api/admin/v1/commerce/plan-versions/{versionId}/draft') {
+      if (body.expectedVersion !== state.draftVersion)
+        return send(409, { code: 'VERSION_CONFLICT' });
+      state.draftCanPublish = true;
+      state.draftVersion = 'draft-v2';
+    }
+    if (op.path.endsWith('/validation') || op.path.endsWith('/draft'))
+      result = {
+        planVersionId: ids.user,
+        missingFields: state.draftCanPublish ? [] : ['saleTermsReference'],
+        canPublish: state.draftCanPublish,
+        version: state.draftVersion,
+      };
+    if (op.path.endsWith('/publish')) {
+      if (!state.draftCanPublish || body.expectedVersion !== state.draftVersion)
+        return send(409, { code: 'VERSION_CONFLICT' });
+    }
+    if (
+      /^\/api\/admin\/v1\/commerce\/(users|organizations)\/.+\/(subscription|commercial-contracts)$/.test(
+        url.pathname,
+      )
+    ) {
+      const ownerType = url.pathname.includes('/users/') ? 'Individual' : 'Organization';
+      if (req.method === 'POST') {
+        if (body.expectedCurrentVersion !== state.commercialVersion)
+          return send(409, { code: 'VERSION_CONFLICT' });
+        state.commercialVersion = 'contract-v1';
+        state.commercialHistory.push(
+          named('CommercialHistoryDto', {
+            reason: body.reason,
+            action: 'RegisterContract',
+            before: null,
+            after: 'Active',
+          }),
+        );
+      }
+      result = named('CommercialSummaryDto', {
+        ownerType,
+        ownerId: ownerType === 'Individual' ? ids.user : ids.org,
+        state: state.commercialVersion ? 'Active' : 'LegacyPendingContract',
+        version: state.commercialVersion,
+        migrationStatus: 'AwaitingValidContract',
+        entitlements: { Academic: true, Ai: false },
+        quotas: [
+          named('CommercialQuotaDto', {
+            key: 'StorageBytes',
+            kind: 'CurrentCapacity',
+            unit: 'bytes',
+            limit: null,
+            consumed: 42,
+            reserved: 3,
+            remaining: null,
+            isUnlimited: false,
+            isUsageAvailable: false,
+          }),
+        ],
+      });
+    }
+    if (op.path === '/api/admin/v1/commerce/history/{targetId}') result = state.commercialHistory;
     if (op.path === '/api/admin/v1/finance/orders')
       result = named('PlatformOrderPage', {
         items: [named('PlatformOrderItem', { orderId: ids.user, organization: null })],

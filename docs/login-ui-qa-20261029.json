@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-29",
+  "mode": "Real local page navigation; explicitly intercepted challenge 404/202 and verify 500 for UI only. No real backend login or server permission verification.",
+  "outcome": "PASSED",
+  "checks": [
+    "Root opens personal login",
+    "Former management page is removed (404)",
+    "Missing challenge endpoint does not imply a missing account or claim a code was sent",
+    "500 login failure is actionable and does not claim success",
+    "Original trace remains visible",
+    "Former owner login is removed; no owner link is rendered"
+  ],
+  "pageErrors": []
+}

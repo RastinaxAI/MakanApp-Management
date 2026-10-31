@@ -1,0 +1,20 @@
+{
+  "clientDate": "2026-10-29",
+  "checkedAt": "2026-10-29T03:50:11.169Z",
+  "application": "http://127.0.0.1:3130",
+  "forcedTestBackend": "http://94.184.32.84:8090",
+  "swagger": {
+    "status": 200,
+    "schema": "/openapi/v1.json",
+    "name": "MakanApp API v1",
+    "paths": 284
+  },
+  "challenge": {
+    "status": 202
+  },
+  "verification": {
+    "status": 500,
+    "code": "UNEXPECTED_ERROR",
+    "traceId": "00-f38c336ae401a608ac9851ac50938c40-3861ec51e6dfb512-00"
+  }
+}

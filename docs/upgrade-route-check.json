@@ -1,0 +1,56 @@
+{
+  "checkedOn": "2026-10-28",
+  "productionFlag": false,
+  "previewProcess": "local-only 3130",
+  "authenticated": false,
+  "results": [
+    {
+      "origin": "http://127.0.0.1:3131",
+      "path": "/design-review",
+      "status": 404,
+      "location": null
+    },
+    {
+      "origin": "http://127.0.0.1:3131",
+      "path": "/design-review/atlas/plans",
+      "status": 404,
+      "location": null
+    },
+    {
+      "origin": "http://127.0.0.1:3131",
+      "path": "/design-review/atlas/messenger",
+      "status": 404,
+      "location": null
+    },
+    {
+      "origin": "http://127.0.0.1:3131",
+      "path": "/admin",
+      "status": 307,
+      "location": "/login"
+    },
+    {
+      "origin": "http://127.0.0.1:3131",
+      "path": "/api/session",
+      "status": 401,
+      "location": null
+    },
+    {
+      "origin": "http://127.0.0.1:3131",
+      "path": "/api/backend/api/admin/v1/commerce/plans",
+      "status": 401,
+      "location": null
+    },
+    {
+      "origin": "http://127.0.0.1:3130",
+      "path": "/design-review",
+      "status": 200,
+      "location": null
+    },
+    {
+      "origin": "http://127.0.0.1:3130",
+      "path": "/design-review/invalid/plans",
+      "status": 404,
+      "location": null
+    }
+  ]
+}

@@ -1,7 +1,6 @@
 'use client';
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { DirectionProvider } from '@radix-ui/react-direction';
 import { useRouter } from 'next/navigation';
 import type { components } from '@/generated/api/schema';
 import { request, type ContextGuard } from '@/lib/api/client';
@@ -9,7 +8,6 @@ import { ApiError } from '@/lib/api/errors';
 import { operationFor, operationKey } from '@/lib/api/contract';
 import { hasCapability } from '@/lib/permissions';
 import { LoadingSkeleton, ErrorState } from '@/components/ui/states';
-import { PwaProvider } from '@/features/pwa/provider';
 import { alignPushIdentity, disablePush } from '@/features/pwa/push-client';
 export type SessionState = {
   user: components['schemas']['CurrentUserResult'];
@@ -29,34 +27,14 @@ type Access = {
   changing: boolean;
 };
 export const AccessContext = createContext<Access | null>(null);
-export function RootProviders({ children }: { children: React.ReactNode }) {
-  const [client] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: (count, error) =>
-              error instanceof ApiError && [502, 503, 504].includes(error.status) && count < 1,
-            refetchOnWindowFocus: false,
-            staleTime: 20000,
-          },
-          mutations: { retry: false },
-        },
-      }),
-  );
-  return (
-    <DirectionProvider dir="rtl">
-      <QueryClientProvider client={client}>
-        <PwaProvider>{children}</PwaProvider>
-      </QueryClientProvider>
-    </DirectionProvider>
-  );
-}
 export function AccessProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [session, setSession] = useState<SessionState | null>(null);
   const [error, setError] = useState<unknown>();
   const [changing, setChanging] = useState(false);
+  const current = useRef<SessionState | null>(null),
+    generation = useRef(0),
+    loadAbort = useRef<AbortController | null>(null);
   useEffect(() => {
     if (session) void alignPushIdentity(session.user.id).catch(() => {});
   }, [session?.user.id]);
@@ -70,38 +48,45 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
       }),
   );
   const reload = useCallback(async () => {
+    const epoch = ++generation.current;
+    loadAbort.current?.abort();
+    const controller = new AbortController();
+    loadAbort.current = controller;
+    setChanging(true);
+    await cache.cancelQueries();
+    if (epoch !== generation.current || controller.signal.aborted) return;
+    cache.clear();
     try {
-      const next = await request<SessionState>('/api/session');
-      setSession((previous) => {
-        if (previous && previous.revision !== next.revision) {
-          void cache.cancelQueries();
-          cache.clear();
-        }
-        return next;
-      });
+      const next = await request<SessionState>(
+        '/api/session',
+        { signal: controller.signal },
+        { revision: '', isCurrent: () => epoch === generation.current },
+      );
+      if (epoch !== generation.current || controller.signal.aborted) return;
+      current.current = next;
+      setSession(next);
       setError(undefined);
     } catch (e) {
+      if (epoch !== generation.current || controller.signal.aborted) return;
+      current.current = null;
+      setSession(null);
       setError(e);
+    } finally {
+      if (epoch === generation.current) setChanging(false);
     }
   }, [cache]);
   useEffect(() => {
     void reload();
     const channel = new BroadcastChannel('makan-session');
-    const refresh = () => {
-      setChanging(true);
-      void cache
-        .cancelQueries()
-        .then(() => {
-          cache.clear();
-          return reload();
-        })
-        .finally(() => setChanging(false));
-    };
+    const refresh = () => void reload();
     channel.onmessage = refresh;
     const focus = () => {
       if (document.visibilityState === 'visible') void reload();
     };
     const expired = () => {
+      generation.current++;
+      loadAbort.current?.abort();
+      current.current = null;
       void cache.cancelQueries();
       cache.clear();
       setSession(null);
@@ -110,9 +95,13 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('makan:expired', expired);
     document.addEventListener('visibilitychange', focus);
     return () => {
+      generation.current++;
+      loadAbort.current?.abort();
       channel.close();
       window.removeEventListener('makan:expired', expired);
       document.removeEventListener('visibilitychange', focus);
+      void cache.cancelQueries();
+      cache.clear();
     };
   }, [reload, cache, router]);
   const broadcast = () => {
@@ -126,24 +115,17 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
         <ErrorState error={error} onRetry={() => void reload()} />
       </div>
     );
-  if (!session)
+  if (!session || changing)
     return (
       <div className="bootstrap">
         <LoadingSkeleton />
       </div>
     );
+  const renderedEpoch = generation.current;
   const guard: ContextGuard = {
     revision: session.revision,
-    onContextChanged: () => {
-      setChanging(true);
-      void cache
-        .cancelQueries()
-        .then(() => {
-          cache.clear();
-          return reload();
-        })
-        .finally(() => setChanging(false));
-    },
+    isCurrent: () => current.current === session && renderedEpoch === generation.current,
+    onContextChanged: () => void reload(),
   };
   function can(path: string, method = 'GET') {
     const op = operationFor(method, path);
@@ -179,6 +161,10 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
       await cache.cancelQueries();
       await disablePush(session!.user.id, guard).catch(() => {});
       await request('/api/auth/logout', { method: 'POST' });
+      generation.current++;
+      loadAbort.current?.abort();
+      current.current = null;
+      setSession(null);
       cache.clear();
       broadcast();
       router.replace('/login');

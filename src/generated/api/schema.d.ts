@@ -6,7 +6,127 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. فقط Manager سازمان جاری. فهرست اعضا شامل حساب/شخص/عضویت/نقش‌های مستقل است؛ profilePhoto فقط طبق سیاست فعلی Avatar و در غیر این صورت null. کاتالوگ‌ها شامل موارد استفاده‌نشده هم هستند. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description جست‌وجوی trimشده تا ۱۰۰ نویسه؛ فقط در محدودهٔ مجاز */
+                    Search?: string;
+                    /**
+                     * @description صفحه از ۱؛ حداکثر 100000
+                     * @example 1
+                     */
+                    Page?: number;
+                    /**
+                     * @description ۱ تا ۱۰۰؛ پیش‌فرض ۵۰
+                     * @example 50
+                     */
+                    PageSize?: number;
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolPageOfAcademicPeriodResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "id": "00000000-0000-0000-0000-000000000001",
+                         *           "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *           "title": "دوره",
+                         *           "startDate": "2026-09-01",
+                         *           "endDate": "2027-06-30",
+                         *           "status": "Active"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolPageOfAcademicPeriodResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "id": "00000000-0000-0000-0000-000000000001",
+                         *           "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *           "title": "دوره",
+                         *           "startDate": "2026-09-01",
+                         *           "endDate": "2027-06-30",
+                         *           "status": "Active"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolPageOfAcademicPeriodResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
         put?: never;
         post: {
             parameters: {
@@ -1062,6 +1182,363 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/academic/classes/{classId}/learners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. فقط Manager یا Teacher با Assignment فعال همان کلاس. این endpoint فهرست مدیریتی است؛ Student و Parent به roster کامل دسترسی ندارند و 404 برای پنهان‌سازی منبع دریافت می‌کنند. شناسهٔ رابطه از User/Person/Membership جداست؛ وضعیت پیش‌فرض Active. مرجع یا مجوز نامعتبر 404. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description جست‌وجوی trimشده تا ۱۰۰ نویسه؛ فقط در محدودهٔ مجاز */
+                    Search?: string;
+                    /**
+                     * @description صفحه از ۱؛ حداکثر 100000
+                     * @example 1
+                     */
+                    Page?: number;
+                    /**
+                     * @description ۱ تا ۱۰۰؛ پیش‌فرض ۵۰
+                     * @example 50
+                     */
+                    PageSize?: number;
+                    status?: string;
+                };
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolPageOfClassLearnerResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "enrollmentId": "00000000-0000-0000-0000-000000000001",
+                         *           "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000002",
+                         *           "personId": "00000000-0000-0000-0000-000000000003",
+                         *           "userId": null,
+                         *           "displayName": "فراگیر",
+                         *           "username": null,
+                         *           "profilePhoto": null,
+                         *           "status": "Active",
+                         *           "enrolledAtUtc": "2026-10-28T12:00:00Z",
+                         *           "endedAtUtc": null,
+                         *           "version": "AAAAAAAAAAE="
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolPageOfClassLearnerResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "enrollmentId": "00000000-0000-0000-0000-000000000001",
+                         *           "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000002",
+                         *           "personId": "00000000-0000-0000-0000-000000000003",
+                         *           "userId": null,
+                         *           "displayName": "فراگیر",
+                         *           "username": null,
+                         *           "profilePhoto": null,
+                         *           "status": "Active",
+                         *           "enrolledAtUtc": "2026-10-28T12:00:00Z",
+                         *           "endedAtUtc": null,
+                         *           "version": "AAAAAAAAAAE="
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolPageOfClassLearnerResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "CLASS_NOT_FOUND",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/academic/classes/{classId}/teachers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. فقط Manager یا Teacher با Assignment فعال همان کلاس. این endpoint فهرست مدیریتی است؛ Student و Parent به roster کامل دسترسی ندارند و 404 برای پنهان‌سازی منبع دریافت می‌کنند. شناسهٔ رابطه از User/Person/Membership جداست؛ وضعیت پیش‌فرض Active. مرجع یا مجوز نامعتبر 404. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description جست‌وجوی trimشده تا ۱۰۰ نویسه؛ فقط در محدودهٔ مجاز */
+                    Search?: string;
+                    /**
+                     * @description صفحه از ۱؛ حداکثر 100000
+                     * @example 1
+                     */
+                    Page?: number;
+                    /**
+                     * @description ۱ تا ۱۰۰؛ پیش‌فرض ۵۰
+                     * @example 50
+                     */
+                    PageSize?: number;
+                    status?: string;
+                };
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolPageOfClassTeacherResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "teacherAssignmentId": "00000000-0000-0000-0000-000000000001",
+                         *           "teacherMembershipId": "00000000-0000-0000-0000-000000000002",
+                         *           "userId": "00000000-0000-0000-0000-000000000003",
+                         *           "personId": null,
+                         *           "displayName": "مدرس",
+                         *           "username": null,
+                         *           "profilePhoto": null,
+                         *           "status": "Active",
+                         *           "assignedAtUtc": "2026-10-28T12:00:00Z",
+                         *           "endedAtUtc": null,
+                         *           "version": "AAAAAAAAAAE="
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolPageOfClassTeacherResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "teacherAssignmentId": "00000000-0000-0000-0000-000000000001",
+                         *           "teacherMembershipId": "00000000-0000-0000-0000-000000000002",
+                         *           "userId": "00000000-0000-0000-0000-000000000003",
+                         *           "personId": null,
+                         *           "displayName": "مدرس",
+                         *           "username": null,
+                         *           "profilePhoto": null,
+                         *           "status": "Active",
+                         *           "assignedAtUtc": "2026-10-28T12:00:00Z",
+                         *           "endedAtUtc": null,
+                         *           "version": "AAAAAAAAAAE="
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolPageOfClassTeacherResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "CLASS_NOT_FOUND",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssignTeacherCommand"];
+                    "text/json": components["schemas"]["AssignTeacherCommand"];
+                    "application/*+json": components["schemas"]["AssignTeacherCommand"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["TeacherAssignmentResult"];
+                        "application/json": components["schemas"]["TeacherAssignmentResult"];
+                        "text/json": components["schemas"]["TeacherAssignmentResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/academic/classes": {
         parameters: {
             query?: never;
@@ -1217,51 +1694,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/academic/classes/{classId}/teachers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    classId: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AssignTeacherCommand"];
-                    "text/json": components["schemas"]["AssignTeacherCommand"];
-                    "application/*+json": components["schemas"]["AssignTeacherCommand"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["TeacherAssignmentResult"];
-                        "application/json": components["schemas"]["TeacherAssignmentResult"];
-                        "text/json": components["schemas"]["TeacherAssignmentResult"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/academic/classes/{classId}/teachers/{teacherAssignmentId}/end": {
         parameters: {
             query?: never;
@@ -1292,6 +1724,1021 @@ export interface paths {
                         "text/plain": components["schemas"]["TeacherAssignmentResult"];
                         "application/json": components["schemas"]["TeacherAssignmentResult"];
                         "text/json": components["schemas"]["TeacherAssignmentResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/academic/classes/{classId}/lessons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. Manager یا Teacher با Assignment فعال همان کلاس مجاز به نوشتن و دیدن Draft است. Student با Enrollment فعال فقط Published را می‌بیند. Parent مجاز نیست (OPEN_PRODUCT_DECISION). محتوا plain text و انتشار در این مرحله immutable است. version/expectedVersion برابر Base64 rowversion هشت‌بایتی است. Create با clientOperationId بازپخش‌پذیر؛ تغییر payload همان عملیات 409؛ نسخهٔ کهنه 412. پیوست جدید باید FileAsset آمادهٔ همان سازمان و متعلق به فرستنده باشد (حداکثر ۱۰). DownloadUrl نسبی است و در هر درخواست مجوز جاری بررسی می‌شود. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description جست‌وجوی trimشده تا ۱۰۰ نویسه؛ فقط در محدودهٔ مجاز */
+                    Search?: string;
+                    /**
+                     * @description صفحه از ۱؛ حداکثر 100000
+                     * @example 1
+                     */
+                    Page?: number;
+                    /**
+                     * @description ۱ تا ۱۰۰؛ پیش‌فرض ۵۰
+                     * @example 50
+                     */
+                    PageSize?: number;
+                };
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolPageOfClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "id": "00000000-0000-0000-0000-000000000001",
+                         *           "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *           "classId": "00000000-0000-0000-0000-000000000003",
+                         *           "courseId": "00000000-0000-0000-0000-000000000004",
+                         *           "title": "درس اول",
+                         *           "body": "متن درس",
+                         *           "displayOrder": 0,
+                         *           "status": "Draft",
+                         *           "revisionNumber": 1,
+                         *           "version": "AAAAAAAAAAE=",
+                         *           "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *           "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *           "updatedAtUtc": null,
+                         *           "publishedAtUtc": null,
+                         *           "attachments": [],
+                         *           "replayed": false
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolPageOfClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "id": "00000000-0000-0000-0000-000000000001",
+                         *           "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *           "classId": "00000000-0000-0000-0000-000000000003",
+                         *           "courseId": "00000000-0000-0000-0000-000000000004",
+                         *           "title": "درس اول",
+                         *           "body": "متن درس",
+                         *           "displayOrder": 0,
+                         *           "status": "Draft",
+                         *           "revisionNumber": 1,
+                         *           "version": "AAAAAAAAAAE=",
+                         *           "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *           "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *           "updatedAtUtc": null,
+                         *           "publishedAtUtc": null,
+                         *           "attachments": [],
+                         *           "replayed": false
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolPageOfClassLessonResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "LESSON_NOT_FOUND",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 409,
+                         *       "code": "LESSON_STATE_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 412,
+                         *       "code": "LESSON_VERSION_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. Manager یا Teacher با Assignment فعال همان کلاس مجاز به نوشتن و دیدن Draft است. Student با Enrollment فعال فقط Published را می‌بیند. Parent مجاز نیست (OPEN_PRODUCT_DECISION). محتوا plain text و انتشار در این مرحله immutable است. version/expectedVersion برابر Base64 rowversion هشت‌بایتی است. Create با clientOperationId بازپخش‌پذیر؛ تغییر payload همان عملیات 409؛ نسخهٔ کهنه 412. پیوست جدید باید FileAsset آمادهٔ همان سازمان و متعلق به فرستنده باشد (حداکثر ۱۰). DownloadUrl نسبی است و در هر درخواست مجوز جاری بررسی می‌شود. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "clientOperationId": "00000000-0000-0000-0000-000000000001",
+                     *       "title": "درس اول",
+                     *       "body": "متن درس",
+                     *       "displayOrder": 0,
+                     *       "fileAssetIds": []
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateClassLessonCommand"];
+                    /**
+                     * @example {
+                     *       "clientOperationId": "00000000-0000-0000-0000-000000000001",
+                     *       "title": "درس اول",
+                     *       "body": "متن درس",
+                     *       "displayOrder": 0,
+                     *       "fileAssetIds": []
+                     *     }
+                     */
+                    "text/json": components["schemas"]["CreateClassLessonCommand"];
+                    /**
+                     * @example {
+                     *       "clientOperationId": "00000000-0000-0000-0000-000000000001",
+                     *       "title": "درس اول",
+                     *       "body": "متن درس",
+                     *       "displayOrder": 0,
+                     *       "fileAssetIds": []
+                     *     }
+                     */
+                    "application/*+json": components["schemas"]["CreateClassLessonCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "application/json": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "text/json": components["schemas"]["ClassLessonResult"];
+                    };
+                };
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "application/json": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "text/json": components["schemas"]["ClassLessonResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "LESSON_NOT_FOUND",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 409,
+                         *       "code": "LESSON_STATE_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 412,
+                         *       "code": "LESSON_VERSION_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/academic/lessons/{lessonId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. Manager یا Teacher با Assignment فعال همان کلاس مجاز به نوشتن و دیدن Draft است. Student با Enrollment فعال فقط Published را می‌بیند. Parent مجاز نیست (OPEN_PRODUCT_DECISION). محتوا plain text و انتشار در این مرحله immutable است. version/expectedVersion برابر Base64 rowversion هشت‌بایتی است. Create با clientOperationId بازپخش‌پذیر؛ تغییر payload همان عملیات 409؛ نسخهٔ کهنه 412. پیوست جدید باید FileAsset آمادهٔ همان سازمان و متعلق به فرستنده باشد (حداکثر ۱۰). DownloadUrl نسبی است و در هر درخواست مجوز جاری بررسی می‌شود. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    lessonId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "application/json": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "text/json": components["schemas"]["ClassLessonResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "LESSON_NOT_FOUND",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 409,
+                         *       "code": "LESSON_STATE_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 412,
+                         *       "code": "LESSON_VERSION_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. Manager یا Teacher با Assignment فعال همان کلاس مجاز به نوشتن و دیدن Draft است. Student با Enrollment فعال فقط Published را می‌بیند. Parent مجاز نیست (OPEN_PRODUCT_DECISION). محتوا plain text و انتشار در این مرحله immutable است. version/expectedVersion برابر Base64 rowversion هشت‌بایتی است. Create با clientOperationId بازپخش‌پذیر؛ تغییر payload همان عملیات 409؛ نسخهٔ کهنه 412. پیوست جدید باید FileAsset آمادهٔ همان سازمان و متعلق به فرستنده باشد (حداکثر ۱۰). DownloadUrl نسبی است و در هر درخواست مجوز جاری بررسی می‌شود. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    lessonId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "title": "درس اول",
+                     *       "body": "متن جایگزین کامل",
+                     *       "displayOrder": 0,
+                     *       "fileAssetIds": [],
+                     *       "expectedVersion": "AAAAAAAAAAE="
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateClassLessonCommand"];
+                    /**
+                     * @example {
+                     *       "title": "درس اول",
+                     *       "body": "متن جایگزین کامل",
+                     *       "displayOrder": 0,
+                     *       "fileAssetIds": [],
+                     *       "expectedVersion": "AAAAAAAAAAE="
+                     *     }
+                     */
+                    "text/json": components["schemas"]["UpdateClassLessonCommand"];
+                    /**
+                     * @example {
+                     *       "title": "درس اول",
+                     *       "body": "متن جایگزین کامل",
+                     *       "displayOrder": 0,
+                     *       "fileAssetIds": [],
+                     *       "expectedVersion": "AAAAAAAAAAE="
+                     *     }
+                     */
+                    "application/*+json": components["schemas"]["UpdateClassLessonCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "application/json": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "text/json": components["schemas"]["ClassLessonResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "LESSON_NOT_FOUND",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 409,
+                         *       "code": "LESSON_STATE_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 412,
+                         *       "code": "LESSON_VERSION_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/academic/lessons/{lessonId}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. Manager یا Teacher با Assignment فعال همان کلاس مجاز به نوشتن و دیدن Draft است. Student با Enrollment فعال فقط Published را می‌بیند. Parent مجاز نیست (OPEN_PRODUCT_DECISION). محتوا plain text و انتشار در این مرحله immutable است. version/expectedVersion برابر Base64 rowversion هشت‌بایتی است. Create با clientOperationId بازپخش‌پذیر؛ تغییر payload همان عملیات 409؛ نسخهٔ کهنه 412. پیوست جدید باید FileAsset آمادهٔ همان سازمان و متعلق به فرستنده باشد (حداکثر ۱۰). DownloadUrl نسبی است و در هر درخواست مجوز جاری بررسی می‌شود. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    lessonId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "expectedVersion": "AAAAAAAAAAE="
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PublishClassLessonCommand"];
+                    /**
+                     * @example {
+                     *       "expectedVersion": "AAAAAAAAAAE="
+                     *     }
+                     */
+                    "text/json": components["schemas"]["PublishClassLessonCommand"];
+                    /**
+                     * @example {
+                     *       "expectedVersion": "AAAAAAAAAAE="
+                     *     }
+                     */
+                    "application/*+json": components["schemas"]["PublishClassLessonCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "application/json": components["schemas"]["ClassLessonResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "classId": "00000000-0000-0000-0000-000000000003",
+                         *       "courseId": "00000000-0000-0000-0000-000000000004",
+                         *       "title": "درس اول",
+                         *       "body": "متن درس",
+                         *       "displayOrder": 0,
+                         *       "status": "Draft",
+                         *       "revisionNumber": 1,
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "createdByUserId": "00000000-0000-0000-0000-000000000005",
+                         *       "createdAtUtc": "2026-10-28T12:00:00Z",
+                         *       "updatedAtUtc": null,
+                         *       "publishedAtUtc": null,
+                         *       "attachments": [],
+                         *       "replayed": false
+                         *     }
+                         */
+                        "text/json": components["schemas"]["ClassLessonResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "LESSON_NOT_FOUND",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 409,
+                         *       "code": "LESSON_STATE_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 412,
+                         *       "code": "LESSON_VERSION_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
                     };
                 };
             };
@@ -1505,6 +2952,484 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/personal/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateOrderCommand"];
+                    "text/json": components["schemas"]["CreateOrderCommand"];
+                    "application/*+json": components["schemas"]["CreateOrderCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialQuoteDto"];
+                        "application/json": components["schemas"]["CommercialQuoteDto"];
+                        "text/json": components["schemas"]["CommercialQuoteDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/organization/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateOrderCommand"];
+                    "text/json": components["schemas"]["CreateOrderCommand"];
+                    "application/*+json": components["schemas"]["CreateOrderCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialQuoteDto"];
+                        "application/json": components["schemas"]["CommercialQuoteDto"];
+                        "text/json": components["schemas"]["CommercialQuoteDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    audience?: components["schemas"]["SubscriptionOwnerType"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialPlanDto"][];
+                        "application/json": components["schemas"]["CommercialPlanDto"][];
+                        "text/json": components["schemas"]["CommercialPlanDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/personal/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/organization/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/ai/simple-text/preflight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AiQuotaPreflightCommand"];
+                    "text/json": components["schemas"]["AiQuotaPreflightCommand"];
+                    "application/*+json": components["schemas"]["AiQuotaPreflightCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AiQuotaPreflightDto"];
+                        "application/json": components["schemas"]["AiQuotaPreflightDto"];
+                        "text/json": components["schemas"]["AiQuotaPreflightDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/personal/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OrderListResult"];
+                        "application/json": components["schemas"]["OrderListResult"];
+                        "text/json": components["schemas"]["OrderListResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateOrderCommand"];
+                    "text/json": components["schemas"]["CreateOrderCommand"];
+                    "application/*+json": components["schemas"]["CreateOrderCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CreateOrderResult"];
+                        "application/json": components["schemas"]["CreateOrderResult"];
+                        "text/json": components["schemas"]["CreateOrderResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/personal/orders/{orderId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orderId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OrderDto"];
+                        "application/json": components["schemas"]["OrderDto"];
+                        "text/json": components["schemas"]["OrderDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/personal/orders/{orderId}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orderId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["InitiatePaymentCommand"];
+                    "text/json": components["schemas"]["InitiatePaymentCommand"];
+                    "application/*+json": components["schemas"]["InitiatePaymentCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["InitiatePaymentResult"];
+                        "application/json": components["schemas"]["InitiatePaymentResult"];
+                        "text/json": components["schemas"]["InitiatePaymentResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/personal/subscription/downgrade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ScheduleDowngradeCommand"];
+                    "text/json": components["schemas"]["ScheduleDowngradeCommand"];
+                    "application/*+json": components["schemas"]["ScheduleDowngradeCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/commerce/organization/subscription/downgrade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ScheduleDowngradeCommand"];
+                    "text/json": components["schemas"]["ScheduleDowngradeCommand"];
+                    "application/*+json": components["schemas"]["ScheduleDowngradeCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -3605,11 +5530,12 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    filter?: "All" | "Direct" | "Group" | "Channel" | "Unread" | "Archived" | "Saved";
+                    filter?: components["schemas"]["ConversationListFilter"];
                     page?: number;
                     pageSize?: number;
                     q?: string;
                     folderId?: string;
+                    scope?: string;
                 };
                 header?: never;
                 path?: never;
@@ -3638,6 +5564,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/conversations/{conversationId}/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Summary مجاز گفتگو مستقل از صفحه و فیلتر Inbox
+         * @description Direct، Saved، Group و Channel مجاز را با DTO موجود Inbox می‌خواند؛ archive مانع deep-link نیست. نشست، workspace جاری و participant فعال همچنان الزامی‌اند. شناسهٔ نامجاز یا context متفاوت 404 می‌گیرد. این مسیر مجوز مدیریت گروه یا ارسال پیام جدید ایجاد نمی‌کند.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    conversationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ConversationSummaryResult"];
+                        "application/json": components["schemas"]["ConversationSummaryResult"];
+                        "text/json": components["schemas"]["ConversationSummaryResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/conversations/discover": {
         parameters: {
             query?: never;
@@ -3652,6 +5621,7 @@ export interface paths {
                     q?: string;
                     page?: number;
                     pageSize?: number;
+                    scope?: string;
                 };
                 header?: never;
                 path?: never;
@@ -3742,6 +5712,42 @@ export interface paths {
                         "text/plain": components["schemas"]["MessageReceiptResult"];
                         "application/json": components["schemas"]["MessageReceiptResult"];
                         "text/json": components["schemas"]["MessageReceiptResult"];
+                    };
+                };
+                /** @description MESSAGE_SAFETY_REVIEW_REQUIRED: وضعیت PendingReview، یا MESSAGE_SAFETY_BLOCKED: وضعیت Rejected. تغییر اعمال نشده و مجوز تحویل/دانلود تازه ایجاد نشده است. Ready فایل تأیید ایمنی نیست. پیش‌نویس حفظ شود و retry خودکار نشود؛ همان شناسه و payload همان نتیجه را می‌دهد. PendingReview وعدهٔ صف انسانی، SLA یا تأیید async نیست. دلیل داخلی و اطلاعات provider عمومی نیستند. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": {
+                            /** @enum {integer} */
+                            status?: 422;
+                            code?: string;
+                            /** @enum {string} */
+                            safetyState?: "PendingReview" | "Rejected";
+                            /** @enum {string} */
+                            operationState?: "NotApplied";
+                            /**
+                             * Format: uuid
+                             * @description شناسهٔ opaque رخداد ثبت‌شده؛ مجوز خواندن پرونده یا فایل نیست. در retry همان رخداد پایدار می‌ماند.
+                             */
+                            safetyReference?: string;
+                            /** @enum {boolean} */
+                            newMessageCreated?: false;
+                            /** @enum {boolean} */
+                            newAttachmentsBound?: false;
+                            /** @enum {boolean} */
+                            recipientDeliveryGranted?: false;
+                            /** @enum {boolean} */
+                            recipientDownloadGranted?: false;
+                            /** @enum {boolean} */
+                            retryable?: false;
+                            /** @enum {string} */
+                            requiredAction?: "KEEP_DRAFT_NO_AUTO_RETRY";
+                            correlationId?: string;
+                            traceId?: string;
+                        };
                     };
                 };
                 /** @description Too Many Requests */
@@ -4336,6 +6342,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * جزئیات مدیریتی Group یا Channel مجاز
+         * @description این مسیر ManagedConversationResult برمی‌گرداند و existence check عمومی گفتگو نیست. Direct و Saved از این مسیر مدیریتی 404 می‌گیرند؛ این پاسخ به معنی نبود پیام یا تاریخچه نیست. برای deep-link مجاز از /conversations/{conversationId}/summary و برای پیام‌ها از /conversations/{conversationId}/messages استفاده شود.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -5213,7 +7223,123 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. فقط Manager سازمان جاری. فهرست اعضا شامل حساب/شخص/عضویت/نقش‌های مستقل است؛ profilePhoto فقط طبق سیاست فعلی Avatar و در غیر این صورت null. کاتالوگ‌ها شامل موارد استفاده‌نشده هم هستند. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description جست‌وجوی trimشده تا ۱۰۰ نویسه؛ فقط در محدودهٔ مجاز */
+                    Search?: string;
+                    /**
+                     * @description صفحه از ۱؛ حداکثر 100000
+                     * @example 1
+                     */
+                    Page?: number;
+                    /**
+                     * @description ۱ تا ۱۰۰؛ پیش‌فرض ۵۰
+                     * @example 50
+                     */
+                    PageSize?: number;
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolPageOfCourseResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "id": "00000000-0000-0000-0000-000000000001",
+                         *           "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *           "title": "درس",
+                         *           "status": "Active"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolPageOfCourseResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "id": "00000000-0000-0000-0000-000000000001",
+                         *           "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *           "title": "درس",
+                         *           "status": "Active"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolPageOfCourseResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
         put?: never;
         post: {
             parameters: {
@@ -6814,6 +8940,195 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/academic/exam-attempts/{attemptId}/answers/{attemptQuestionId}/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * اتصال فایل آماده به نسخهٔ پاسخ آزمون
+         * @description ابتدا POST /api/v1/files و وضعیت Ready لازم است. سیاست همان QuestionVersion تثبیت‌شده، مالکیت فایل، سازمان، Enrollment جاری، مهلت سرور، write lease و ExpectedRevisionNumber بررسی می‌شوند. ClientOperationId برای retry همان درخواست ثابت است؛ payload متفاوت با همان شناسه 409 می‌گیرد. پاسخ ExamAnswerReceiptDto و AnswerSetVersion جدید است. حذف پیوست فایل یا تاریخچه را پاک نمی‌کند. ذخیرهٔ متن با PUT answers فایل‌های جاری را حفظ می‌کند. پس از Finalize تغییر جدید مجاز نیست. UserId یا FileAssetId به‌تنهایی مجوز نیست.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    attemptId: string;
+                    attemptQuestionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AttachExamAnswerFileCommand"];
+                    "text/json": components["schemas"]["AttachExamAnswerFileCommand"];
+                    "application/*+json": components["schemas"]["AttachExamAnswerFileCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ExamAnswerReceiptDto"];
+                        "application/json": components["schemas"]["ExamAnswerReceiptDto"];
+                        "text/json": components["schemas"]["ExamAnswerReceiptDto"];
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/academic/exam-attempts/{attemptId}/answers/{attemptQuestionId}/attachments/{fileAssetId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * حذف پیوست با ایجاد نسخهٔ جدید پاسخ
+         * @description ابتدا POST /api/v1/files و وضعیت Ready لازم است. سیاست همان QuestionVersion تثبیت‌شده، مالکیت فایل، سازمان، Enrollment جاری، مهلت سرور، write lease و ExpectedRevisionNumber بررسی می‌شوند. ClientOperationId برای retry همان درخواست ثابت است؛ payload متفاوت با همان شناسه 409 می‌گیرد. پاسخ ExamAnswerReceiptDto و AnswerSetVersion جدید است. حذف پیوست فایل یا تاریخچه را پاک نمی‌کند. ذخیرهٔ متن با PUT answers فایل‌های جاری را حفظ می‌کند. پس از Finalize تغییر جدید مجاز نیست. UserId یا FileAssetId به‌تنهایی مجوز نیست.
+         */
+        delete: {
+            parameters: {
+                query?: {
+                    ClientOperationId?: string;
+                    WriteLeaseVersion?: number;
+                    ExpectedRevisionNumber?: number;
+                };
+                header?: never;
+                path: {
+                    attemptId: string;
+                    attemptQuestionId: string;
+                    fileAssetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ExamAnswerReceiptDto"];
+                        "application/json": components["schemas"]["ExamAnswerReceiptDto"];
+                        "text/json": components["schemas"]["ExamAnswerReceiptDto"];
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails: سیاست/سقف پیوست 400؛ احراز هویت 401؛ نقش نامجاز 403؛ فایل/تلاش نامجاز 404؛ نسخه، lease، مهلت، فایل غیرآماده یا Finalize برابر 409. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/academic/exam-attempts/{attemptId}/answers": {
         parameters: {
             query?: never;
@@ -6948,7 +9263,9 @@ export interface paths {
         put?: never;
         post: {
             parameters: {
-                query?: never;
+                query?: {
+                    workspaceScope?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -6956,8 +9273,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        File?: string;
+                        File?: components["schemas"]["IFormFile"];
                     };
                 };
             };
@@ -7052,6 +9368,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * دانلود بایت فایل با مجوز جاری
+         * @description پاسخ موفق بایت خام فایل است، نه JSON یا FileStreamResult سریال‌شده. Content-Type از فایل معتبر و Content-Disposition از نام دانلود تعیین می‌شود. Ready به‌تنهایی مجوز دانلود نیست؛ فایل unattached طبق scope و policy ممکن است 404 بدهد. هر درخواست، نشست و دسترسی جاری را بررسی می‌کند. Range روی stream قابل seek پشتیبانی می‌شود؛ Cache-Control=private, no-store و Vary=Authorization است.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -7063,15 +9383,88 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
+                /** @description فایل کامل؛ مصرف‌کننده باید bytes یا Blob بخواند. */
                 200: {
+                    headers: {
+                        /** @description MIME واقعی فایل طبق metadata معتبر؛ ممکن است image/png، image/jpeg، application/pdf یا text/plain باشد. */
+                        "Content-Type"?: string;
+                        /** @description attachment؛ نام دانلود با encoding مناسب */
+                        "Content-Disposition"?: string;
+                        /** @description اندازهٔ بدنه بر حسب بایت */
+                        "Content-Length"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": string;
+                    };
+                };
+                /** @description بخشی از بایت‌ها برای Range معتبر روی stream قابل seek؛ Content-Range مشخص است. */
+                206: {
+                    headers: {
+                        /** @description MIME واقعی فایل طبق metadata معتبر؛ ممکن است image/png، image/jpeg، application/pdf یا text/plain باشد. */
+                        "Content-Type"?: string;
+                        /** @description attachment؛ نام دانلود با encoding مناسب */
+                        "Content-Disposition"?: string;
+                        /** @description اندازهٔ بدنه بر حسب بایت */
+                        "Content-Length"?: number;
+                        /** @description بازهٔ واقعی بایت‌ها و اندازهٔ کل */
+                        "Content-Range"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": string;
+                    };
+                };
+                /** @description ProblemDetails؛ خطای JSON نباید به‌عنوان فایل موفق ذخیره شود. */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["FileStreamResult"];
-                        "application/json": components["schemas"]["FileStreamResult"];
-                        "text/json": components["schemas"]["FileStreamResult"];
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ خطای JSON نباید به‌عنوان فایل موفق ذخیره شود. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ خطای JSON نباید به‌عنوان فایل موفق ذخیره شود. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ خطای JSON نباید به‌عنوان فایل موفق ذخیره شود. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description Range خارج محدوده است؛ پاسخ موفق فایل نیست. */
+                416: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description ProblemDetails؛ خطای JSON نباید به‌عنوان فایل موفق ذخیره شود. */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": Record<string, never>;
                     };
                 };
             };
@@ -7206,6 +9599,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description inbox دعوت‌های حساب احرازشده؛ دعوت والد نیازمند requiresGuardianConsent و تأیید صریح است. organizationPersonId متعلق به Person Link است و با guardianLearnerOrganizationPersonId یکی نیست. */
         get: {
             parameters: {
                 query?: never;
@@ -7221,8 +9615,68 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example [
+                         *       {
+                         *         "id": "00000000-0000-0000-0000-000000000001",
+                         *         "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *         "organizationName": "آموزشگاه",
+                         *         "invitedByUserId": "00000000-0000-0000-0000-000000000003",
+                         *         "role": "Parent",
+                         *         "status": "Pending",
+                         *         "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *         "organizationPersonId": null,
+                         *         "organizationPersonDisplayName": null,
+                         *         "guardianLearnerOrganizationPersonId": "00000000-0000-0000-0000-000000000004",
+                         *         "guardianLearnerDisplayName": "فراگیر",
+                         *         "requiresPersonLinkConsent": false,
+                         *         "requiresGuardianConsent": true,
+                         *         "nextAction": "CONFIRM_GUARDIAN_RELATION"
+                         *       }
+                         *     ]
+                         */
                         "text/plain": components["schemas"]["InvitationResult"][];
+                        /**
+                         * @example [
+                         *       {
+                         *         "id": "00000000-0000-0000-0000-000000000001",
+                         *         "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *         "organizationName": "آموزشگاه",
+                         *         "invitedByUserId": "00000000-0000-0000-0000-000000000003",
+                         *         "role": "Parent",
+                         *         "status": "Pending",
+                         *         "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *         "organizationPersonId": null,
+                         *         "organizationPersonDisplayName": null,
+                         *         "guardianLearnerOrganizationPersonId": "00000000-0000-0000-0000-000000000004",
+                         *         "guardianLearnerDisplayName": "فراگیر",
+                         *         "requiresPersonLinkConsent": false,
+                         *         "requiresGuardianConsent": true,
+                         *         "nextAction": "CONFIRM_GUARDIAN_RELATION"
+                         *       }
+                         *     ]
+                         */
                         "application/json": components["schemas"]["InvitationResult"][];
+                        /**
+                         * @example [
+                         *       {
+                         *         "id": "00000000-0000-0000-0000-000000000001",
+                         *         "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *         "organizationName": "آموزشگاه",
+                         *         "invitedByUserId": "00000000-0000-0000-0000-000000000003",
+                         *         "role": "Parent",
+                         *         "status": "Pending",
+                         *         "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *         "organizationPersonId": null,
+                         *         "organizationPersonDisplayName": null,
+                         *         "guardianLearnerOrganizationPersonId": "00000000-0000-0000-0000-000000000004",
+                         *         "guardianLearnerDisplayName": "فراگیر",
+                         *         "requiresPersonLinkConsent": false,
+                         *         "requiresGuardianConsent": true,
+                         *         "nextAction": "CONFIRM_GUARDIAN_RELATION"
+                         *       }
+                         *     ]
+                         */
                         "text/json": components["schemas"]["InvitationResult"][];
                     };
                 };
@@ -7245,6 +9699,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description پذیرش فقط توسط حساب مقصد در نشست معتبر. دعوت Person Link نیازمند confirmPersonLink و دعوت والد نیازمند confirmGuardianRelation=true است. پذیرش والد، Membership/Role و GuardianRelation را اتمیک ثبت می‌کند؛ بازپخش رسید رابطهٔ پایان‌یافته را فعال نمی‌کند. */
         post: {
             parameters: {
                 query?: never;
@@ -7256,8 +9711,26 @@ export interface paths {
             };
             requestBody?: {
                 content: {
+                    /**
+                     * @example {
+                     *       "confirmPersonLink": false,
+                     *       "confirmGuardianRelation": true
+                     *     }
+                     */
                     "application/json": components["schemas"]["AcceptInvitationCommand"];
+                    /**
+                     * @example {
+                     *       "confirmPersonLink": false,
+                     *       "confirmGuardianRelation": true
+                     *     }
+                     */
                     "text/json": components["schemas"]["AcceptInvitationCommand"];
+                    /**
+                     * @example {
+                     *       "confirmPersonLink": false,
+                     *       "confirmGuardianRelation": true
+                     *     }
+                     */
                     "application/*+json": components["schemas"]["AcceptInvitationCommand"];
                 };
             };
@@ -7268,9 +9741,64 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example {
+                         *       "invitationId": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "organizationName": "آموزشگاه",
+                         *       "membershipId": "00000000-0000-0000-0000-000000000003",
+                         *       "roleAssignmentId": "00000000-0000-0000-0000-000000000004",
+                         *       "role": "Parent",
+                         *       "alreadyAccepted": false,
+                         *       "organizationPersonId": null,
+                         *       "guardianRelationId": "00000000-0000-0000-0000-000000000005"
+                         *     }
+                         */
                         "text/plain": components["schemas"]["AcceptInvitationResult"];
+                        /**
+                         * @example {
+                         *       "invitationId": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "organizationName": "آموزشگاه",
+                         *       "membershipId": "00000000-0000-0000-0000-000000000003",
+                         *       "roleAssignmentId": "00000000-0000-0000-0000-000000000004",
+                         *       "role": "Parent",
+                         *       "alreadyAccepted": false,
+                         *       "organizationPersonId": null,
+                         *       "guardianRelationId": "00000000-0000-0000-0000-000000000005"
+                         *     }
+                         */
                         "application/json": components["schemas"]["AcceptInvitationResult"];
+                        /**
+                         * @example {
+                         *       "invitationId": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "organizationName": "آموزشگاه",
+                         *       "membershipId": "00000000-0000-0000-0000-000000000003",
+                         *       "roleAssignmentId": "00000000-0000-0000-0000-000000000004",
+                         *       "role": "Parent",
+                         *       "alreadyAccepted": false,
+                         *       "organizationPersonId": null,
+                         *       "guardianRelationId": "00000000-0000-0000-0000-000000000005"
+                         *     }
+                         */
                         "text/json": components["schemas"]["AcceptInvitationResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "GUARDIAN_INVITATION_CONSENT_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
                     };
                 };
             };
@@ -7388,6 +9916,7 @@ export interface paths {
                     hasAttachment?: boolean;
                     hasLinks?: boolean;
                     topicId?: string;
+                    scope?: string;
                 };
                 header?: never;
                 path?: never;
@@ -8190,6 +10719,334 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/official-spaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OfficialSpacesPairResult"];
+                        "application/json": components["schemas"]["OfficialSpacesPairResult"];
+                        "text/json": components["schemas"]["OfficialSpacesPairResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/classes/{classId}/official-spaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OfficialSpacesPairResult"];
+                        "application/json": components["schemas"]["OfficialSpacesPairResult"];
+                        "text/json": components["schemas"]["OfficialSpacesPairResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/classes/{classId}/official-spaces/activities/{eventId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                    eventId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AcademicActivityDeliveryResult"][];
+                        "application/json": components["schemas"]["AcademicActivityDeliveryResult"][];
+                        "text/json": components["schemas"]["AcademicActivityDeliveryResult"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/classes/{classId}/official-spaces/activities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    kind?: components["schemas"]["AcademicActivityKind"];
+                    sourceVersionId?: string;
+                    revision?: number;
+                };
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AcademicActivityDeliveryResult"][];
+                        "application/json": components["schemas"]["AcademicActivityDeliveryResult"][];
+                        "text/json": components["schemas"]["AcademicActivityDeliveryResult"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. فقط Manager سازمان جاری. فهرست اعضا شامل حساب/شخص/عضویت/نقش‌های مستقل است؛ profilePhoto فقط طبق سیاست فعلی Avatar و در غیر این صورت null. کاتالوگ‌ها شامل موارد استفاده‌نشده هم هستند. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description جست‌وجوی trimشده تا ۱۰۰ نویسه؛ فقط در محدودهٔ مجاز */
+                    Search?: string;
+                    Role?: string;
+                    Status?: string;
+                    /**
+                     * @description صفحه از ۱؛ حداکثر 100000
+                     * @example 1
+                     */
+                    Page?: number;
+                    /**
+                     * @description ۱ تا ۱۰۰؛ پیش‌فرض ۵۰
+                     * @example 50
+                     */
+                    PageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolPageOfSchoolMemberResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "userId": "00000000-0000-0000-0000-000000000001",
+                         *           "personId": null,
+                         *           "organizationPersonId": null,
+                         *           "displayName": "کاربر",
+                         *           "username": "test.user",
+                         *           "profilePhoto": null,
+                         *           "membershipId": "00000000-0000-0000-0000-000000000002",
+                         *           "membershipStatus": "Active",
+                         *           "activeRoles": [
+                         *             "Teacher"
+                         *           ],
+                         *           "roleAssignments": [
+                         *             {
+                         *               "roleAssignmentId": "00000000-0000-0000-0000-000000000003",
+                         *               "role": "Teacher",
+                         *               "status": "Active",
+                         *               "assignedAtUtc": "2026-10-28T12:00:00Z",
+                         *               "endedAtUtc": null,
+                         *               "version": "AAAAAAAAAAE="
+                         *             }
+                         *           ],
+                         *           "version": "AAAAAAAAAAE="
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolPageOfSchoolMemberResult"];
+                        /**
+                         * @example {
+                         *       "dataAsOfUtc": "2026-10-28T12:00:00Z",
+                         *       "page": 1,
+                         *       "pageSize": 50,
+                         *       "totalCount": 1,
+                         *       "items": [
+                         *         {
+                         *           "userId": "00000000-0000-0000-0000-000000000001",
+                         *           "personId": null,
+                         *           "organizationPersonId": null,
+                         *           "displayName": "کاربر",
+                         *           "username": "test.user",
+                         *           "profilePhoto": null,
+                         *           "membershipId": "00000000-0000-0000-0000-000000000002",
+                         *           "membershipStatus": "Active",
+                         *           "activeRoles": [
+                         *             "Teacher"
+                         *           ],
+                         *           "roleAssignments": [
+                         *             {
+                         *               "roleAssignmentId": "00000000-0000-0000-0000-000000000003",
+                         *               "role": "Teacher",
+                         *               "status": "Active",
+                         *               "assignedAtUtc": "2026-10-28T12:00:00Z",
+                         *               "endedAtUtc": null,
+                         *               "version": "AAAAAAAAAAE="
+                         *             }
+                         *           ],
+                         *           "version": "AAAAAAAAAAE="
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolPageOfSchoolMemberResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/people": {
         parameters: {
             query?: never;
@@ -8646,6 +11503,344 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/personal-classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassDto"][];
+                        "application/json": components["schemas"]["PersonalClassDto"][];
+                        "text/json": components["schemas"]["PersonalClassDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreatePersonalClassCommand"];
+                    "text/json": components["schemas"]["CreatePersonalClassCommand"];
+                    "application/*+json": components["schemas"]["CreatePersonalClassCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassDto"];
+                        "application/json": components["schemas"]["PersonalClassDto"];
+                        "text/json": components["schemas"]["PersonalClassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal-classes/{classId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassDto"];
+                        "application/json": components["schemas"]["PersonalClassDto"];
+                        "text/json": components["schemas"]["PersonalClassDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal-classes/{classId}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassDto"];
+                        "application/json": components["schemas"]["PersonalClassDto"];
+                        "text/json": components["schemas"]["PersonalClassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal-classes/{classId}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["InvitePersonalClassStudentCommand"];
+                    "text/json": components["schemas"]["InvitePersonalClassStudentCommand"];
+                    "application/*+json": components["schemas"]["InvitePersonalClassStudentCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassInvitationDto"];
+                        "application/json": components["schemas"]["PersonalClassInvitationDto"];
+                        "text/json": components["schemas"]["PersonalClassInvitationDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal-classes/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassInvitationDto"][];
+                        "application/json": components["schemas"]["PersonalClassInvitationDto"][];
+                        "text/json": components["schemas"]["PersonalClassInvitationDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal-classes/invitations/{invitationId}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    invitationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassDto"];
+                        "application/json": components["schemas"]["PersonalClassDto"];
+                        "text/json": components["schemas"]["PersonalClassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal-classes/{classId}/participants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PersonalClassParticipantDto"][];
+                        "application/json": components["schemas"]["PersonalClassParticipantDto"][];
+                        "text/json": components["schemas"]["PersonalClassParticipantDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal-classes/{classId}/participants/{participantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    classId: string;
+                    participantId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/v1/commerce/plans": {
         parameters: {
             query?: never;
@@ -8924,6 +12119,338 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/users/{ownerId}/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    ownerId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/organizations/{ownerId}/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    ownerId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/plans/{planId}/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    planId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialAvailabilityCommand"];
+                    "text/json": components["schemas"]["CommercialAvailabilityCommand"];
+                    "application/*+json": components["schemas"]["CommercialAvailabilityCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/plan-versions/{versionId}/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    versionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialDraftCommand"];
+                    "text/json": components["schemas"]["CommercialDraftCommand"];
+                    "application/*+json": components["schemas"]["CommercialDraftCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialValidationDto"];
+                        "application/json": components["schemas"]["CommercialValidationDto"];
+                        "text/json": components["schemas"]["CommercialValidationDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/plan-versions/{versionId}/validation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    versionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialValidationDto"];
+                        "application/json": components["schemas"]["CommercialValidationDto"];
+                        "text/json": components["schemas"]["CommercialValidationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/organizations/{ownerId}/commercial-contracts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    ownerId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RegisterCommercialContractCommand"];
+                    "text/json": components["schemas"]["RegisterCommercialContractCommand"];
+                    "application/*+json": components["schemas"]["RegisterCommercialContractCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/users/{ownerId}/commercial-contracts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    ownerId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RegisterCommercialContractCommand"];
+                    "text/json": components["schemas"]["RegisterCommercialContractCommand"];
+                    "application/*+json": components["schemas"]["RegisterCommercialContractCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialSummaryDto"];
+                        "application/json": components["schemas"]["CommercialSummaryDto"];
+                        "text/json": components["schemas"]["CommercialSummaryDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/commerce/history/{targetId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    targetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CommercialHistoryDto"][];
+                        "application/json": components["schemas"]["CommercialHistoryDto"][];
+                        "text/json": components["schemas"]["CommercialHistoryDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -10796,6 +14323,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/profile-photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetProfilePhotoCommand"];
+                    "text/json": components["schemas"]["SetProfilePhotoCommand"];
+                    "application/*+json": components["schemas"]["SetProfilePhotoCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProfilePhotoResult3"];
+                        "application/json": components["schemas"]["ProfilePhotoResult3"];
+                        "text/json": components["schemas"]["ProfilePhotoResult3"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/profile": {
         parameters: {
             query?: never;
@@ -10837,6 +14424,102 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/v1/realtime/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    scope?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AccountChangePageResult"];
+                        "application/json": components["schemas"]["AccountChangePageResult"];
+                        "text/json": components["schemas"]["AccountChangePageResult"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/reports/exports": {
@@ -11744,11 +15427,20 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description بازهٔ fromUtc و toUtc اجباری است؛ هر دو UTC با پسوند Z، پایان پس از آغاز و حداکثر یک سال پس از آغاز. حذف یا بازهٔ نامعتبر: 400 SESSION_TIME_INVALID. مجوزهای فعلی تقویم حفظ می‌شوند. */
         get: {
             parameters: {
-                query?: {
-                    fromUtc?: string;
-                    toUtc?: string;
+                query: {
+                    /**
+                     * @description زمان UTC اجباری با پسوند Z
+                     * @example 2026-11-01T00:00:00Z
+                     */
+                    fromUtc: string;
+                    /**
+                     * @description زمان UTC اجباری با پسوند Z
+                     * @example 2026-11-08T00:00:00Z
+                     */
+                    toUtc: string;
                 };
                 header?: never;
                 path?: never;
@@ -11765,6 +15457,22 @@ export interface paths {
                         "text/plain": components["schemas"]["SessionResult"][];
                         "application/json": components["schemas"]["SessionResult"][];
                         "text/json": components["schemas"]["SessionResult"][];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SESSION_TIME_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
                     };
                 };
             };
@@ -11974,6 +15682,450 @@ export interface paths {
                         "text/plain": components["schemas"]["ScheduledMessageResult"];
                         "application/json": components["schemas"]["ScheduledMessageResult"];
                         "text/json": components["schemas"]["ScheduledMessageResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/people/{learnerId}/guardian-invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. فقط Manager جاری. یکی از username دقیق یا phoneNumber قابل نرمال‌سازی به حساب موجود و تلفن تأییدشده؛ هیچ fuzzy matching یا ایجاد حساب انجام نمی‌شود. انقضای UTC در آینده و حداکثر ۳۰ روز. خطای مقصد 404 بدون افشای هویت. دعوت در inbox مقصد و nextAction=CONFIRM_GUARDIAN_RELATION نمایش داده می‌شود؛ پذیرش صریح در endpoint موجود لازم است. Messaging privacy تغییر نمی‌کند. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    learnerId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "clientOperationId": "00000000-0000-0000-0000-000000000001",
+                     *       "username": "test.parent",
+                     *       "phoneNumber": null,
+                     *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                     *       "reason": "تأیید رابطه والد"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateSchoolGuardianInvitationCommand"];
+                    /**
+                     * @example {
+                     *       "clientOperationId": "00000000-0000-0000-0000-000000000001",
+                     *       "username": "test.parent",
+                     *       "phoneNumber": null,
+                     *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                     *       "reason": "تأیید رابطه والد"
+                     *     }
+                     */
+                    "text/json": components["schemas"]["CreateSchoolGuardianInvitationCommand"];
+                    /**
+                     * @example {
+                     *       "clientOperationId": "00000000-0000-0000-0000-000000000001",
+                     *       "username": "test.parent",
+                     *       "phoneNumber": null,
+                     *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                     *       "reason": "تأیید رابطه والد"
+                     *     }
+                     */
+                    "application/*+json": components["schemas"]["CreateSchoolGuardianInvitationCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolGuardianInvitationResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000003",
+                         *       "status": "Pending",
+                         *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "replayed": false,
+                         *       "nextAction": "AWAIT_PARENT_CONFIRMATION"
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolGuardianInvitationResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000003",
+                         *       "status": "Pending",
+                         *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "replayed": false,
+                         *       "nextAction": "AWAIT_PARENT_CONFIRMATION"
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolGuardianInvitationResult"];
+                    };
+                };
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolGuardianInvitationResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000003",
+                         *       "status": "Pending",
+                         *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "replayed": false,
+                         *       "nextAction": "AWAIT_PARENT_CONFIRMATION"
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolGuardianInvitationResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000003",
+                         *       "status": "Pending",
+                         *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "replayed": false,
+                         *       "nextAction": "AWAIT_PARENT_CONFIRMATION"
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolGuardianInvitationResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "GUARDIAN_INVITATION_TARGET_NOT_AVAILABLE",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 409,
+                         *       "code": "GUARDIAN_INVITATION_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 412,
+                         *       "code": "CONCURRENCY_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 429,
+                         *       "code": "RATE_LIMITED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/guardian-invitations/{invitationId}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description نشست معتبر و Workspace سازمانی جاری لازم است؛ OrganizationId ارسالی از کلاینت مجوز نیست. فقط Manager جاری. یکی از username دقیق یا phoneNumber قابل نرمال‌سازی به حساب موجود و تلفن تأییدشده؛ هیچ fuzzy matching یا ایجاد حساب انجام نمی‌شود. انقضای UTC در آینده و حداکثر ۳۰ روز. خطای مقصد 404 بدون افشای هویت. دعوت در inbox مقصد و nextAction=CONFIRM_GUARDIAN_RELATION نمایش داده می‌شود؛ پذیرش صریح در endpoint موجود لازم است. Messaging privacy تغییر نمی‌کند. فهرست‌ها items/totalCount/page/pageSize/dataAsOfUtc دارند؛ ترتیب پایدار با شناسهٔ یکتا به‌عنوان tie-breaker. status اختیاری و enum رشته‌ای؛ فیلدهای اختیاری null هستند. تغییر هم‌زمان داده بین صفحات snapshot واحد تضمین نمی‌کند. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    invitationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "expectedRowVersion": "AAAAAAAAAAE=",
+                     *       "reason": "لغو دعوت والد"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["OnboardingStateCommand"];
+                    /**
+                     * @example {
+                     *       "expectedRowVersion": "AAAAAAAAAAE=",
+                     *       "reason": "لغو دعوت والد"
+                     *     }
+                     */
+                    "text/json": components["schemas"]["OnboardingStateCommand"];
+                    /**
+                     * @example {
+                     *       "expectedRowVersion": "AAAAAAAAAAE=",
+                     *       "reason": "لغو دعوت والد"
+                     *     }
+                     */
+                    "application/*+json": components["schemas"]["OnboardingStateCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SchoolGuardianInvitationResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000003",
+                         *       "status": "Pending",
+                         *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "replayed": false,
+                         *       "nextAction": "AWAIT_PARENT_CONFIRMATION"
+                         *     }
+                         */
+                        "application/json": components["schemas"]["SchoolGuardianInvitationResult"];
+                        /**
+                         * @example {
+                         *       "id": "00000000-0000-0000-0000-000000000001",
+                         *       "organizationId": "00000000-0000-0000-0000-000000000002",
+                         *       "learnerOrganizationPersonId": "00000000-0000-0000-0000-000000000003",
+                         *       "status": "Pending",
+                         *       "expiresAtUtc": "2026-11-01T12:00:00Z",
+                         *       "version": "AAAAAAAAAAE=",
+                         *       "replayed": false,
+                         *       "nextAction": "AWAIT_PARENT_CONFIRMATION"
+                         *     }
+                         */
+                        "text/json": components["schemas"]["SchoolGuardianInvitationResult"];
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 400,
+                         *       "code": "SCHOOL_REQUEST_INVALID",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 401,
+                         *       "code": "AUTH_REQUIRED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 403,
+                         *       "code": "WORKSPACE_NOT_ALLOWED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 404,
+                         *       "code": "GUARDIAN_INVITATION_TARGET_NOT_AVAILABLE",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 409,
+                         *       "code": "GUARDIAN_INVITATION_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 412,
+                         *       "code": "CONCURRENCY_CONFLICT",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
+                    };
+                };
+                /** @description ProblemDetails؛ مجوز، وضعیت یا نسخهٔ معتبر لازم است. */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "status": 429,
+                         *       "code": "RATE_LIMITED",
+                         *       "correlationId": "example-correlation"
+                         *     }
+                         */
+                        "application/problem+json": Record<string, never>;
                     };
                 };
             };
@@ -13004,6 +17156,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/snapshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WorkspaceSnapshotResult"];
+                        "application/json": components["schemas"]["WorkspaceSnapshotResult"];
+                        "text/json": components["schemas"]["WorkspaceSnapshotResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -13024,6 +17213,66 @@ export interface components {
         };
         /** @enum {string} */
         AbuseReportStatus: "Submitted" | "UnderReview" | "Resolved" | "Dismissed";
+        AcademicActivityCardResult: {
+            /** Format: uuid */
+            eventId: string;
+            kind: components["schemas"]["AcademicActivityKind"];
+            /** Format: uuid */
+            sourceId: string;
+            /** Format: uuid */
+            sourceVersionId: string;
+            /** Format: int32 */
+            sourceRevision: number;
+            /** Format: uuid */
+            organizationId: string;
+            /** Format: uuid */
+            classId: string;
+            /** Format: uuid */
+            destinationConversationId: string;
+            destinationPurpose: components["schemas"]["ConversationType"];
+            actorKind: string;
+            /** Format: uuid */
+            initiatedByUserId: string;
+            /** Format: date-time */
+            occurredAtUtc: string;
+            title: string;
+            /** Format: date-time */
+            dueAtUtc: string | null;
+            /** Format: date-time */
+            availableFromUtc: string | null;
+            /** Format: date-time */
+            availableUntilUtc: string | null;
+            state: string;
+            isActionable: boolean;
+        } | null;
+        AcademicActivityDeliveryResult: {
+            /** Format: uuid */
+            eventId: string;
+            purpose: components["schemas"]["ConversationType"];
+            state: components["schemas"]["AcademicActivityDeliveryState"];
+            /** Format: uuid */
+            conversationId: string | null;
+            /** Format: uuid */
+            messageId: string | null;
+            /** Format: int32 */
+            attemptCount: number;
+            lastFailureCategory: string | null;
+        };
+        /** @enum {string} */
+        AcademicActivityDeliveryState: "Pending" | "Delivered" | "Superseded";
+        /** @enum {string} */
+        AcademicActivityKind: "Lesson" | "Assignment" | "Exam";
+        AcademicAnswerAttachmentDto: {
+            /** Format: uuid */
+            fileAssetId: string;
+            originalFileName: string;
+            contentType: string;
+            /** Format: int64 */
+            sizeBytes: number;
+            fileStatus: components["schemas"]["FileAssetStatus"];
+            canDownload: boolean;
+            downloadPath: string | null;
+        };
         AcademicPeriodResult: {
             /** Format: uuid */
             id: string;
@@ -13041,6 +17290,8 @@ export interface components {
         AcceptInvitationCommand: {
             /** @default false */
             confirmPersonLink: boolean;
+            /** @default false */
+            confirmGuardianRelation: boolean;
         } | null;
         AcceptInvitationResult: {
             /** Format: uuid */
@@ -13059,6 +17310,11 @@ export interface components {
              * @default null
              */
             organizationPersonId: string | null;
+            /**
+             * Format: uuid
+             * @default null
+             */
+            guardianRelationId: string | null;
         };
         AccessContext: {
             /** Format: uuid */
@@ -13076,6 +17332,26 @@ export interface components {
             /** Format: uuid */
             subjectOrganizationPersonId: string | null;
         };
+        AccountChangePageResult: {
+            changes: components["schemas"]["AccountChangeResult"][];
+            nextCursor: string;
+            hasMore: boolean;
+            watermark: string;
+            epoch: string;
+            contextRevision: string;
+            /**
+             * Format: int32
+             * @default null
+             */
+            retryAfterMilliseconds: number | null;
+        };
+        AccountChangeResult: {
+            /** Format: uuid */
+            eventId: string;
+            streamVersion: string;
+            conversation: components["schemas"]["MessagingRealtimeNotification"];
+            invalidation: components["schemas"]["RealtimeInvalidation"];
+        };
         AddConversationMemberCommand: {
             /** Format: uuid */
             userId: string;
@@ -13089,6 +17365,7 @@ export interface components {
             score: number;
             options: components["schemas"]["ExamQuestionOptionCommand"][] | null;
             expectedVersionRowVersion: string;
+            attachmentPolicy?: components["schemas"]["ExamQuestionAttachmentPolicyCommand"];
         };
         AddReactionCommand: {
             reaction: components["schemas"]["MessageReactionType"];
@@ -13203,6 +17480,8 @@ export interface components {
             sources: components["schemas"]["AiSourceReference"][];
             metadata: components["schemas"]["AiResponseMetadata"];
         };
+        /** @enum {string} */
+        AiPayerSelection: "Individual" | "Organization" | "FreeTrial";
         AiPlanItem: {
             title: string;
             reason: string;
@@ -13213,6 +17492,33 @@ export interface components {
         AiProgress: {
             trend: string;
             description: string;
+        };
+        AiQuotaPreflightCommand: {
+            contextType: components["schemas"]["CommerceContextType"];
+            /**
+             * Format: uuid
+             * @default null
+             */
+            contextId: string | null;
+            payer?: components["schemas"]["NullableOfAiPayerSelection"];
+        };
+        AiQuotaPreflightDto: {
+            payer: components["schemas"]["AiPayerSelection"];
+            ownerType: components["schemas"]["SubscriptionOwnerType"];
+            /** Format: uuid */
+            ownerId: string;
+            unit: string;
+            /** Format: int64 */
+            amount: number;
+            /** Format: int64 */
+            remaining: number | null;
+            /** Format: date-time */
+            periodEndsAtUtc: string | null;
+            allowed: boolean;
+            errorCode: string | null;
+            requiresExplicitSelection: boolean;
+            /** @default false */
+            authorizesEducationalData: boolean;
         };
         AiRecommendation: {
             title: string;
@@ -13320,6 +17626,16 @@ export interface components {
             /** Format: uuid */
             teacherMembershipId: string;
         };
+        AttachExamAnswerFileCommand: {
+            /** Format: uuid */
+            fileAssetId: string;
+            /** Format: uuid */
+            clientOperationId: string;
+            /** Format: int64 */
+            writeLeaseVersion: number;
+            /** Format: int32 */
+            expectedRevisionNumber: number | null;
+        };
         AttachSubmissionFileCommand: {
             /** Format: uuid */
             fileAssetId: string;
@@ -13413,6 +17729,8 @@ export interface components {
             organizationName: string;
             relationStatus: components["schemas"]["GuardianRelationStatus"];
         };
+        /** @enum {string} */
+        BillingCalendar: "Gregorian" | "Persian";
         BlockedUserResult: {
             /** Format: uuid */
             blockId: string;
@@ -13450,6 +17768,54 @@ export interface components {
             itemId: string;
             text: string;
         };
+        ClassLearnerResult: {
+            /** Format: uuid */
+            enrollmentId: string;
+            /** Format: uuid */
+            learnerOrganizationPersonId: string;
+            /** Format: uuid */
+            personId: string;
+            /** Format: uuid */
+            userId: string | null;
+            displayName: string;
+            username: string | null;
+            profilePhoto: components["schemas"]["ProfilePhotoResult2"];
+            status: components["schemas"]["EnrollmentStatus"];
+            /** Format: date-time */
+            enrolledAtUtc: string;
+            /** Format: date-time */
+            endedAtUtc: string | null;
+            version: string;
+        };
+        ClassLessonResult: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            organizationId: string;
+            /** Format: uuid */
+            classId: string;
+            /** Format: uuid */
+            courseId: string;
+            title: string;
+            body: string;
+            /** Format: int32 */
+            displayOrder: number;
+            status: components["schemas"]["LessonStatus"];
+            /** Format: int32 */
+            revisionNumber: number;
+            version: string;
+            /** Format: uuid */
+            createdByUserId: string;
+            /** Format: date-time */
+            createdAtUtc: string;
+            /** Format: date-time */
+            updatedAtUtc: string | null;
+            /** Format: date-time */
+            publishedAtUtc: string | null;
+            attachments: components["schemas"]["LessonAttachmentResult"][];
+            /** @default false */
+            replayed: boolean;
+        };
         ClassResult: {
             /** Format: uuid */
             id: string;
@@ -13468,9 +17834,30 @@ export interface components {
         };
         /** @enum {string} */
         ClassStatus: "Draft" | "Active" | "Completed" | "Archived";
+        ClassTeacherResult: {
+            /** Format: uuid */
+            teacherAssignmentId: string;
+            /** Format: uuid */
+            teacherMembershipId: string;
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            personId: string | null;
+            displayName: string;
+            username: string | null;
+            profilePhoto: components["schemas"]["ProfilePhotoResult2"];
+            status: components["schemas"]["TeacherAssignmentStatus"];
+            /** Format: date-time */
+            assignedAtUtc: string;
+            /** Format: date-time */
+            endedAtUtc: string | null;
+            version: string;
+        };
         CloseConversationPollCommand: {
             expectedVersion: string;
         };
+        /** @enum {string} */
+        CommerceContextType: "Personal" | "PersonalClass" | "Organization";
         CommerceEntitlementDto: {
             key: components["schemas"]["EntitlementKey"];
             enabled: boolean;
@@ -13486,6 +17873,8 @@ export interface components {
             isUnlimited: boolean;
             isOverQuota: boolean;
             usageSource: components["schemas"]["QuotaUsageSource"];
+            /** Format: int64 */
+            reserved?: number;
         };
         CommerceSubscriptionDto: {
             /** Format: uuid */
@@ -13506,6 +17895,167 @@ export interface components {
         } | null;
         /** @enum {string} */
         CommerceSummaryState: "NoSubscription" | "Active" | "Inactive";
+        CommercialAvailabilityCommand: {
+            catalogVisible: boolean;
+            newPurchaseAvailable: boolean;
+            renewalAvailable: boolean;
+            expectedVersion: string;
+            reason: string;
+        };
+        CommercialDraftCommand: {
+            /** Format: double */
+            priceToman: number | null;
+            explicitlyFree: boolean;
+            calendar: components["schemas"]["NullableOfBillingCalendar"];
+            saleTermsReference: string | null;
+            /** Format: int32 */
+            warningPercent: number | null;
+            /** Format: int32 */
+            criticalWarningPercent: number | null;
+            entitlements: components["schemas"]["PlatformPlanEntitlementItem"][];
+            quotas: components["schemas"]["PlatformPlanQuotaItem"][];
+            expectedVersion: string;
+            reason: string;
+        };
+        CommercialHistoryDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            actorUserId: string | null;
+            action: string;
+            targetId: string;
+            /** Format: date-time */
+            occurredAtUtc: string;
+            reason: string;
+            before: string | null;
+            after: string | null;
+        };
+        /** @enum {string} */
+        CommercialMigrationStatus: "NotApplicable" | "AwaitingValidContract" | "Completed";
+        /**
+         * @default Purchase
+         * @enum {string}
+         */
+        CommercialOrderPurpose: "Purchase" | "Renewal" | "Upgrade";
+        /** @enum {string} */
+        CommercialOrderPurpose2: "Purchase" | "Renewal" | "Upgrade";
+        CommercialPlanDto: {
+            /** Format: uuid */
+            planId: string;
+            /** Format: uuid */
+            planVersionId: string;
+            code: string;
+            displayName: string;
+            audience: components["schemas"]["SubscriptionOwnerType"];
+            /** Format: int32 */
+            versionNumber: number;
+            /** Format: double */
+            priceToman: number;
+            displayCurrency: string;
+            calendar: components["schemas"]["BillingCalendar"];
+            renewalMode: string;
+            autoRenew: boolean;
+            entitlements: {
+                [key: string]: boolean;
+            };
+            quotas: {
+                [key: string]: number | null;
+            };
+        };
+        CommercialQuotaDto: {
+            key: components["schemas"]["QuotaKey"];
+            kind: components["schemas"]["QuotaKind"];
+            unit: string;
+            /** Format: int64 */
+            limit: number | null;
+            /** Format: int64 */
+            consumed: number;
+            /** Format: int64 */
+            reserved: number;
+            /** Format: int64 */
+            remaining: number | null;
+            isOverQuota: boolean;
+            /** Format: int32 */
+            warningPercent: number | null;
+            /** Format: int32 */
+            criticalWarningPercent?: number | null;
+            isUsageAvailable?: boolean;
+            isUnlimited?: boolean;
+            warningLevel?: string | null;
+        };
+        CommercialQuoteDto: {
+            purpose: components["schemas"]["CommercialOrderPurpose2"];
+            /** Format: uuid */
+            planVersionId: string;
+            /** Format: uuid */
+            subscriptionId: string | null;
+            /** Format: double */
+            priceToman: number;
+            displayCurrency: string;
+            /** Format: date-time */
+            effectiveAtUtc: string;
+            /** Format: date-time */
+            periodEndsAtUtc: string;
+            effectiveQuotas: components["schemas"]["CommercialQuotaDto"][];
+            autoRenew: boolean;
+            /** Format: date-time */
+            expiresAtUtc?: string;
+            previewOnly?: boolean;
+            startsUponVerifiedPayment?: boolean;
+        };
+        CommercialSummaryDto: {
+            ownerType: components["schemas"]["SubscriptionOwnerType"];
+            /** Format: uuid */
+            ownerId: string;
+            state: components["schemas"]["SubscriptionDisplayState"];
+            commercialControlEnabled: boolean;
+            /** Format: uuid */
+            subscriptionId: string | null;
+            /** Format: uuid */
+            planVersionId: string | null;
+            /** Format: date-time */
+            periodStartsAtUtc: string | null;
+            /** Format: date-time */
+            periodEndsAtUtc: string | null;
+            /** Format: date-time */
+            graceEndsAtUtc: string | null;
+            /** Format: uuid */
+            scheduledPlanVersionId: string | null;
+            entitlements: {
+                [key: string]: boolean;
+            };
+            quotas: components["schemas"]["CommercialQuotaDto"][];
+            /** Format: date-time */
+            observedAtUtc: string;
+            version?: string | null;
+            migrationStatus?: components["schemas"]["CommercialMigrationStatus"];
+            /** Format: uuid */
+            legacySubscriptionId?: string | null;
+            /** Format: date-time */
+            commercialEnforcementFromUtc?: string | null;
+            hasVerifiedCommercialContract?: boolean;
+            planCode?: string | null;
+            planDisplayName?: string | null;
+            /** Format: int32 */
+            planVersionNumber?: number | null;
+            /** Format: double */
+            monthlyPriceToman?: number | null;
+            displayCurrency?: string | null;
+            autoRenew?: boolean;
+            renewalMode?: string | null;
+            hasPendingPayment?: boolean;
+            /** Format: uuid */
+            renewalPlanVersionId?: string | null;
+            /** Format: double */
+            renewalPriceToman?: number | null;
+        };
+        CommercialValidationDto: {
+            /** Format: uuid */
+            planVersionId: string;
+            missingFields: string[];
+            canPublish: boolean;
+            version: string;
+        };
         /** @enum {string} */
         CommunicationAgeCategory: "Unknown" | "Minor" | "Adult";
         CommunicationAgeResult: {
@@ -13535,6 +18085,11 @@ export interface components {
             lastName: string;
             displayName: string | null;
             username: string;
+            /**
+             * Format: date
+             * @default null
+             */
+            dateOfBirth: string | null;
         };
         ContactCardResult: {
             /** Format: uuid */
@@ -13662,6 +18217,11 @@ export interface components {
         };
         /** @enum {string} */
         ConversationJoinRequestStatus: "Pending" | "Approved" | "Rejected" | "Cancelled" | "Expired";
+        /**
+         * @default All
+         * @enum {string}
+         */
+        ConversationListFilter: "All" | "Direct" | "Group" | "Channel" | "Unread" | "Archived" | "Saved";
         /** @enum {string} */
         ConversationManagementPolicy: "None" | "UserManaged" | "SystemManagedAcademic";
         ConversationMediaItemResult: {
@@ -13722,6 +18282,8 @@ export interface components {
             topicId: string | null;
             /** @default false */
             isSilent: boolean;
+            originKind?: string;
+            academicActivity?: components["schemas"]["AcademicActivityCardResult"];
         };
         /** @enum {string} */
         ConversationMuteMode: "None" | "Permanent" | "Until";
@@ -13853,6 +18415,8 @@ export interface components {
             isPinned: boolean;
             isManuallyUnread: boolean;
             organization: components["schemas"]["ConversationOrganizationBadgeResult"];
+            official?: components["schemas"]["OfficialSpaceMetadata"];
+            isOfficial?: boolean;
         };
         ConversationTopicPageResult: {
             items: components["schemas"]["ConversationTopicResult"][];
@@ -13957,6 +18521,15 @@ export interface components {
             capacity: number;
             activateImmediately: boolean;
         };
+        CreateClassLessonCommand: {
+            /** Format: uuid */
+            clientOperationId: string;
+            title: string;
+            body: string | null;
+            /** Format: int32 */
+            displayOrder: number;
+            fileAssetIds: string[];
+        };
         CreateConversationChecklistCommand: {
             /** Format: uuid */
             clientMessageId: string;
@@ -14058,6 +18631,12 @@ export interface components {
             planVersionId: string;
             /** Format: uuid */
             clientOperationId: string;
+            purpose?: components["schemas"]["CommercialOrderPurpose"];
+            /**
+             * Format: uuid
+             * @default null
+             */
+            subscriptionId: string | null;
         };
         CreateOrderResult: {
             order: components["schemas"]["OrderDto"];
@@ -14070,6 +18649,11 @@ export interface components {
             lastName: string;
             displayName: string | null;
             reason: string;
+        };
+        CreatePersonalClassCommand: {
+            title: string;
+            /** Format: uuid */
+            clientOperationId: string;
         };
         CreatePersonLinkInvitationCommand: {
             /** Format: uuid */
@@ -14098,19 +18682,40 @@ export interface components {
             code: string;
             displayName: string;
             reason: string;
+            audience?: components["schemas"]["SubscriptionOwnerType2"];
         };
         CreatePlatformPlanVersionCommand: {
             /** Format: double */
-            priceAmount: number;
+            priceAmount: number | null;
             currency: components["schemas"]["CurrencyCode"];
             entitlements: components["schemas"]["PlatformPlanEntitlementItem"][];
             quotas: components["schemas"]["PlatformPlanQuotaItem"][];
             reason: string;
+            calendar?: components["schemas"]["NullableOfBillingCalendar2"];
+            /** @default null */
+            saleTermsReference: string | null;
+            /**
+             * Format: int32
+             * @default null
+             */
+            warningPercent: number | null;
+            /**
+             * Format: int32
+             * @default null
+             */
+            criticalWarningPercent: number | null;
+            /** @default false */
+            explicitlyFree: boolean;
         };
         CreateReportExportCommand: {
             reportType: components["schemas"]["ReportExportType"];
             format: components["schemas"]["ReportExportFormat"];
             filters: components["schemas"]["ReportExportFilters"];
+            /**
+             * Format: uuid
+             * @default null
+             */
+            clientOperationId: string | null;
         };
         CreateScheduleRuleCommand: {
             localDayOfWeek: components["schemas"]["DayOfWeek"];
@@ -14125,6 +18730,15 @@ export interface components {
             effectiveUntil: string;
             sessionTitle: string;
             meetingUrl: string | null;
+        };
+        CreateSchoolGuardianInvitationCommand: {
+            /** Format: uuid */
+            clientOperationId: string;
+            username: string | null;
+            phoneNumber: string | null;
+            /** Format: date-time */
+            expiresAtUtc: string;
+            reason: string;
         };
         CreateSchoolGuardianRelationCommand: {
             /** Format: uuid */
@@ -14159,6 +18773,12 @@ export interface components {
             lastName: string | null;
             displayName: string | null;
             username: string | null;
+            /**
+             * Format: date
+             * @default null
+             */
+            dateOfBirth: string | null;
+            profilePhoto?: components["schemas"]["ProfilePhotoResult"];
         };
         DashboardAssignmentItem: {
             /** Format: uuid */
@@ -14383,7 +19003,7 @@ export interface components {
         /** @enum {string} */
         EnrollmentStatus: "Active" | "Completed" | "Withdrawn";
         /** @enum {string} */
-        EntitlementKey: "Academic" | "Assignments" | "Exams" | "Messaging" | "Reports" | "Storage";
+        EntitlementKey: "Academic" | "Assignments" | "Exams" | "Messaging" | "Reports" | "Storage" | "Ai" | "PersonalClassHosting" | "PersonalSources";
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
@@ -14517,6 +19137,7 @@ export interface components {
             score: number;
             options: components["schemas"]["ExamEditorOptionDto"][];
             rowVersion: string;
+            attachmentPolicy?: components["schemas"]["ExamQuestionAttachmentPolicyDto"];
         };
         ExamFinalReceiptDto: {
             /** Format: uuid */
@@ -14635,6 +19256,25 @@ export interface components {
             /** Format: int32 */
             totalPendingCount: number;
         };
+        /** @default null */
+        ExamQuestionAttachmentPolicyCommand: {
+            attachmentsAllowed: boolean;
+            textRequired: boolean;
+            allowedContentTypes: string[] | null;
+            /** Format: int32 */
+            maximumCount: number | null;
+            /** Format: int64 */
+            maximumTotalBytes: number | null;
+        } | null;
+        ExamQuestionAttachmentPolicyDto: {
+            attachmentsAllowed: boolean;
+            textRequired: boolean;
+            allowedContentTypes: string[];
+            /** Format: int32 */
+            maximumCount: number | null;
+            /** Format: int64 */
+            maximumTotalBytes: number | null;
+        } | null;
         ExamQuestionGradeDto: {
             /** Format: uuid */
             examAttemptQuestionId: string;
@@ -14659,6 +19299,7 @@ export interface components {
             reviewedByMembershipId: string | null;
             /** Format: date-time */
             reviewedAtUtc: string | null;
+            attachments?: components["schemas"]["AcademicAnswerAttachmentDto"][];
         };
         /** @enum {string} */
         ExamQuestionGradingMode: "Objective" | "Manual";
@@ -14847,6 +19488,8 @@ export interface components {
             /** Format: date-time */
             createdAtUtc: string;
         };
+        /** Format: binary */
+        IFormFile: string;
         InitiatePaymentCommand: {
             /** Format: uuid */
             clientOperationId: string;
@@ -14875,7 +19518,16 @@ export interface components {
             organizationPersonId: string | null;
             /** @default null */
             organizationPersonDisplayName: string | null;
+            /**
+             * Format: uuid
+             * @default null
+             */
+            guardianLearnerOrganizationPersonId: string | null;
+            /** @default null */
+            guardianLearnerDisplayName: string | null;
             requiresPersonLinkConsent?: boolean;
+            requiresGuardianConsent?: boolean;
+            nextAction?: string | null;
         };
         /** @enum {string} */
         InvitationStatus: "Pending" | "Accepted" | "Declined" | "Expired" | "Revoked";
@@ -14909,6 +19561,25 @@ export interface components {
             revokedAtUtc: string | null;
             version: string;
         };
+        InvitePersonalClassStudentCommand: {
+            /** Format: uuid */
+            destinationUserId: string;
+            /** Format: uuid */
+            clientOperationId: string;
+        };
+        LessonAttachmentResult: {
+            /** Format: uuid */
+            fileAssetId: string;
+            fileName: string;
+            contentType: string;
+            /** Format: int64 */
+            sizeBytes: number;
+            status: components["schemas"]["FileAssetStatus"];
+            isAvailable: boolean;
+            downloadUrl: string | null;
+        };
+        /** @enum {string} */
+        LessonStatus: "Draft" | "Published";
         ManagedConversationResult: {
             /** Format: uuid */
             conversationId: string;
@@ -15004,6 +19675,11 @@ export interface components {
             quotas: components["schemas"]["CommerceQuotaDto"][];
             /** Format: date-time */
             dataAsOfUtc: string;
+            commercialControlEnabled?: boolean;
+            hasVerifiedCommercialContract?: boolean;
+            migrationStatus?: components["schemas"]["CommercialMigrationStatus"];
+            /** Format: date-time */
+            commercialEnforcementFromUtc?: string | null;
         };
         ManagerDashboardDto: {
             /** Format: date-time */
@@ -15206,6 +19882,7 @@ export interface components {
             isSavedContact: boolean;
             isFavorite: boolean;
             canStartDirect: boolean;
+            profilePhoto?: components["schemas"]["ProfilePhotoResult"];
         };
         MessagingPublicProfileResult2: {
             /** Format: uuid */
@@ -15216,6 +19893,27 @@ export interface components {
             isSavedContact: boolean;
             isFavorite: boolean;
             canStartDirect: boolean;
+            profilePhoto?: components["schemas"]["ProfilePhotoResult"];
+        } | null;
+        MessagingRealtimeNotification: {
+            /** Format: uuid */
+            conversationId: string;
+            type: components["schemas"]["MessagingChangeType"];
+            /** Format: uuid */
+            resourceId: string;
+            resourceVersion: string | null;
+            cursor: string;
+            /** Format: date-time */
+            occurredAtUtc: string;
+            /** Format: int32 */
+            payloadVersion: number;
+            /**
+             * Format: int64
+             * @default null
+             */
+            peerReadThroughSequence: number | null;
+            /** @default null */
+            contextRevision: string | null;
         } | null;
         MessagingStatusResult: {
             verificationStatus: components["schemas"]["CommunicationAgeVerificationStatus"];
@@ -15372,6 +20070,18 @@ export interface components {
             /** Format: int32 */
             count: number;
         };
+        /**
+         * @default null
+         * @enum {string|null}
+         */
+        NullableOfAiPayerSelection: "Individual" | "Organization" | "FreeTrial" | null;
+        /** @enum {string|null} */
+        NullableOfBillingCalendar: "Gregorian" | "Persian" | null;
+        /**
+         * @default null
+         * @enum {string|null}
+         */
+        NullableOfBillingCalendar2: "Gregorian" | "Persian" | null;
         /** @enum {string|null} */
         NullableOfConversationChecklistMode: "Personal" | "Collaborative" | null;
         /** @enum {string|null} */
@@ -15392,11 +20102,15 @@ export interface components {
         /** @default null */
         NullableOfGroupMemberCapability: string | null;
         /** @enum {string|null} */
+        NullableOfMembershipStatus: "Active" | "Suspended" | "Ended" | null;
+        /** @enum {string|null} */
         NullableOfMessageKind: "Text" | "Image" | "Video" | "Voice" | "File" | "ContactCard" | "Poll" | "Checklist" | null;
         /** @enum {string|null} */
         NullableOfNotificationDeliveryFailureReason: "SuppressedByPreference" | "NoDevice" | "NoSmsDestination" | "OrganizationAccessRevoked" | "DeviceRevoked" | "ProviderUnavailable" | "ProviderRejected" | "ProviderTimeout" | "InvalidRegistration" | "ProviderAuthenticationFailed" | "ProviderRateLimited" | "ProviderConfigurationInvalid" | "ResourceAccessRevoked" | null;
         /** @enum {string|null} */
         NullableOfOrganizationRole: "Student" | "Teacher" | "Parent" | "Manager" | null;
+        /** @enum {string|null} */
+        NullableOfOrganizationStatus: "Active" | "Suspended" | null;
         /** @enum {string|null} */
         NullableOfPaymentAttemptStatus: "Created" | "Initiating" | "PendingVerification" | "Succeeded" | "Failed" | "Unknown" | null;
         /**
@@ -15410,6 +20124,8 @@ export interface components {
          */
         NullableOfReportExportAssessmentKind: "Assignment" | "Exam" | null;
         /** @enum {string|null} */
+        NullableOfRoleAssignmentStatus: "Active" | "Ended" | null;
+        /** @enum {string|null} */
         NullableOfSubmissionAttemptStatus: "Draft" | "Submitted" | null;
         OfficialClassConversationResult: {
             /** Format: uuid */
@@ -15420,6 +20136,43 @@ export interface components {
             classId: string;
             /** Format: int32 */
             activeMemberCount: number;
+        };
+        /** @enum {string} */
+        OfficialSourceKind: "Organization" | "Class";
+        OfficialSpaceCapabilities: {
+            canRead: boolean;
+            canSend: boolean;
+            canManage: boolean;
+        };
+        OfficialSpaceEndpointResult: {
+            /** Format: uuid */
+            conversationId: string | null;
+            state: string;
+            capabilities: components["schemas"]["OfficialSpaceCapabilities"];
+            official: components["schemas"]["OfficialSpaceMetadata"];
+            /** Format: int32 */
+            attemptCount: number;
+            lastFailureCategory: string | null;
+        };
+        OfficialSpaceMetadata: {
+            sourceKind: components["schemas"]["OfficialSourceKind"];
+            /** Format: uuid */
+            sourceId: string;
+            /** Format: uuid */
+            organizationId: string;
+            purpose: components["schemas"]["ConversationType"];
+            displayLabel: string;
+            version: string;
+        } | null;
+        OfficialSpacesPairResult: {
+            sourceKind: components["schemas"]["OfficialSourceKind"];
+            /** Format: uuid */
+            sourceId: string;
+            /** Format: uuid */
+            organizationId: string;
+            version: string;
+            group: components["schemas"]["OfficialSpaceEndpointResult"];
+            channel: components["schemas"]["OfficialSpaceEndpointResult"];
         };
         OnboardingStateCommand: {
             expectedRowVersion: string;
@@ -15442,6 +20195,9 @@ export interface components {
             paidAtUtc: string | null;
             fulfillmentState: components["schemas"]["OrderFulfillmentState"];
             paymentAttempts: components["schemas"]["PaymentAttemptDto"][];
+            /** Format: double */
+            priceToman?: number;
+            displayCurrency?: string | null;
         };
         /** @enum {string} */
         OrderFulfillmentState: "NotStarted" | "SubscriptionActivationPending" | "SubscriptionActivated" | "ProvisioningPending";
@@ -15460,6 +20216,9 @@ export interface components {
             paidAtUtc: string | null;
             fulfillmentState: components["schemas"]["OrderFulfillmentState"];
             latestPaymentStatus: components["schemas"]["NullableOfPaymentAttemptStatus"];
+            /** Format: double */
+            priceToman?: number;
+            displayCurrency?: string | null;
         };
         OrderListResult: {
             items: components["schemas"]["OrderListItemDto"][];
@@ -15672,6 +20431,39 @@ export interface components {
             /** Format: int32 */
             pageSize: number;
             hasMore: boolean;
+        };
+        PersonalClassDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            hostUserId: string;
+            title: string;
+            archived: boolean;
+            isHost: boolean;
+            canCreateEducationalContent: boolean;
+            educationalWorkflowStatus: string;
+            /** Format: date-time */
+            createdAtUtc: string;
+        };
+        PersonalClassInvitationDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personalClassId: string;
+            /** Format: uuid */
+            destinationUserId: string;
+            /** Format: date-time */
+            expiresAtUtc: string;
+            accepted: boolean;
+        };
+        PersonalClassParticipantDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            studentUserId: string;
+            /** Format: date-time */
+            joinedAtUtc: string;
+            active: boolean;
         };
         /** @enum {string} */
         PersonalMessagingAction: "ReadExistingConversations" | "DiscoverUsers" | "CreateDirect" | "CreatePersonalGroup" | "CreatePersonalChannel" | "DiscoverRelatedUsers" | "CreateDirectWithAuthorizedRelationship" | "CreatePrivatePersonalGroup";
@@ -16272,6 +21064,11 @@ export interface components {
             createdAtUtc: string;
             versions: components["schemas"]["PlatformPlanVersionItem"][];
             versionsTruncated: boolean;
+            audience?: components["schemas"]["SubscriptionOwnerType"];
+            catalogVisible?: boolean;
+            newPurchaseAvailable?: boolean;
+            renewalAvailable?: boolean;
+            version?: string;
         };
         PlatformPlanEntitlementItem: {
             key: components["schemas"]["EntitlementKey"];
@@ -16288,6 +21085,11 @@ export interface components {
             latestPublishedVersion: number | null;
             /** Format: date-time */
             createdAtUtc: string;
+            audience?: components["schemas"]["SubscriptionOwnerType"];
+            catalogVisible?: boolean;
+            newPurchaseAvailable?: boolean;
+            renewalAvailable?: boolean;
+            version?: string;
         };
         PlatformPlanPage: {
             items: components["schemas"]["PlatformPlanItem"][];
@@ -16321,6 +21123,15 @@ export interface components {
             /** Format: date-time */
             publishedAtUtc: string | null;
             version: string;
+            calendar?: components["schemas"]["NullableOfBillingCalendar"];
+            saleTermsReference?: string | null;
+            /** Format: int32 */
+            warningPercent?: number | null;
+            /** Format: int32 */
+            criticalWarningPercent?: number | null;
+            /** Format: double */
+            priceToman?: number | null;
+            displayCurrency?: string | null;
         };
         PlatformProvisioningItem: {
             /** Format: uuid */
@@ -16620,6 +21431,25 @@ export interface components {
             detail?: string | null;
             instance?: string | null;
         };
+        /** @default null */
+        ProfilePhotoResult: {
+            /** Format: uuid */
+            fileAssetId: string;
+            contentType: string;
+            downloadUrl?: string | null;
+        } | null;
+        ProfilePhotoResult2: {
+            /** Format: uuid */
+            fileAssetId: string;
+            contentType: string;
+            downloadUrl?: string | null;
+        } | null;
+        ProfilePhotoResult3: {
+            /** Format: uuid */
+            fileAssetId: string;
+            contentType: string;
+            downloadUrl?: string | null;
+        };
         ProvisionOrganizationCommand: {
             clientOperationId: string;
             organizationName: string;
@@ -16641,6 +21471,9 @@ export interface components {
             assignment: components["schemas"]["AssignmentResult"];
             /** Format: int32 */
             recipientCount: number;
+        };
+        PublishClassLessonCommand: {
+            expectedVersion: string;
         };
         PublishExamCommand: {
             expectedExamRowVersion: string;
@@ -16686,9 +21519,29 @@ export interface components {
             version: string | null;
         };
         /** @enum {string} */
-        QuotaKey: "ActiveLearners" | "ActiveClasses" | "StorageBytes" | "ReportExports";
+        QuotaKey: "ActiveLearners" | "ActiveClasses" | "StorageBytes" | "ReportExports" | "AiTextRequests" | "SourceCount" | "AssignmentFileBytes";
+        /** @enum {string} */
+        QuotaKind: "CurrentCapacity" | "PeriodicConsumption";
         /** @enum {string} */
         QuotaUsageSource: "AuthoritativeModule" | "UsageLedger";
+        RealtimeInvalidation: {
+            /** Format: uuid */
+            eventId: string;
+            key: string;
+            /** Format: uuid */
+            resourceId: string | null;
+            contextRevision: string;
+            streamVersion: string;
+            /** Format: date-time */
+            occurredAtUtc: string;
+            /**
+             * Format: int32
+             * @default 1
+             */
+            payloadVersion: number;
+            /** @default null */
+            traceId: string | null;
+        } | null;
         RecentContactPageResult: {
             items: components["schemas"]["RecentContactResult"][];
             /** Format: int32 */
@@ -16724,6 +21577,16 @@ export interface components {
             refreshToken: string;
             /** Format: date-time */
             refreshExpiresAtUtc: string;
+        };
+        RegisterCommercialContractCommand: {
+            /** Format: uuid */
+            planVersionId: string;
+            /** Format: date-time */
+            billingAnchorUtc: string;
+            /** Format: int32 */
+            billingPeriodIndex: number;
+            expectedCurrentVersion: string | null;
+            reason: string;
         };
         RegisterPushDeviceCommand: {
             platform: components["schemas"]["PushDevicePlatform"];
@@ -16960,17 +21823,21 @@ export interface components {
         RevokePlatformSessionsCommand: {
             reason: string;
         };
+        /** @enum {string} */
+        RoleAssignmentStatus: "Active" | "Ended";
         SafeMessagingIdentityResult: {
             /** Format: uuid */
             userId: string;
             username: string;
             displayName: string;
+            profilePhoto?: components["schemas"]["ProfilePhotoResult"];
         };
         SafeMessagingIdentityResult2: {
             /** Format: uuid */
             userId: string;
             username: string;
             displayName: string;
+            profilePhoto?: components["schemas"]["ProfilePhotoResult"];
         } | null;
         SaveChatFolderCommand: {
             name: string;
@@ -17066,6 +21933,12 @@ export interface components {
         };
         /** @enum {string} */
         ScheduledMessageStatus: "Scheduled" | "Dispatched" | "Cancelled" | "Failed";
+        ScheduleDowngradeCommand: {
+            /** Format: uuid */
+            planVersionId: string;
+            expectedVersion: string;
+            reason: string;
+        };
         ScheduleMessageCommand: {
             /** Format: date-time */
             scheduledAtUtc: string;
@@ -17097,6 +21970,20 @@ export interface components {
         };
         /** @enum {string} */
         ScheduleRuleStatus: "Active" | "Ended";
+        SchoolGuardianInvitationResult: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            organizationId: string;
+            /** Format: uuid */
+            learnerOrganizationPersonId: string;
+            status: components["schemas"]["InvitationStatus"];
+            /** Format: date-time */
+            expiresAtUtc: string;
+            version: string;
+            replayed: boolean;
+            nextAction: string;
+        };
         SchoolGuardianRelationDto: {
             /** Format: uuid */
             id: string;
@@ -17125,6 +22012,100 @@ export interface components {
             /** Format: int32 */
             totalCount: number;
             items: components["schemas"]["SchoolGuardianRelationDto"][];
+        };
+        SchoolMemberResult: {
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            personId: string | null;
+            /** Format: uuid */
+            organizationPersonId: string | null;
+            displayName: string;
+            username: string | null;
+            profilePhoto: components["schemas"]["ProfilePhotoResult2"];
+            /** Format: uuid */
+            membershipId: string;
+            membershipStatus: components["schemas"]["MembershipStatus"];
+            activeRoles: components["schemas"]["OrganizationRole"][];
+            roleAssignments: components["schemas"]["SchoolRoleAssignmentResult"][];
+            version: string;
+        };
+        SchoolPageOfAcademicPeriodResult: {
+            /** Format: date-time */
+            dataAsOfUtc: string;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            items: components["schemas"]["AcademicPeriodResult"][];
+        };
+        SchoolPageOfClassLearnerResult: {
+            /** Format: date-time */
+            dataAsOfUtc: string;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            items: components["schemas"]["ClassLearnerResult"][];
+        };
+        SchoolPageOfClassLessonResult: {
+            /** Format: date-time */
+            dataAsOfUtc: string;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            items: components["schemas"]["ClassLessonResult"][];
+        };
+        SchoolPageOfClassTeacherResult: {
+            /** Format: date-time */
+            dataAsOfUtc: string;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            items: components["schemas"]["ClassTeacherResult"][];
+        };
+        SchoolPageOfCourseResult: {
+            /** Format: date-time */
+            dataAsOfUtc: string;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            items: components["schemas"]["CourseResult"][];
+        };
+        SchoolPageOfSchoolMemberResult: {
+            /** Format: date-time */
+            dataAsOfUtc: string;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            items: components["schemas"]["SchoolMemberResult"][];
+        };
+        SchoolRoleAssignmentResult: {
+            /** Format: uuid */
+            roleAssignmentId: string;
+            role: components["schemas"]["OrganizationRole"];
+            status: components["schemas"]["RoleAssignmentStatus"];
+            /** Format: date-time */
+            assignedAtUtc: string;
+            /** Format: date-time */
+            endedAtUtc: string | null;
+            version: string;
         };
         SelectWorkspaceCommand: {
             workspaceType: components["schemas"]["WorkspaceType"];
@@ -17206,6 +22187,10 @@ export interface components {
             untilUtc: string | null;
             reason: string;
             expectedVersion: string | null;
+        };
+        SetProfilePhotoCommand: {
+            /** Format: uuid */
+            fileAssetId: string;
         };
         StartDirectConversationCommand: {
             /** Format: uuid */
@@ -17291,6 +22276,7 @@ export interface components {
             textAnswer: string | null;
             /** Format: date-time */
             acceptedAtUtc: string;
+            attachments?: components["schemas"]["AcademicAnswerAttachmentDto"][];
         };
         StudentDashboardDto: {
             /** Format: date-time */
@@ -17351,6 +22337,7 @@ export interface components {
             /** Format: double */
             score: number;
             options: components["schemas"]["StudentExamAttemptOptionDto"][];
+            attachmentPolicy?: components["schemas"]["ExamQuestionAttachmentPolicyDto"];
         };
         StudentExamAttemptSummaryDto: {
             /** Format: uuid */
@@ -17518,6 +22505,7 @@ export interface components {
             /** Format: double */
             score: number;
             options: components["schemas"]["StudentSafeExamOption"][];
+            attachmentPolicy?: components["schemas"]["ExamQuestionAttachmentPolicyDto"];
         };
         SubmissionAttachmentResult: {
             /** Format: uuid */
@@ -17597,7 +22585,16 @@ export interface components {
             rowVersion: string;
         };
         /** @enum {string} */
-        SubscriptionStatus: "Pending" | "Active" | "Expired" | "Cancelled";
+        SubscriptionDisplayState: "NoSubscription" | "PendingPayment" | "Active" | "QuotaWarning" | "QuotaExceeded" | "GracePeriod" | "Expired" | "ScheduledDowngrade" | "LegacyPendingContract";
+        /** @enum {string} */
+        SubscriptionOwnerType: "Individual" | "Organization";
+        /**
+         * @default Organization
+         * @enum {string}
+         */
+        SubscriptionOwnerType2: "Individual" | "Organization";
+        /** @enum {string} */
+        SubscriptionStatus: "Pending" | "Active" | "Expired" | "Cancelled" | "Scheduled";
         SuggestTeacherActivitiesCommand: {
             objective: string;
             /** Format: int32 */
@@ -17751,6 +22748,14 @@ export interface components {
             expectedAssignmentRowVersion: string;
             expectedVersionRowVersion: string;
         };
+        UpdateClassLessonCommand: {
+            title: string;
+            body: string | null;
+            /** Format: int32 */
+            displayOrder: number;
+            fileAssetIds: string[];
+            expectedVersion: string;
+        };
         UpdateConversationChecklistCommand: {
             title: string;
             mode: components["schemas"]["NullableOfConversationChecklistMode"];
@@ -17803,6 +22808,7 @@ export interface components {
             options: components["schemas"]["ExamQuestionOptionCommand"][] | null;
             expectedVersionRowVersion: string;
             expectedQuestionRowVersion: string;
+            attachmentPolicy?: components["schemas"]["ExamQuestionAttachmentPolicyCommand"];
         };
         UpdateMessagingPrivacyCommand: {
             directMessagesAudience: components["schemas"]["PrivacyAudience"];
@@ -17955,6 +22961,20 @@ export interface components {
             role: components["schemas"]["NullableOfOrganizationRole"];
             displayName: string;
             status: string;
+            membershipStatus?: components["schemas"]["NullableOfMembershipStatus"];
+            roleStatus?: components["schemas"]["NullableOfRoleAssignmentStatus"];
+            organizationStatus?: components["schemas"]["NullableOfOrganizationStatus"];
+            isEffective?: boolean;
+            canEnter?: boolean;
+            isVisible?: boolean | null;
+            hasEffectiveEducationalRole?: boolean;
+        };
+        WorkspaceSnapshotResult: {
+            version: string;
+            hasEffectiveEducationalRole: boolean;
+            personalWorkspaceVisible: boolean | null;
+            personalVisibilityDecision: string;
+            workspaces: components["schemas"]["WorkspaceResult"][];
         };
         /** @enum {string} */
         WorkspaceType: "Personal" | "Organization";

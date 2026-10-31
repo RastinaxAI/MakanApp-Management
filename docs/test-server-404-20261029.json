@@ -1,0 +1,17 @@
+{
+  "clientDate": "2026-10-29",
+  "mode": "Real HTTP responses, no mocked service",
+  "baseUrl": "http://94.184.32.84:8090",
+  "checks": [
+    { "method": "POST", "path": "/api/v1/auth/otp/challenges", "status": 404, "contentType": "text/html", "challengeReceived": false },
+    { "method": "GET", "path": "/swagger/index.html", "status": 404, "contentType": "text/html", "server": "Microsoft-IIS/10.0" },
+    { "method": "GET", "path": "/swagger/index.js", "status": 404, "contentType": "text/html", "server": "Microsoft-IIS/10.0" },
+    { "method": "GET", "path": "/openapi/v1.json", "status": 404, "contentType": "text/html", "server": "Microsoft-IIS/10.0" },
+    { "method": "GET", "path": "/", "status": 403, "contentType": "text/html", "server": "Microsoft-IIS/10.0" },
+    { "method": "POST", "baseUrl": "http://127.0.0.1:3130", "path": "/api/client/auth/challenge", "status": 404, "contentType": "application/json", "challengeReceived": false }
+  ],
+  "assessment": "The documented API routes are currently unavailable on the configured test server. The IIS deployment/binding/application routing must be investigated; exact internal configuration is not accessible from these responses.",
+  "phoneAccountExistenceInferred": false,
+  "configurationSwitchedToProduction": false,
+  "tokensLogged": false
+}

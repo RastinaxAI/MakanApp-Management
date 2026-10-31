@@ -1,0 +1,141 @@
+{
+  "checkedOn": "2026-10-28",
+  "environment": "Next development, 127.0.0.1:3130, explicit mock fixtures",
+  "method": "Manual UI automation with CUA; not a backend integration or server authorization test",
+  "responsive": [
+    {
+      "direction": "atlas",
+      "screen": "messenger",
+      "size": "390x844",
+      "overflow": false
+    },
+    {
+      "direction": "atlas",
+      "screen": "plans",
+      "size": "390x844",
+      "overflow": false
+    },
+    {
+      "direction": "orbit",
+      "screen": "messenger",
+      "size": "390x844",
+      "overflow": false
+    },
+    {
+      "direction": "orbit",
+      "screen": "plans",
+      "size": "390x844",
+      "overflow": false
+    },
+    {
+      "direction": "sepehr",
+      "screen": "messenger",
+      "size": "390x844",
+      "overflow": false
+    },
+    {
+      "direction": "sepehr",
+      "screen": "plans",
+      "size": "390x844",
+      "overflow": false
+    },
+    {
+      "direction": "atlas",
+      "screen": "plans",
+      "size": "820x1180",
+      "overflow": false
+    },
+    {
+      "direction": "atlas",
+      "screen": "messenger",
+      "size": "820x1180",
+      "overflow": false
+    },
+    {
+      "direction": "orbit",
+      "screen": "plans",
+      "size": "820x1180",
+      "overflow": false
+    },
+    {
+      "direction": "orbit",
+      "screen": "messenger",
+      "size": "820x1180",
+      "overflow": false
+    },
+    {
+      "direction": "sepehr",
+      "screen": "plans",
+      "size": "820x1180",
+      "overflow": false
+    },
+    {
+      "direction": "sepehr",
+      "screen": "messenger",
+      "size": "820x1180",
+      "overflow": false
+    },
+    {
+      "direction": "atlas",
+      "screen": "plans",
+      "size": "1440x1000",
+      "overflow": false
+    },
+    {
+      "direction": "atlas",
+      "screen": "messenger",
+      "size": "1440x1000",
+      "overflow": false
+    },
+    {
+      "direction": "orbit",
+      "screen": "plans",
+      "size": "1440x1000",
+      "overflow": false
+    },
+    {
+      "direction": "orbit",
+      "screen": "messenger",
+      "size": "1440x1000",
+      "overflow": false
+    },
+    {
+      "direction": "sepehr",
+      "screen": "plans",
+      "size": "1440x1000",
+      "overflow": false
+    },
+    {
+      "direction": "sepehr",
+      "screen": "messenger",
+      "size": "1440x1000",
+      "overflow": false
+    }
+  ],
+  "interactionsVerified": [
+    "Plan search PRO narrows to professional plan",
+    "Local draft adds a fifth fixture with explicit local-only receipt",
+    "Plan detail shows unknown price and quota",
+    "Orbit details dialog opens and closes",
+    "Sepehr plan selection changes inline detail",
+    "Local message appends without real delivered status",
+    "Reply and Enter submission in mobile chat",
+    "Mobile back returns to conversation list",
+    "New-conversation modal opens and Escape closes it",
+    "Focus returns to new-conversation trigger",
+    "Official revocation removes composer, room content and inbox snippet",
+    "Personal composer remains available after official revocation",
+    "Error state displays retry",
+    "Plan loading and empty states display and clear resets filters"
+  ],
+  "consoleWarningsAndErrors": [
+    {
+      "level": "warn",
+      "message": "[Fast Refresh] performing full reload\n\nFast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.\nYou might have a file which exports a React component but also exports a value that is imported by a non-React component file.\nConsider migrating the non-React component export to a separate file and importing it into both files.\n\nIt is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.\nFast Refresh requires at least one parent function component in your React tree.",
+      "timestamp": "2026-10-28T11:49:34.551Z",
+      "url": "http://127.0.0.1:3130/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js"
+    }
+  ],
+  "screenshotDirectory": "docs/screenshots/upgrade-design-review",
+  "screenshots": "Viewport captures; full-page stitching was avoided after visual inspection found an RTL capture artifact"
+}

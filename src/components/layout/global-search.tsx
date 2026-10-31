@@ -13,6 +13,16 @@ export function GlobalSearch() {
   const [term, setTerm] = useState('');
   const { can } = useAccess();
   useEffect(() => {
+    const shortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setOpen((value) => !value);
+      }
+    };
+    window.addEventListener('keydown', shortcut);
+    return () => window.removeEventListener('keydown', shortcut);
+  }, []);
+  useEffect(() => {
     const t = setTimeout(() => setTerm(input.trim()), 250);
     return () => clearTimeout(t);
   }, [input]);
@@ -34,6 +44,7 @@ export function GlobalSearch() {
       >
         <Search size={18} />
         <span>جست‌وجوی سازمان یا کاربر</span>
+        <kbd dir="ltr">Ctrl K</kbd>
       </button>
       {open && (
         <DialogContent

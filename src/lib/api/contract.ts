@@ -10,6 +10,7 @@ type Schema = {
   enum?: string[];
   required?: string[];
   properties?: Record<string, Schema>;
+  additionalProperties?: Schema | boolean;
   items?: Schema;
   default?: unknown;
   minimum?: number;
@@ -51,7 +52,10 @@ export function validator(input: Schema, utcField = false): z.ZodType {
       if (!input.required?.includes(name)) v = v.optional();
       shape[name] = v;
     }
-    result = z.object(shape);
+    result =
+      input.additionalProperties && typeof input.additionalProperties === 'object'
+        ? z.object(shape).catchall(validator(input.additionalProperties))
+        : z.object(shape);
   } else if (input.type === 'array') result = z.array(validator(input.items ?? {}));
   else if (input.type === 'string') {
     let v = z.string();

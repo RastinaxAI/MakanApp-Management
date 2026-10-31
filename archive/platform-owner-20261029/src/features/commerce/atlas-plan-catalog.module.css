@@ -1,0 +1,251 @@
+.catalogPage {
+  min-width: 0;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.summary > div {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.summary svg {
+  color: var(--primary);
+}
+.summary p {
+  color: var(--muted);
+  font-size: 12px;
+}
+.summary strong {
+  display: block;
+  font-size: 28px;
+  font-weight: 750;
+  line-height: 1.5;
+  color: var(--text);
+}
+.summary small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.catalog {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.header > div {
+  margin-inline-end: auto;
+}
+.header h2 {
+  font-size: 18px;
+}
+.header p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 360px;
+  min-width: 240px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px 8px;
+  color: var(--muted);
+}
+.search input {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 8px 4px;
+  min-height: 44px;
+  font-size: 13px;
+  width: 100%;
+}
+.tableWrap {
+  position: relative;
+  overflow-x: auto;
+}
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+  white-space: nowrap;
+}
+.tableWrap th {
+  padding: 16px 20px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.tableWrap td {
+  padding: 16px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.tableWrap tr:last-child td {
+  border-bottom: 0;
+}
+.planLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+.planLink:hover strong {
+  color: var(--primary);
+}
+.planLink strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+}
+.planLink bdi {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 4px;
+}
+.planIcon {
+  background: var(--primary-soft);
+  color: var(--primary);
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.muted {
+  color: var(--muted);
+  font-size: 12px !important;
+}
+.published {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 12px;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+.paging {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.clear {
+  padding: 0 24px 24px;
+  text-align: center;
+}
+.note {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.note svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+@media (max-width: 1050px) {
+  .header {
+    flex-wrap: wrap;
+  }
+  .search {
+    max-width: none;
+    flex: 1;
+  }
+  .summary > div {
+    padding: 16px;
+    gap: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .summary {
+    gap: 8px;
+  }
+  .summary > div {
+    padding: 12px 8px;
+    display: block;
+    text-align: center;
+  }
+  .summary svg {
+    display: none;
+  }
+  .summary p {
+    font-size: 10px;
+  }
+  .summary strong {
+    font-size: 25px;
+  }
+  .header {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+  .header > div {
+    width: 100%;
+  }
+  .header h2 {
+    font-size: 17px;
+  }
+  .search {
+    min-width: 0;
+  }
+  .search input {
+    font-size: 12px;
+  }
+  .tableWrap table {
+    min-width: 650px;
+  }
+  .tableWrap th,
+  .tableWrap td {
+    padding: 12px 16px;
+  }
+  .footer {
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+  .note {
+    font-size: 11px;
+  }
+  .planIcon {
+    display: none;
+  }
+}

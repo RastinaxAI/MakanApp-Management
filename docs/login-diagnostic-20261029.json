@@ -1,0 +1,32 @@
+{
+  "clientDate": "2026-10-29",
+  "checkedAt": "2026-10-29T03:36:24.509Z",
+  "base": "http://94.184.32.84:8090",
+  "userReportedTrace": "00-37ff6e37966ab5b138fa5a06e8c043e3-68aa3025dfa5ec76-00",
+  "userReportedTraceStage": "not accessible without backend logs",
+  "bff": [
+    {
+      "role": "Student",
+      "challengeStatus": 202,
+      "verifyStatus": 500,
+      "code": "UNEXPECTED_ERROR",
+      "traceId": "00-97451085a64ea41fe0622515ecbab67c-ebe154650780a614-00"
+    },
+    {
+      "role": "PlatformOwner",
+      "challengeStatus": 202,
+      "verifyStatus": 500,
+      "code": "UNEXPECTED_ERROR",
+      "traceId": "00-e80b3a07594036663ddf81714804bddd-c09ab46b35ab2fe8-00"
+    }
+  ],
+  "direct": {
+    "role": "Student",
+    "challengeStatus": 202,
+    "verifyStatus": 500,
+    "code": "UNEXPECTED_ERROR",
+    "traceId": "00-e0fe5135da93a540113cd261a731e5da-0aca02b78f3bc7a1-00"
+  },
+  "realSessionCreated": false,
+  "tokensLogged": false
+}

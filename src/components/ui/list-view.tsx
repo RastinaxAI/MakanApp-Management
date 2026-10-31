@@ -8,7 +8,7 @@ import { useApi } from '@/lib/api/hooks';
 import { useAccess } from '@/features/access-context/provider';
 import { operationFor, resolve } from '@/lib/api/contract';
 import { ApiError, isRecord } from '@/lib/api/errors';
-import { number } from '@/lib/formatting';
+import { number, localDateTime, utcDateTime } from '@/lib/formatting';
 import { Value } from './data-view';
 import { Button } from './button';
 import { DataTable } from './data-table';
@@ -61,6 +61,15 @@ export function ListView({
   if (queryNames.includes('PageNumber') && !params.has('PageNumber')) params.set('PageNumber', '1');
   if (queryNames.includes('PageSize') && !params.has('PageSize')) params.set('PageSize', '20');
   const query = useApi<unknown>(endpoint + (params.size ? '?' + params : ''));
+  function collect(form: HTMLFormElement) {
+    const values: Record<string, string> = {};
+    for (const [key, value] of new FormData(form)) {
+      if (typeof value !== 'string') continue;
+      const field = operation?.parameters.find((parameter) => parameter.name === key);
+      values[key] = value && field?.schema.format === 'date-time' ? utcDateTime(value) : value;
+    }
+    return values;
+  }
   function update(values: Record<string, string>) {
     const next = new URLSearchParams(search.toString());
     for (const [key, value] of Object.entries(values)) {
@@ -154,12 +163,22 @@ export function ListView({
         'status',
       ].includes(k) && !(k in fixed),
   );
+  const inlineNames = extraNames.filter((key) => !!referenceKind(key)).slice(0, 2);
+  const activeFilters = queryNames.filter(
+    (key) =>
+      !/^(page|pageNumber|pageSize|PageNumber|PageSize|sortBy|sortDirection)$/.test(key) &&
+      !(key in fixed) &&
+      !!search.get(key),
+  );
   return (
     <>
       <div className="panel">
         {title && (
           <div className="panel-heading">
-            <h2>{title}</h2>
+            <div className="list-heading">
+              <h2>{title}</h2>
+              {total !== undefined && <span className="list-count">{number(total)} مورد</span>}
+            </div>
             <Button
               size="icon"
               variant="ghost"
@@ -175,10 +194,7 @@ export function ListView({
           className="filter-bar"
           onSubmit={(e) => {
             e.preventDefault();
-            const data = new FormData(e.currentTarget);
-            const values: Record<string, string> = {};
-            for (const [key, value] of data) if (typeof value === 'string') values[key] = value;
-            update(values);
+            update(collect(e.currentTarget));
           }}
         >
           {queryNames.includes('search') && (
@@ -221,6 +237,7 @@ export function ListView({
               onClick={() => setExpanded(true)}
             >
               <SlidersHorizontal size={16} />
+              <span>فیلترها{activeFilters.length ? ` (${number(activeFilters.length)})` : ''}</span>
             </Button>
           )}
           {(queryNames.includes('search') ||
@@ -230,7 +247,7 @@ export function ListView({
               اعمال فیلتر
             </Button>
           )}
-          {params.size > 1 && (
+          {activeFilters.length > 0 && (
             <Button
               type="button"
               variant="ghost"
@@ -245,9 +262,9 @@ export function ListView({
               پاک کردن
             </Button>
           )}
-          {extraNames.length > 0 && (
+          {inlineNames.length > 0 && (
             <div className="filters-extra">
-              {extraNames.map((key) => {
+              {inlineNames.map((key) => {
                 const definition = operation?.parameters.find((p) => p.name === key);
                 const kind = endpoint.startsWith('/api/admin/') ? referenceKind(key) : undefined;
                 if (kind)
@@ -291,17 +308,14 @@ export function ListView({
         <Dialog open={expanded} onOpenChange={setExpanded}>
           <DialogContent
             title="فیلترهای فهرست"
-            description="فیلترها در نشانی صفحه ذخیره می‌شوند."
+            description="موارد دلخواه را انتخاب کنید و سپس «اعمال فیلتر» را بزنید."
             side
           >
             <form
               className="form-grid"
               onSubmit={(e) => {
                 e.preventDefault();
-                const values: Record<string, string> = {};
-                for (const [key, value] of new FormData(e.currentTarget))
-                  if (typeof value === 'string') values[key] = value;
-                update(values);
+                update(collect(e.currentTarget));
                 setExpanded(false);
               }}
             >
@@ -343,12 +357,24 @@ export function ListView({
                     ) : (
                       <input
                         name={key}
-                        defaultValue={search.get(key) ?? ''}
-                        dir={/Id|Utc/.test(key) ? 'ltr' : undefined}
-                        placeholder={
-                          field?.schema.format === 'date-time' ? '2026-10-18T00:00:00Z' : undefined
+                        aria-label={filterLabels[key] ?? key}
+                        type={
+                          field?.schema.format === 'date-time'
+                            ? 'datetime-local'
+                            : field?.schema.type === 'integer'
+                              ? 'number'
+                              : 'text'
                         }
+                        defaultValue={
+                          field?.schema.format === 'date-time'
+                            ? localDateTime(search.get(key))
+                            : (search.get(key) ?? '')
+                        }
+                        dir={/Id|Utc/.test(key) ? 'ltr' : undefined}
                       />
+                    )}
+                    {field?.schema.format === 'date-time' && (
+                      <span className="field-help">به وقت دستگاه شما</span>
                     )}
                   </label>
                 );
@@ -362,7 +388,16 @@ export function ListView({
         ) : query.isError ? (
           <ErrorState error={query.error} onRetry={() => void query.refetch()} />
         ) : (
-          <DataTable data={rows} columns={defs} />
+          <DataTable
+            data={rows}
+            columns={defs}
+            emptyTitle={activeFilters.length ? 'نتیجه‌ای پیدا نشد' : 'هنوز موردی ثبت نشده است'}
+            emptyDescription={
+              activeFilters.length
+                ? 'عبارت جست‌وجو یا فیلترها را تغییر دهید و دوباره بررسی کنید.'
+                : 'پس از ثبت اطلاعات، موارد این بخش را در این فهرست می‌بینید.'
+            }
+          />
         )}
         <div className="pagination">
           <span>
@@ -458,15 +493,15 @@ const filterLabels: Record<string, string> = {
   targetType: 'نوع منبع',
   targetId: 'شناسه منبع',
   result: 'نتیجه',
-  fromUtc: 'از زمان UTC',
-  toUtc: 'تا زمان UTC',
+  fromUtc: 'از زمان',
+  toUtc: 'تا زمان',
   type: 'نوع',
   scope: 'محدوده',
   visibility: 'نمایانی',
   personId: 'شناسه شخص',
   isAccountLinked: 'اتصال حساب',
-  from: 'شروع بازه UTC',
-  to: 'پایان بازه UTC',
+  from: 'شروع بازه',
+  to: 'پایان بازه',
   academicPeriodId: 'شناسه دوره',
   teacherMembershipId: 'شناسه عضویت معلم',
   learnerOrganizationPersonId: 'شناسه پرونده فراگیر',

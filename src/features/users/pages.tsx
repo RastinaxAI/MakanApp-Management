@@ -10,6 +10,7 @@ import { useApi } from '@/lib/api/hooks';
 import { useAccess } from '@/features/access-context/provider';
 import { ApiError } from '@/lib/api/errors';
 import type { components } from '@/generated/api/schema';
+import { CommercialSummary } from '@/features/commerce/commercial-contracts';
 export function UsersPage() {
   return (
     <>
@@ -74,8 +75,12 @@ export function UserDetail({ id }: { id: string }) {
           { key: 'sessions', label: 'نشست‌ها' },
           { key: 'history', label: 'سوابق مدیریتی' },
           { key: 'security', label: 'امنیت و سن ارتباطی' },
+          ...(can(`/api/admin/v1/commerce/users/${id}/subscription`)
+            ? [{ key: 'commercial', label: 'قرارداد و سهمیه‌ها' }]
+            : []),
         ]}
       />
+      {tab === 'commercial' && <CommercialSummary kind="user" id={id} name={user.displayName} />}
       {tab === 'profile' && (
         <div className="detail-grid">
           <Panel title="اطلاعات مجاز حساب">
