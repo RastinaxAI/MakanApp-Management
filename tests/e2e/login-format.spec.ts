@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+test('deployment identifies the management service without a session or backend request', async ({ request }) => {
+  const response = await request.get('/api/health');
+  expect(response.status()).toBe(200);
+  expect(await response.json()).toEqual({ application: 'makan-management-panel', status: 'ok' });
+  expect(response.headers()['cache-control']).toContain('no-store');
+  expect(response.headers()['set-cookie']).toBeUndefined();
+});
+
 test.beforeEach(async ({ request }) => {
   await request.post('http://127.0.0.1:4100/__control', { data: { reset: true } });
 });

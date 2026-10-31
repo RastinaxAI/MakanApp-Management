@@ -2,7 +2,18 @@
 
 ## استقرار روی سرور management.makanapp.org
 
-اسکریپت `setup.sh` پنل فعلی Next.js را با Docker می‌سازد و اجرا می‌کند. Nginx درخواست‌ها را به برنامه روی `127.0.0.1:3000` می‌فرستد؛ مسیرهای احراز هویت، API و صفحات سمت سرور از همین برنامه پاسخ می‌گیرند. نشانی عمومی `https://management.makanapp.org` است.
+اسکریپت `setup.sh` پنل فعلی Next.js را با Docker می‌سازد و اجرا می‌کند. Nginx دامنهٔ مدیریت را به برنامه روی `127.0.0.1:3101` می‌فرستد؛ پورت داخلی کانتینر `3000` است. نشانی عمومی `https://management.makanapp.org` است.
+
+مدیریت با پروژهٔ Docker به نام `makan-management-panel`، ایمیج `makan-management-panel:local` و volume نشست `makan-management-panel_management_sessions` اجرا می‌شود. نام‌ها و پورت قدیمیِ مشترک با وب‌اپ استفاده نمی‌شوند؛ اسکریپت هیچ کانتینر یا volume قدیمی را متوقف یا حذف نمی‌کند. پس از این جداسازی، ورود دوباره به پنل لازم است و نشست‌های قبلی در volume قبلی باقی می‌مانند.
+
+برای رفع تداخل وب‌اپ و مدیریت، **کل نسخهٔ جدید پروژه** را در مسیر استقرار قرار دهید، فایل خصوصی `.env.docker` را حفظ کنید و اجرا کنید:
+
+```bash
+cd /var/www/makanapp/management
+sudo bash ./setup.sh --repair
+```
+
+حالت `--repair` مدیریت را با نام و پورت مستقل می‌سازد، گواهی دامنهٔ مدیریت و هدایت HTTPS را تنظیم می‌کند و هویت برنامه را مستقیماً و از طریق Nginx و دامنه بررسی می‌کند. ارتقای کلی سیستم و فعال‌سازی اجباری UFW در این حالت انجام نمی‌شوند. اگر پورت `3101` یا نام پروژهٔ جدید متعلق به سرویس دیگری باشد، پیش از تغییر تنظیمات Nginx یا کانتینرهای برنامه متوقف می‌شود؛ هیچ فرایندی را برای آزادکردن پورت نمی‌بندد.
 
 بازکردن `http://management.makanapp.org/` با پاسخ `301` به `https://management.makanapp.org/` هدایت می‌شود. سایر مسیرهای HTTP نیز با حفظ مسیر و پارامترها به HTTPS می‌روند؛ فقط مسیر تأیید گواهی مستثناست. پس از ورود به HTTPS، مسیر اصلی ورود برنامه `/enter` است و ریشه HTTPS و آدرس قدیمی `/login` به آن هدایت می‌شوند. برای انتشار تغییرات کد برنامه، نسخه جدید کل پروژه را روی سرور قرار دهید و `sudo bash ./setup.sh` را اجرا کنید تا برنامه دوباره ساخته شود. برای اصلاح هدایت HTTP و گواهی، همان حالت `--ssl-only` کافی است و image برنامه را تغییر نمی‌دهد.
 
@@ -14,7 +25,7 @@
 sudo bash ./setup.sh --diagnose
 ```
 
-گزارش، وضعیت سرویس Nginx، نام سایت‌های تنظیم‌شده، کانتینر مدیریت، پورت `3000` و پاسخ مستقیم برنامه و دامنه را نشان می‌دهد. خطای `404`، قطع اتصال برنامه و خطای گواهی به‌صورت جداگانه مشخص می‌شوند. خروجی همین دستور را برای عیب‌یابی ارسال کنید.
+گزارش، وضعیت سرویس Nginx، نام سایت‌های تنظیم‌شده، کانتینر مدیریت، پورت `3101`، هویت برنامه و پاسخ مستقیم برنامه و دامنه را نشان می‌دهد. خطای `404`، قطع اتصال برنامه و خطای گواهی به‌صورت جداگانه مشخص می‌شوند. خروجی همین دستور را برای عیب‌یابی ارسال کنید.
 
 برای اصلاح هدایت `http://management.makanapp.org/` به `https://management.makanapp.org/` و گواهی همین دامنه، نسخه جدید `setup.sh` را روی سرور جایگزین کنید و در پوشه همان فایل اجرا کنید:
 
@@ -37,7 +48,7 @@ curl -I https://management.makanapp.org/
 
 صدور و تمدید از مسیر `/.well-known/acme-challenge/` روی HTTP انجام می‌شود؛ این مسیر از هدایت به HTTPS مستثناست. بقیه درخواست‌های HTTP پس از آماده‌شدن گواهی به HTTPS می‌روند. اسکریپت نام دامنه، زنجیره اعتماد و اعتبار زمانی گواهی را بررسی می‌کند و reload پس از تمدید را تنظیم می‌کند.
 
-موفقیت `--ssl-only` به معنای سلامت TLS است؛ اگر برنامه روی پورت `3000` اجرا نباشد، ممکن است صفحه `502` نشان داده شود و لازم باشد سرویس Docker را جداگانه اجرا کنید. پیش‌نیاز DNS و بازبودن پورت‌های `80` و `443` در مرحله زیر آمده است.
+حالت `--ssl-only` کانتینر جدید مدیریت را نمی‌سازد و تداخل استقرار قدیمی را برطرف نمی‌کند. برای نخستین جداسازی از وب‌اپ، `--repair` را اجرا کنید. اگر مدیریت روی پورت `3101` اجرا نباشد، حالت SSL ممکن است گواهی را اصلاح کند ولی صفحه همچنان `502` بدهد. پیش‌نیاز DNS و بازبودن پورت‌های `80` و `443` در مرحله زیر آمده است.
 
 ### مرحله ۱: تنظیمات DNS
 
@@ -70,7 +81,8 @@ sudo ./setup.sh
 اسکریپت بسته‌های سیستم را به‌روزرسانی و ارتقا می‌دهد و Nginx، UFW، Certbot و ابزارهای لازم Docker را نصب می‌کند. اگر Docker، Compose و Buildx نصب باشند، نصب موجود استفاده می‌شود. هنگام نصب اولیه، فایل `.env.docker` با مجوز `600` و کلید نشست تصادفی ساخته می‌شود. در اجرای مجدد، کلید نشست و تنظیمات بک‌اند و مجوزها حفظ می‌شوند و فقط تنظیمات انتشار زیر اعمال می‌شوند:
 
 ```dotenv
-MAKAN_PORT=3000
+MAKAN_PORT=3101
+COMPOSE_PROJECT_NAME=makan-management-panel
 APP_ORIGIN=https://management.makanapp.org
 COOKIE_SECURE=true
 ```
@@ -79,7 +91,7 @@ COOKIE_SECURE=true
 
 ساخت نخست به دریافت بسته‌های Ubuntu، image پایه Node.js و بسته‌های npm نیاز دارد. اسکریپت ابتدا Nginx و SSL را مستقل از برنامه آماده می‌کند و سپس image برنامه را می‌سازد و حداکثر ۲۴۰ ثانیه برای سلامت کانتینر صبر می‌کند. بنابراین شکست build مانع آماده‌شدن گواهی نمی‌شود. در صورت خطا، اجرا متوقف می‌شود؛ پس از رفع علت همان دستور را دوباره بزنید.
 
-گواهی SSL با ایمیل `rastinaxoffice@gmail.com` صادر می‌شود، HTTP به HTTPS هدایت و تایمر تمدید Certbot فعال می‌شود. در پایان، پاسخ HTTPS مسیر `/enter` بررسی می‌شود. برای بررسی دستی، نشانی زیر را باز کنید:
+گواهی SSL با ایمیل `rastinaxoffice@gmail.com` صادر می‌شود، HTTP به HTTPS هدایت و تایمر تمدید Certbot فعال می‌شود. مسیر `/api/health` باید پاسخ `{"application":"makan-management-panel","status":"ok"}` بدهد؛ پاسخ `200` از صفحهٔ ورودِ سرویس دیگر به‌عنوان سلامت مدیریت پذیرفته نمی‌شود. در پایان، هویت برنامه و پاسخ HTTPS مسیر `/enter` بررسی می‌شوند. برای بررسی دستی، نشانی زیر را باز کنید:
 
 ```text
 https://management.makanapp.org/enter
@@ -97,18 +109,17 @@ https://management.makanapp.org/enter
 
 ```bash
 cd /var/www/makanapp/management
-sudo docker compose --env-file .env.docker build web
-sudo docker compose --env-file .env.docker up -d --wait --wait-timeout 240 web
+sudo bash ./setup.sh --repair
 ```
 
-نشست‌ها در volume پایدار Docker می‌مانند. سرویس فقط روی loopback منتشر می‌شود و پورت `3000` را در فایروال باز نکنید. کل پروژه را با `chmod -R 755` تغییر ندهید؛ فایل تنظیمات خصوصی باید با مجوز `600` باقی بماند. کانتینر با کاربر غیر root اجرا می‌شود.
+نشست‌ها در volume اختصاصی مدیریت می‌مانند. سرویس فقط روی loopback منتشر می‌شود و پورت `3101` را در فایروال باز نکنید. کل پروژه را با `chmod -R 755` تغییر ندهید؛ فایل تنظیمات خصوصی باید با مجوز `600` باقی بماند. کانتینر با کاربر غیر root اجرا می‌شود.
 
 برای بررسی وضعیت و خطاها:
 
 ```bash
 cd /var/www/makanapp/management
-sudo docker compose --env-file .env.docker ps
-sudo docker compose --env-file .env.docker logs --tail 100 web
+sudo docker compose --project-name makan-management-panel --env-file .env.docker ps
+sudo docker compose --project-name makan-management-panel --env-file .env.docker logs --tail 100 web
 sudo nginx -t
 sudo systemctl status certbot.timer --no-pager
 ```
@@ -121,19 +132,21 @@ sudo systemctl status certbot.timer --no-pager
 
 ## اجرای سریع روی همین ویندوز
 
+در نخستین انتقال به نسخهٔ مستقل، تنظیمات Docker محلی را روی `MAKAN_PORT=3101` و `APP_ORIGIN=http://127.0.0.1:3101` قرار دهید و دستور ساخت بخش بعد را اجرا کنید. ایمیج و volume قدیمی برای پنل جدید استفاده نمی‌شوند.
+
 Docker Desktop را با Linux containers روشن کنید. در PowerShell وارد پوشه پروژه شوید:
 
 ```powershell
 cd 'C:\Users\OmidrezaBagheriyan\Desktop\MakanManagement'
-docker compose --env-file .env.docker up -d --wait --wait-timeout 240
+docker compose --project-name makan-management-panel --env-file .env.docker up -d --wait --wait-timeout 240
 ```
 
-سپس [صفحه ورود](http://127.0.0.1:3000/enter) را باز کنید. این دستور نسخه ساخته‌شده را اجرا می‌کند؛ در اجرای روزمره ساخت دوباره لازم نیست. فایل خصوصی `.env.docker` در نصب موجود را بازنویسی نکنید.
+سپس [صفحه ورود](http://127.0.0.1:3101/enter) را باز کنید. این دستور نسخه ساخته‌شده را اجرا می‌کند؛ در اجرای روزمره ساخت دوباره لازم نیست. فایل خصوصی `.env.docker` در نصب موجود را بازنویسی نکنید.
 
 بعد از تغییر کد، نصب اولیه یا دریافت نسخه جدید، ساخت و اجرا را با این دستور انجام دهید:
 
 ```powershell
-docker compose --env-file .env.docker up -d --build --force-recreate --wait --wait-timeout 240
+docker compose --project-name makan-management-panel --env-file .env.docker up -d --build --force-recreate --wait --wait-timeout 240
 ```
 
 ساخت نخست و به‌روزرسانی ممکن است چند دقیقه طول بکشد. دانلود وابستگی‌ها و ساخت داخل Docker به سرعت شبکه و منابع Docker Desktop وابسته‌اند. تا نمایش `Healthy` صبر کنید؛ `--wait-timeout` زمان انتظار سلامت کانتینر است، نه سقف زمان ساخت. این حداکثر مهلت است؛ به‌محض آماده‌بودن سرویس، فرمان زودتر تمام می‌شود.
@@ -162,8 +175,8 @@ if (-not (Test-Path -LiteralPath '.env.docker')) {
 
 | تنظیم                                  | مقدار برای اجرای فعلی                                                                     |
 | -------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `MAKAN_PORT`                           | `3000`                                                                                    |
-| `APP_ORIGIN`                           | `http://127.0.0.1:3000`                                                                   |
+| `MAKAN_PORT`                           | `3101`                                                                                    |
+| `APP_ORIGIN`                           | `http://127.0.0.1:3101`                                                                   |
 | `BACKEND_BASE_URL`                     | `http://94.184.32.84:8090`                                                                |
 | `COOKIE_SECURE`                        | `false` برای HTTP محلی                                                                    |
 | `PLATFORM_OWNER_ROLE_KEYS`             | `'["PlatformOwner"]'`                                                                     |
@@ -182,15 +195,15 @@ if (-not (Test-Path -LiteralPath '.env.docker')) {
 
 ```powershell
 # وضعیت و سلامت
-docker compose --env-file .env.docker ps
+docker compose --project-name makan-management-panel --env-file .env.docker ps
 # لاگ؛ Ctrl+C فقط نمایش لاگ را می‌بندد
-docker compose --env-file .env.docker logs -f --tail 100 web
+docker compose --project-name makan-management-panel --env-file .env.docker logs -f --tail 100 web
 # توقف با حفظ نشست‌ها
-docker compose --env-file .env.docker down
+docker compose --project-name makan-management-panel --env-file .env.docker down
 # اجرای دوباره نسخه موجود
-docker compose --env-file .env.docker up -d --wait --wait-timeout 240
+docker compose --project-name makan-management-panel --env-file .env.docker up -d --wait --wait-timeout 240
 # اعمال تغییر تنظیمات بدون ساخت دوباره کد
-docker compose --env-file .env.docker up -d --force-recreate --wait --wait-timeout 240
+docker compose --project-name makan-management-panel --env-file .env.docker up -d --force-recreate --wait --wait-timeout 240
 ```
 
 برای تغییر پورت، `MAKAN_PORT` و پورت `APP_ORIGIN` را با هم در `.env.docker` تغییر دهید، سپس کانتینر را با `--force-recreate` بالا بیاورید. برای مثال هر دو را روی 3010 تنظیم کنید و `http://127.0.0.1:3010/enter` را باز کنید. `restart` فایل env جدید را نمی‌خواند.
@@ -205,7 +218,7 @@ npm ci
 npm run dev
 ```
 
-`APP_ORIGIN` باید با نشانی اجرا یکسان باشد. پورت پیش‌فرض اجرای محلی 3000 است؛ Docker و اجرای محلی را هم‌زمان روی این پورت اجرا نکنید. برای توسعه روی پورت جدا، `APP_ORIGIN` در `.env.local` را به `http://127.0.0.1:3100` تغییر دهید و اجرا کنید:
+`APP_ORIGIN` باید با نشانی اجرا یکسان باشد. اجرای بدون Docker به‌صورت پیش‌فرض روی پورت 3000 و Docker مدیریت روی پورت 3101 است. برای توسعه روی پورت جدا، `APP_ORIGIN` در `.env.local` را به `http://127.0.0.1:3100` تغییر دهید و اجرا کنید:
 
 ```powershell
 npm run dev -- --port 3100
@@ -237,6 +250,14 @@ npm start
 نشست‌ها در volume پایدار Docker هستند؛ دستورهای بالا آن را حذف نمی‌کنند. عوض‌کردن `SESSION_SECRET` نشست‌های قبلی را بی‌اعتبار می‌کند. این تنظیم برای یک نمونه سرور و دسترسی محلی است؛ در انتشار عمومی HTTPS و `COOKIE_SECURE=true` لازم‌اند.
 
 ## بررسی و مستندات
+
+آزمون استقرار با Python 3، OpenSSL، Nginx و CLI مربوط به Docker Compose، بدون نیاز به روشن‌بودن Docker daemon:
+
+```bash
+python3 tests/deployment/test_setup.py
+```
+
+این آزمون در پوشه‌های موقت و پورت‌های محلی آزمایشی اجرا می‌شود؛ نصب بسته‌ها، تغییر سرویس‌ها و عملیات Docker شبیه‌سازی می‌شوند. فایل‌های واقعی Nginx یا env تغییر نمی‌کنند. در صورت نبود Nginx روی PATH، مسیر باینری آن را در `MAKAN_TEST_NGINX_BIN` تنظیم کنید.
 
 ```powershell
 npm run typecheck

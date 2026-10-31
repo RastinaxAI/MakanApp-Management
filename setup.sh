@@ -4,19 +4,19 @@ umask 077
 
 MODE="${1:-deploy}"
 case "$MODE" in
-    deploy|--ssl-only|--diagnose) ;;
+    deploy|--repair|--ssl-only|--diagnose) ;;
     --help|-h)
-        echo 'Usage: sudo bash setup.sh [--ssl-only|--diagnose]'
+        echo 'Usage: sudo bash setup.sh [--repair|--ssl-only|--diagnose]'
         exit 0
         ;;
-    *) echo 'Usage: sudo bash setup.sh [--ssl-only|--diagnose]' >&2; exit 1 ;;
+    *) echo 'Usage: sudo bash setup.sh [--repair|--ssl-only|--diagnose]' >&2; exit 1 ;;
 esac
 if [[ "$#" -gt 1 ]]; then
     echo 'Too many arguments.' >&2
     exit 1
 fi
 if [[ "${EUID}" -ne 0 ]]; then
-    echo 'Run this script as root: sudo bash setup.sh [--ssl-only|--diagnose]' >&2
+    echo 'Run this script as root: sudo bash setup.sh [--repair|--ssl-only|--diagnose]' >&2
     exit 1
 fi
 
@@ -24,6 +24,8 @@ DOMAIN=management.makanapp.org
 SSL_EMAIL=rastinaxoffice@gmail.com
 PROJECT_DIR=/var/www/makanapp/management
 ENV_FILE="$PROJECT_DIR/.env.docker"
+COMPOSE_PROJECT=makan-management-panel
+MANAGEMENT_PORT=3101
 SITE_CONFIG=/etc/nginx/sites-available/makanapp-management.conf
 ENABLED_SITE=/etc/nginx/sites-enabled/makanapp-management.conf
 PROXY_CONFIG=/etc/nginx/snippets/makanapp-management-proxy.conf
@@ -31,6 +33,74 @@ CERT_DIR="/etc/letsencrypt/live/$DOMAIN"
 ACME_ROOT=/var/www/letsencrypt
 TLS_CHAIN=
 SSL_BACKUP=
+
+check_management_port() {
+    local metadata= container_ids
+    local -a containers=()
+    if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+        container_ids=$(docker ps -aq)
+        if [[ -n "$container_ids" ]]; then
+            read -r -a containers <<< "${container_ids//$'\n'/ }"
+            # Inspect only ownership and ports, never environment values.
+            metadata=$(docker inspect --format \
+                '{"name":{{json .Name}},"running":{{json .State.Running}},"labels":{{json .Config.Labels}},"ports":{{json .HostConfig.PortBindings}}}' \
+                "${containers[@]}")
+        fi
+    fi
+    python3 - "$COMPOSE_PROJECT" "$MANAGEMENT_PORT" 3<<< "$metadata" <<'PYTHON'
+import errno
+import json
+import os
+import socket
+import sys
+
+project, port = sys.argv[1], int(sys.argv[2])
+owned_listener = False
+for line in os.fdopen(3):
+    if not line.strip():
+        continue
+    container = json.loads(line)
+    labels = container.get('labels') or {}
+    own_project = labels.get('com.docker.compose.project') == project
+    own_app = own_project and labels.get('org.makan.application') == project
+    if own_project and not own_app:
+        sys.exit(f'Docker project {project} is already used by another application; no containers were changed.')
+    if not container.get('running'):
+        continue
+    for target, bindings in (container.get('ports') or {}).items():
+        for binding in bindings or []:
+            if binding.get('HostPort') != str(port):
+                continue
+            if (own_app and labels.get('com.docker.compose.service') == 'web'
+                    and target == '3000/tcp' and binding.get('HostIp') == '127.0.0.1'):
+                owned_listener = True
+            else:
+                sys.exit(f'Management port {port} belongs to {container["name"]}; no service was stopped or replaced.')
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+    # A recently stopped server can leave TIME_WAIT sockets behind. They do not
+    # represent another active service, and Docker's TCP listener can reuse them.
+    listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        listener.bind(('127.0.0.1', port))
+    except OSError as error:
+        if error.errno != errno.EADDRINUSE or not owned_listener:
+            sys.exit(f'Cannot safely use management port {port}: {error}. No service was stopped or replaced.')
+print(f'Management port {port}: available or owned by {project}.')
+PYTHON
+}
+
+check_management_identity() {
+    curl --fail --silent --show-error --noproxy '*' --connect-timeout 5 --max-time 15 "$@" | \
+        python3 -c '
+import json, sys
+try:
+    body = json.load(sys.stdin)
+except (ValueError, TypeError):
+    sys.exit("Unexpected application response: management identity could not be verified.")
+sys.exit(0 if body == {"application": "makan-management-panel", "status": "ok"}
+         else "Unexpected application: refusing to accept the web app as the management panel.")
+'
+}
 
 reload_nginx() {
     nginx -t
@@ -133,7 +203,7 @@ configure_ssl() {
 
     # A lineage can have a suffix such as -0001. Validate its actual hostname,
     # dates and trust chain instead of assuming that its directory name is valid.
-    for candidate in "$CERT_DIR/fullchain.pem" /etc/letsencrypt/live/*/fullchain.pem; do
+    for candidate in "$CERT_DIR/fullchain.pem" "$CERT_DIR"-*/fullchain.pem; do
         if usable_certificate "$candidate"; then
             TLS_CHAIN="$candidate"
             break
@@ -155,7 +225,9 @@ location = /login {
     return 308 /enter$is_args$args;
 }
 location / {
-    proxy_pass http://127.0.0.1:3000;
+NGINX
+    printf '    proxy_pass http://127.0.0.1:%s;\n' "$MANAGEMENT_PORT" >> "$staged"
+    cat >> "$staged" <<'NGINX'
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
@@ -189,10 +261,10 @@ NGINX
 
     # Check SNI, hostname and the trust chain locally, independently of Docker.
     # An HTTP 502 can mean the application is stopped; it is not a TLS failure.
-    https_status=$(curl --silent --show-error --connect-timeout 10 --max-time 30 \
+    https_status=$(curl --silent --show-error --noproxy '*' --connect-timeout 10 --max-time 30 \
         --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
         --write-out '%{http_code}' "https://$DOMAIN/enter")
-    entry_redirect=$(curl --silent --show-error --connect-timeout 10 --max-time 30 \
+    entry_redirect=$(curl --silent --show-error --noproxy '*' --connect-timeout 10 --max-time 30 \
         --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
         --write-out '%{redirect_url}' "http://$DOMAIN/")
     if [[ "$entry_redirect" != "https://$DOMAIN/" ]]; then
@@ -239,11 +311,11 @@ diagnose() {
     fi
     echo '--- Processes listening on HTTP, HTTPS and the application port ---'
     if command -v ss >/dev/null 2>&1; then
-        ss -ltnp '( sport = :80 or sport = :443 or sport = :3000 )' || true
+        ss -ltnp "( sport = :80 or sport = :443 or sport = :$MANAGEMENT_PORT )" || true
     fi
     echo '--- Management Docker containers ---'
     if command -v docker >/dev/null 2>&1; then
-        docker ps -a --filter label=com.docker.compose.project=makan-management \
+        docker ps -a --filter "label=com.docker.compose.project=$COMPOSE_PROJECT" \
             --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' || true
     else
         echo 'Docker is not installed.'
@@ -252,7 +324,10 @@ diagnose() {
         echo '--- Direct application response ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --output /dev/null --write-out 'Upstream /enter: HTTP %{http_code}\n' \
-            -H "Host: $DOMAIN" http://127.0.0.1:3000/enter || true
+            -H "Host: $DOMAIN" "http://127.0.0.1:$MANAGEMENT_PORT/enter" || true
+        echo '--- Management application identity ---'
+        check_management_identity "http://127.0.0.1:$MANAGEMENT_PORT/api/health" && \
+            echo "Identity verified: $COMPOSE_PROJECT" || true
         echo '--- Local Nginx responses for the management hostname ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
@@ -279,13 +354,18 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=a
 
-if [[ "$MODE" == deploy ]]; then
-    for required in Dockerfile compose.yaml package.json package-lock.json .env.docker.example scripts/docker-start.mjs; do
+if [[ "$MODE" != --ssl-only ]]; then
+    for required in Dockerfile compose.yaml package.json package-lock.json .env.docker.example scripts/docker-start.mjs \
+        src/app/api/health/route.ts 'src/app/(protected)/admin/[[...section]]/page.tsx'; do
         if [[ ! -f "$PROJECT_DIR/$required" ]]; then
             echo "Missing $PROJECT_DIR/$required. Upload the complete project first." >&2
             exit 1
         fi
     done
+    echo "Deploying management panel: project=$COMPOSE_PROJECT; upstream=127.0.0.1:$MANAGEMENT_PORT"
+fi
+
+if [[ "$MODE" == deploy ]]; then
     apt-get update
     apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
     apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx ufw certbot python3-certbot-nginx python3 openssl ca-certificates curl
@@ -293,21 +373,21 @@ if [[ "$MODE" == deploy ]]; then
     ufw allow 'Nginx Full'
     ufw --force enable
 else
-    # Repair TLS without apt upgrade, Docker, application files or session changes.
+    # Repair without a system upgrade or restarting existing applications.
     missing=0
-    for dependency in nginx certbot openssl curl; do
+    for dependency in nginx certbot openssl curl python3; do
         if ! command -v "$dependency" >/dev/null 2>&1; then missing=1; fi
     done
     if [[ "$missing" -eq 1 ]]; then
         apt-get update
-        apt-get install -y nginx certbot openssl ca-certificates curl
+        apt-get install -y nginx certbot openssl ca-certificates curl python3
     fi
     if command -v ufw >/dev/null 2>&1; then ufw allow 'Nginx Full'; fi
 fi
 
-# Provision TLS before application builds so a build failure cannot skip SSL.
-configure_ssl
 if [[ "$MODE" == --ssl-only ]]; then
+    check_management_port
+    configure_ssl
     exit 0
 fi
 
@@ -318,6 +398,7 @@ if ! docker buildx version >/dev/null 2>&1; then apt-get install -y docker-build
 systemctl enable --now docker
 docker compose version
 docker buildx version
+check_management_port
 
 if [[ ! -f "$ENV_FILE" ]]; then
     install -m 600 "$PROJECT_DIR/.env.docker.example" "$ENV_FILE"
@@ -351,7 +432,8 @@ updates = {
     'SESSION_SECRET': secret,
     'APP_ORIGIN': 'https://management.makanapp.org',
     'COOKIE_SECURE': 'true',
-    'MAKAN_PORT': '3000',
+    'MAKAN_PORT': '3101',
+    'COMPOSE_PROJECT_NAME': 'makan-management-panel',
 }
 result = []
 written = set()
@@ -369,12 +451,35 @@ PYTHON
 
 cd "$PROJECT_DIR"
 # Match the loopback upstream even when the invoking shell has MAKAN_PORT set.
-export MAKAN_PORT=3000
-COMPOSE=(docker compose --project-directory "$PROJECT_DIR" -f "$PROJECT_DIR/compose.yaml" --env-file "$ENV_FILE")
+export MAKAN_PORT="$MANAGEMENT_PORT"
+COMPOSE=(docker compose --project-name "$COMPOSE_PROJECT" --project-directory "$PROJECT_DIR" -f "$PROJECT_DIR/compose.yaml" --env-file "$ENV_FILE")
 "${COMPOSE[@]}" config --quiet
+"${COMPOSE[@]}" config --format json | python3 -c '
+import json, sys
+config = json.load(sys.stdin)
+web = config["services"]["web"]
+ports = web.get("ports", [])
+volumes = web.get("volumes", [])
+valid = (
+    config["name"] == "makan-management-panel"
+    and web["image"] == "makan-management-panel:local"
+    and web.get("labels", {}).get("org.makan.application") == "makan-management-panel"
+    and len(ports) == 1 and ports[0].get("host_ip") == "127.0.0.1"
+    and str(ports[0].get("published")) == "3101" and ports[0].get("target") == 3000
+    and any(v.get("source") == "management_sessions" and v.get("target") == "/app/.makan-sessions" for v in volumes)
+    and config["volumes"]["management_sessions"]["name"] == "makan-management-panel_management_sessions"
+)
+sys.exit(0 if valid else "Deployment configuration is not isolated for the management panel. Upload the current project files.")
+'
+
+# Provision TLS before application builds so a build failure cannot skip SSL.
+configure_ssl
 "${COMPOSE[@]}" build web
 "${COMPOSE[@]}" up -d --wait --wait-timeout 240 web
 
-curl --fail --silent --show-error --connect-timeout 10 --max-time 30 --output /dev/null https://management.makanapp.org/enter
+check_management_identity "http://127.0.0.1:$MANAGEMENT_PORT/api/health"
+check_management_identity --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/api/health"
+check_management_identity "https://$DOMAIN/api/health"
+curl --fail --silent --show-error --noproxy '*' --connect-timeout 10 --max-time 30 --output /dev/null "https://$DOMAIN/enter"
 
 echo 'Setup complete: https://management.makanapp.org'

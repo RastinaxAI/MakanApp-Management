@@ -4,13 +4,15 @@ Docker Desktop با Linux containers و WSL2 لازم است. برنامه فق�
 
 ## اجرای نصب موجود
 
+پروژه و ایمیج این پنل `makan-management-panel` و `makan-management-panel:local`، پورت میزبان `3101` و volume نشست آن `makan-management-panel_management_sessions` است. برای انتقال از نام قدیمی، مقادیر `MAKAN_PORT=3101` و `APP_ORIGIN=http://127.0.0.1:3101` را در env محلی تنظیم و نخستین بار با `--build` اجرا کنید؛ ورود مجدد لازم است. کانتینرها و volumeهای قدیمی را حذف نکنید؛ ممکن است متعلق به وب‌اپ باشند. برای سرور عمومی از [راهنمای README](../README.md) و `setup.sh --repair` استفاده کنید.
+
 در این رایانه `.env.docker` آماده است؛ آن را بازنویسی نکنید:
 
 ```powershell
-docker compose --env-file .env.docker up -d --wait --wait-timeout 240
+docker compose --project-name makan-management-panel --env-file .env.docker up -d --wait --wait-timeout 240
 ```
 
-پس از موفقیت بررسی سلامت، [ورود پنل](http://127.0.0.1:3000/enter) را باز کنید. این دستور نسخه ساخته‌شده را اجرا می‌کند؛ برای تغییر کد، `--build` را اضافه کنید. مرورگر خودکار باز نمی‌شود.
+پس از موفقیت بررسی سلامت، [ورود پنل](http://127.0.0.1:3101/enter) را باز کنید. این دستور نسخه ساخته‌شده را اجرا می‌کند؛ برای تغییر کد، `--build` را اضافه کنید. مرورگر خودکار باز نمی‌شود.
 
 ## آماده‌سازی اولیه
 
@@ -33,16 +35,16 @@ if (-not (Test-Path -LiteralPath '.env.docker')) {
 در `.env.docker` برای بک‌اند فعلی این مقادیر را تنظیم کنید و سپس دستور اجرا را بزنید:
 
 ```dotenv
-MAKAN_PORT=3000
+MAKAN_PORT=3101
 BACKEND_BASE_URL=http://94.184.32.84:8090
-APP_ORIGIN=http://127.0.0.1:3000
+APP_ORIGIN=http://127.0.0.1:3101
 COOKIE_SECURE=false
 ```
 
 کلید تولیدشده را در `SESSION_SECRET` نگه دارید. فایل env و کلید را منتشر نکنید. برای نصب اولیه سپس اجرا کنید:
 
 ```powershell
-docker compose --env-file .env.docker up -d --build --wait --wait-timeout 240
+docker compose --project-name makan-management-panel --env-file .env.docker up -d --build --wait --wait-timeout 240
 ```
 
 برای `.env.local` تازه نیز همین روش تولید کلید با نام فایل مربوط به آن قابل استفاده است؛ اجرای محلی به `MAKAN_PORT` وابسته نیست.
@@ -51,13 +53,13 @@ docker compose --env-file .env.docker up -d --build --wait --wait-timeout 240
 
 | کار                     | دستور                                                                                            |
 | ----------------------- | ------------------------------------------------------------------------------------------------ |
-| ساخت و اجرا             | `docker compose --env-file .env.docker up -d --build --wait --wait-timeout 240`                  |
-| اجرای نسخه ساخته‌شده    | `docker compose --env-file .env.docker up -d --wait --wait-timeout 240`                          |
-| وضعیت و سلامت           | `docker compose --env-file .env.docker ps`                                                       |
-| مشاهده لاگ‌ها           | `docker compose --env-file .env.docker logs -f --tail 100 web`                                   |
-| توقف با حفظ نشست‌ها     | `docker compose --env-file .env.docker down`                                                     |
-| اعمال تنظیمات تازه      | `docker compose --env-file .env.docker up -d --force-recreate --wait --wait-timeout 240`         |
-| اعمال کد و تنظیمات تازه | `docker compose --env-file .env.docker up -d --build --force-recreate --wait --wait-timeout 240` |
+| ساخت و اجرا             | `docker compose --project-name makan-management-panel --env-file .env.docker up -d --build --wait --wait-timeout 240`                  |
+| اجرای نسخه ساخته‌شده    | `docker compose --project-name makan-management-panel --env-file .env.docker up -d --wait --wait-timeout 240`                          |
+| وضعیت و سلامت           | `docker compose --project-name makan-management-panel --env-file .env.docker ps`                                                       |
+| مشاهده لاگ‌ها           | `docker compose --project-name makan-management-panel --env-file .env.docker logs -f --tail 100 web`                                   |
+| توقف با حفظ نشست‌ها     | `docker compose --project-name makan-management-panel --env-file .env.docker down`                                                     |
+| اعمال تنظیمات تازه      | `docker compose --project-name makan-management-panel --env-file .env.docker up -d --force-recreate --wait --wait-timeout 240`         |
+| اعمال کد و تنظیمات تازه | `docker compose --project-name makan-management-panel --env-file .env.docker up -d --build --force-recreate --wait --wait-timeout 240` |
 
 Ctrl+C فقط مشاهده لاگ را می‌بندد. `restart` فایل env را دوباره نمی‌خواند؛ برای تغییر تنظیمات از `up --force-recreate` استفاده کنید. پس از تغییر کد، `--build` لازم است.
 
@@ -78,7 +80,7 @@ Dockerfile با `npm ci` و Webpack خروجی standalone می‌سازد. فق�
 
 `docker-start.mjs` ورودی داخلی کانتینر است و پیش از اجرای سرور کلید، JSON تنظیمات و امکان نوشتن نشست را بررسی می‌کند؛ این فایل باید برای Docker باقی بماند. کانتینر با کاربر غیر root و فایل‌سیستم اصلی فقط‌خواندنی اجرا می‌شود. cache کانتینر مستقل از خروجی ساخت میزبان است.
 
-نشست‌های Docker در volume پایدار نگه‌داری می‌شوند. دستورهای توقف بالا volume را حذف نمی‌کنند. تعویض `SESSION_SECRET` یا حذف volume، نشست‌های قبلی را از دسترس خارج می‌کند. این نسخه برای یک replica و انتشار محلی روی `127.0.0.1` تنظیم شده است؛ برای استقرار عمومی [راهنمای استقرار](deployment.md) را بخوانید.
+نشست‌های Docker در volume پایدار نگه‌داری می‌شوند. دستورهای توقف بالا volume را حذف نمی‌کنند. تعویض `SESSION_SECRET` یا حذف volume، نشست‌های قبلی را از دسترس خارج می‌کند. این نسخه برای یک replica و انتشار محلی روی `127.0.0.1` تنظیم شده است؛ برای استقرار عمومی [راهنمای استقرار](../README.md) را بخوانید.
 
 ## عیب‌یابی
 

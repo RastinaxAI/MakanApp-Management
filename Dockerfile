@@ -8,10 +8,11 @@ FROM dependencies AS build
 ENV NEXT_STANDALONE=true \
     NODE_OPTIONS=--max-old-space-size=1536
 COPY . .
-RUN --mount=type=cache,id=makan-next-webpack,target=/app/.next/cache,sharing=locked \
+RUN --mount=type=cache,id=makan-management-panel-next-webpack,target=/app/.next/cache,sharing=locked \
     mkdir -p public && npm run build -- --webpack
 
 FROM node:22-bookworm-slim AS runtime
+LABEL org.makan.application=makan-management-panel
 WORKDIR /app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
