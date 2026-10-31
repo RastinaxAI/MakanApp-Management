@@ -4,19 +4,19 @@ umask 077
 
 MODE="${1:-deploy}"
 case "$MODE" in
-    deploy|--ssl-only) ;;
+    deploy|--ssl-only|--diagnose) ;;
     --help|-h)
-        echo 'Usage: sudo bash setup.sh [--ssl-only]'
+        echo 'Usage: sudo bash setup.sh [--ssl-only|--diagnose]'
         exit 0
         ;;
-    *) echo 'Usage: sudo bash setup.sh [--ssl-only]' >&2; exit 1 ;;
+    *) echo 'Usage: sudo bash setup.sh [--ssl-only|--diagnose]' >&2; exit 1 ;;
 esac
 if [[ "$#" -gt 1 ]]; then
     echo 'Too many arguments.' >&2
     exit 1
 fi
 if [[ "${EUID}" -ne 0 ]]; then
-    echo 'Run this script as root: sudo bash setup.sh --ssl-only' >&2
+    echo 'Run this script as root: sudo bash setup.sh [--ssl-only|--diagnose]' >&2
     exit 1
 fi
 
@@ -198,6 +198,66 @@ HOOK
     systemctl enable --now certbot.timer
     echo "SSL ready: https://$DOMAIN (Nginx backup: $SSL_BACKUP)"
 }
+
+diagnose() {
+    echo "Management diagnostic report: $DOMAIN"
+    date -Is
+    echo '--- Nginx service and configuration check ---'
+    systemctl is-active nginx || true
+    if command -v nginx >/dev/null 2>&1; then
+        nginx -t || true
+        echo '--- Site files and server names (not the full configuration) ---'
+        if [[ -e "$ENABLED_SITE" || -L "$ENABLED_SITE" ]]; then
+            ls -ld "$SITE_CONFIG" "$ENABLED_SITE" "$PROXY_CONFIG" || true
+        else
+            echo "Management site is not enabled: $ENABLED_SITE"
+        fi
+        nginx -T 2>&1 | awk '
+            /^# configuration file / { source = $0 }
+            /^[[:space:]]*server_name[[:space:]]/ { print source; print }
+            /conflicting server name|\[emerg\]|test failed/ { print }
+        ' || true
+    else
+        echo 'Nginx is not installed.'
+    fi
+    echo '--- Processes listening on HTTP, HTTPS and the application port ---'
+    if command -v ss >/dev/null 2>&1; then
+        ss -ltnp '( sport = :80 or sport = :443 or sport = :3000 )' || true
+    fi
+    echo '--- Management Docker containers ---'
+    if command -v docker >/dev/null 2>&1; then
+        docker ps -a --filter label=com.docker.compose.project=makan-management \
+            --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' || true
+    else
+        echo 'Docker is not installed.'
+    fi
+    if command -v curl >/dev/null 2>&1; then
+        echo '--- Direct application response ---'
+        curl --silent --show-error --connect-timeout 3 --max-time 8 \
+            --output /dev/null --write-out 'Upstream /login: HTTP %{http_code}\n' \
+            -H "Host: $DOMAIN" http://127.0.0.1:3000/login || true
+        echo '--- Local Nginx responses for the management hostname ---'
+        curl --silent --show-error --connect-timeout 3 --max-time 8 \
+            --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
+            --write-out 'Local HTTP /login: %{http_code}; redirect: %{redirect_url}\n' \
+            "http://$DOMAIN/login" || true
+        curl --silent --show-error --connect-timeout 3 --max-time 8 \
+            --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
+            --write-out 'Local HTTPS /login: %{http_code}; TLS verify: %{ssl_verify_result}\n' \
+            "https://$DOMAIN/login" || true
+        echo '--- Public DNS, TLS and application response ---'
+        curl --silent --show-error --connect-timeout 3 --max-time 8 \
+            --output /dev/null \
+            --write-out 'Public HTTPS /login: %{http_code}; IP: %{remote_ip}; TLS verify: %{ssl_verify_result}\n' \
+            "https://$DOMAIN/login" || true
+    fi
+    echo 'Diagnostic report complete. No configuration was changed.'
+}
+
+if [[ "$MODE" == --diagnose ]]; then
+    diagnose
+    exit 0
+fi
 
 export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=a
