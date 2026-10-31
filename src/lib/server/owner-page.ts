@@ -27,7 +27,7 @@ export async function requireOwnerPage() {
   if (status !== 200)
     redirect(
       status === 401
-        ? '/login'
-        : `/login?access=${status === 403 ? 'owner-required' : 'unavailable'}`,
+        ? '/enter'
+        : `/enter?access=${status === 403 ? 'owner-required' : 'unavailable'}`,
     );
 }

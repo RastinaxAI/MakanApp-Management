@@ -13,7 +13,7 @@ test('phone input rejects shorter, longer and international numbers before reque
   page.on('request', (request) => {
     if (request.url().endsWith('/api/auth/challenge')) challenges.push(request.url());
   });
-  await page.goto('/login');
+  await page.goto('/enter');
   for (const phone of ['0910000000', '091000000000', '+12025550171']) {
     await page.getByLabel('شماره همراه', { exact: true }).fill(phone);
     await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
@@ -52,7 +52,7 @@ for (const account of data.accounts) {
   }) => {
     expect(account.loginReady).toBe(true);
     expect(account.platformStatus).toBe(403);
-    await page.goto('/login');
+    await page.goto('/enter');
     await page.getByLabel('شماره همراه', { exact: true }).fill(account.phoneNumber);
     await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
     await page.getByLabel('کد ورود', { exact: true }).fill('123456');
@@ -67,6 +67,6 @@ for (const account of data.accounts) {
     expect((await page.request.get('/api/session')).status()).toBe(401);
     const direct = await page.request.get('/admin', { maxRedirects: 0 });
     expect(direct.status()).toBe(307);
-    expect(direct.headers().location).toBe('/login');
+    expect(direct.headers().location).toBe('/enter');
   });
 }

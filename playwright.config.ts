@@ -13,7 +13,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'node scripts/test-server.mjs',
-    url: `http://127.0.0.1:${process.env.MAKAN_TEST_PORT ?? '3100'}/login`,
+    url: `http://127.0.0.1:${process.env.MAKAN_TEST_PORT ?? '3100'}/enter`,
     reuseExistingServer: false,
     timeout: 180000,
   },

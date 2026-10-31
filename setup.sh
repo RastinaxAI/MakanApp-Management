@@ -86,6 +86,12 @@ server {
 NGINX
     if [[ -n "$TLS_CHAIN" ]]; then
         cat >> "$staged" <<'NGINX'
+    location = / {
+        return 301 https://management.makanapp.org/enter$is_args$args;
+    }
+    location = /login {
+        return 308 https://management.makanapp.org/enter$is_args$args;
+    }
     location / {
         return 301 https://management.makanapp.org$request_uri;
     }
@@ -110,7 +116,7 @@ NGINX
 }
 
 configure_ssl() {
-    local candidate name target staged
+    local candidate name target staged entry_redirect
     install -d -m 755 /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/snippets
     install -d -m 755 "$ACME_ROOT" "$ACME_ROOT/.well-known" "$ACME_ROOT/.well-known/acme-challenge"
     install -d -m 700 /var/backups/makanapp-management
@@ -148,6 +154,12 @@ gzip_comp_level 5;
 gzip_min_length 256;
 gzip_types text/plain text/css text/javascript application/javascript application/json application/xml text/xml image/svg+xml;
 
+location = / {
+    return 302 /enter$is_args$args;
+}
+location = /login {
+    return 308 /enter$is_args$args;
+}
 location / {
     proxy_pass http://127.0.0.1:3000;
     proxy_http_version 1.1;
@@ -184,7 +196,14 @@ NGINX
     # Check SNI, hostname and the trust chain locally, independently of Docker.
     # An HTTP 502 can mean the application is stopped; it is not a TLS failure.
     curl --silent --show-error --connect-timeout 10 --max-time 30 \
-        --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null "https://$DOMAIN/login"
+        --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null "https://$DOMAIN/enter"
+    entry_redirect=$(curl --silent --show-error --connect-timeout 10 --max-time 30 \
+        --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
+        --write-out '%{redirect_url}' "http://$DOMAIN/")
+    if [[ "$entry_redirect" != "https://$DOMAIN/enter" ]]; then
+        echo 'Management HTTP root is not redirecting to HTTPS /enter. Check duplicate server_name entries.' >&2
+        rollback_ssl 1
+    fi
     trap - ERR
 
     install -d -m 755 /etc/letsencrypt/renewal-hooks/deploy
@@ -234,22 +253,22 @@ diagnose() {
     if command -v curl >/dev/null 2>&1; then
         echo '--- Direct application response ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
-            --output /dev/null --write-out 'Upstream /login: HTTP %{http_code}\n' \
-            -H "Host: $DOMAIN" http://127.0.0.1:3000/login || true
+            --output /dev/null --write-out 'Upstream /enter: HTTP %{http_code}\n' \
+            -H "Host: $DOMAIN" http://127.0.0.1:3000/enter || true
         echo '--- Local Nginx responses for the management hostname ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
-            --write-out 'Local HTTP /login: %{http_code}; redirect: %{redirect_url}\n' \
-            "http://$DOMAIN/login" || true
+            --write-out 'Local HTTP /enter: %{http_code}; redirect: %{redirect_url}\n' \
+            "http://$DOMAIN/enter" || true
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
-            --write-out 'Local HTTPS /login: %{http_code}; TLS verify: %{ssl_verify_result}\n' \
-            "https://$DOMAIN/login" || true
+            --write-out 'Local HTTPS /enter: %{http_code}; TLS verify: %{ssl_verify_result}\n' \
+            "https://$DOMAIN/enter" || true
         echo '--- Public DNS, TLS and application response ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --output /dev/null \
-            --write-out 'Public HTTPS /login: %{http_code}; IP: %{remote_ip}; TLS verify: %{ssl_verify_result}\n' \
-            "https://$DOMAIN/login" || true
+            --write-out 'Public HTTPS /enter: %{http_code}; IP: %{remote_ip}; TLS verify: %{ssl_verify_result}\n' \
+            "https://$DOMAIN/enter" || true
     fi
     echo 'Diagnostic report complete. No configuration was changed.'
 }
@@ -358,6 +377,6 @@ COMPOSE=(docker compose --project-directory "$PROJECT_DIR" -f "$PROJECT_DIR/comp
 "${COMPOSE[@]}" build web
 "${COMPOSE[@]}" up -d --wait --wait-timeout 240 web
 
-curl --fail --silent --show-error --connect-timeout 10 --max-time 30 --output /dev/null https://management.makanapp.org/login
+curl --fail --silent --show-error --connect-timeout 10 --max-time 30 --output /dev/null https://management.makanapp.org/enter
 
 echo 'Setup complete: https://management.makanapp.org'

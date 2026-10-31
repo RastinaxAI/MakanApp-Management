@@ -4,6 +4,24 @@ test.beforeEach(async ({ request }) => {
   await request.post('http://127.0.0.1:4100/__control', { data: { reset: true } });
 });
 
+test('the root opens the canonical entry page and protected pages return there', async ({ request }) => {
+  const root = await request.get('/', { maxRedirects: 0 });
+  expect(root.status()).toBe(307);
+  expect(root.headers().location).toBe('/enter');
+  const entry = await request.get('/enter', { maxRedirects: 0 });
+  expect(entry.status()).toBe(200);
+  expect(await entry.text()).toContain('شماره همراه');
+  const protectedPage = await request.get('/admin', { maxRedirects: 0 });
+  expect(protectedPage.status()).toBe(307);
+  expect(protectedPage.headers().location).toBe('/enter');
+});
+
+test('legacy login links preserve query parameters when moved to enter', async ({ request }) => {
+  const response = await request.get('/login?step=mfa&access=owner-required', { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(response.headers().location).toBe('/enter?step=mfa&access=owner-required');
+});
+
 test('login constrains the national mobile and six-digit OTP before sending', async ({ page }) => {
   let challenges = 0,
     verifications = 0;
@@ -11,7 +29,7 @@ test('login constrains the national mobile and six-digit OTP before sending', as
     if (r.url().endsWith('/api/auth/challenge')) challenges++;
     if (r.url().endsWith('/api/auth/verify')) verifications++;
   });
-  await page.goto('/login');
+  await page.goto('/enter');
   const phone = page.getByLabel('شماره همراه', { exact: true });
   await expect(phone).toHaveAttribute('maxlength', '11');
   for (const value of ['08120000105', '0912000010']) {

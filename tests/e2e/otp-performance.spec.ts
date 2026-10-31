@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 test.beforeEach(async ({ request }) => { await request.post('http://127.0.0.1:4100/__control', { data: { reset: true } }); });
 async function login(page: import('@playwright/test').Page) {
-  await page.goto('/login?step=mfa');
+  await page.goto('/enter?step=mfa');
   await page.getByLabel('شماره همراه', { exact: true }).fill('09120000000');
   await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
   await page.getByLabel('کد ورود', { exact: true }).fill('123456');

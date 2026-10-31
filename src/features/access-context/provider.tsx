@@ -90,7 +90,7 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
       void cache.cancelQueries();
       cache.clear();
       setSession(null);
-      router.replace('/login');
+      router.replace('/enter');
     };
     window.addEventListener('makan:expired', expired);
     document.addEventListener('visibilitychange', focus);
@@ -167,7 +167,7 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       cache.clear();
       broadcast();
-      router.replace('/login');
+      router.replace('/enter');
     } finally {
       setChanging(false);
     }

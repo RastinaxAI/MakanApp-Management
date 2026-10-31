@@ -6,13 +6,13 @@ describe('local login canonical address', () => {
     'moves alias %s to the configured address before submitting credentials',
     (host) => {
       expect(canonicalLocalLoginUrl(host, 'http://127.0.0.1:3000')).toBe(
-        'http://127.0.0.1:3000/login',
+        'http://127.0.0.1:3000/enter',
       );
     },
   );
   it('uses the configured port and supports a localhost canonical address', () => {
     expect(canonicalLocalLoginUrl('127.0.0.1:3012', 'http://localhost:3012')).toBe(
-      'http://localhost:3012/login',
+      'http://localhost:3012/enter',
     );
   });
   it.each([

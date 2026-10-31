@@ -6,12 +6,12 @@ test('local login aliases redirect before OTP while foreign and missing origins 
 }) => {
   const canonical = new URL(baseURL!);
   const alias = canonical.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
-  const response = await request.get('/login', {
+  const response = await request.get('/enter', {
     headers: { Host: `${alias}:${canonical.port}` },
     maxRedirects: 0,
   });
   expect(response.status()).toBe(307);
-  expect(response.headers().location).toBe(new URL('/login', canonical).href);
+  expect(response.headers().location).toBe(new URL('/enter', canonical).href);
   for (const origin of [
     undefined,
     'https://foreign.example',
@@ -49,7 +49,7 @@ test('production serves its install manifest, worker and user handbook', async (
   expect(handbook.ok()).toBe(true);
   expect(handbook.headers()['content-type']).toContain('application/pdf');
   expect((await handbook.body()).subarray(0, 5).toString()).toBe('%PDF-');
-  await page.goto('/login');
+  await page.goto('/enter');
   await expect(page.locator('.login-brand-panel .brand-mark image')).toHaveAttribute(
     'href',
     '/brand/makan-logo.png',
@@ -81,7 +81,7 @@ test('production container serves login and its bundled styles and fonts', async
       if (!response.ok()) failures.push(`Static asset returned ${response.status()}`);
     }
   });
-  const response = await page.goto('/login');
+  const response = await page.goto('/enter');
   expect(response?.status()).toBe(200);
   await expect(page.getByRole('link', { name: 'مشاهده نسخه نمایشی بدون حساب' })).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
@@ -93,7 +93,7 @@ test('production container serves login and its bundled styles and fonts', async
 test('container keeps real pages and APIs protected without a session', async ({ request }) => {
   const page = await request.get('/admin', { maxRedirects: 0 });
   expect(page.status()).toBe(307);
-  expect(page.headers().location).toBe('/login');
+  expect(page.headers().location).toBe('/enter');
   const session = await request.get('/api/session');
   expect(session.status()).toBe(401);
   expect(session.headers()['cache-control']).toContain('no-store');
@@ -105,7 +105,7 @@ test('production auth rejects non-national mobiles and non-six-digit login codes
   baseURL,
   page,
 }) => {
-  await page.goto('/login');
+  await page.goto('/enter');
   await expect(page.getByLabel('شماره همراه', { exact: true })).toHaveAttribute('maxlength', '11');
   for (const phoneNumber of ['08120000105', '0912000010', '091200001050', '+989120000105']) {
     expect(
@@ -161,7 +161,7 @@ test('failed OTP delivery preserves the phone and recovers only after an explici
       });
     }
   });
-  await page.goto('/login');
+  await page.goto('/enter');
   await page.getByLabel('شماره همراه', { exact: true }).fill('09100000000');
   await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
   const alert = page.locator('.login-form .form-message[role="alert"]');

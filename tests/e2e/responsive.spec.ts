@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 async function login(page: Page) {
-  await page.goto('/login');
+  await page.goto('/enter');
   await page.getByLabel('شماره همراه', { exact: true }).fill('09120000000');
   await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
   await page.getByLabel('کد ورود', { exact: true }).fill('123456');
@@ -21,7 +21,7 @@ test('anonymous preview routes are removed and login offers authentication only'
   page,
   request,
 }) => {
-  await page.goto('/login');
+  await page.goto('/enter');
   await expect(page.locator('a[href^="/demo"]')).toHaveCount(0);
   for (const path of ['/demo', '/demo/admin', '/demo/admin/users', '/demo/organization'])
     expect((await request.get(path, { maxRedirects: 0 })).status()).toBe(404);
@@ -34,7 +34,7 @@ for (const width of [320, 375, 430, 768, 1024, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.goto('/login');
+    await page.goto('/enter');
     await noPageOverflow(page);
     await login(page);
     for (const section of [

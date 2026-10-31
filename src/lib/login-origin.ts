@@ -13,7 +13,7 @@ export function canonicalLocalLoginUrl(host: string | null, appOrigin: string): 
       incoming.port !== expected.port
     )
       return null;
-    return new URL('/login', expected.origin).href;
+    return new URL('/enter', expected.origin).href;
   } catch {
     return null;
   }
