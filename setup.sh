@@ -86,12 +86,6 @@ server {
 NGINX
     if [[ -n "$TLS_CHAIN" ]]; then
         cat >> "$staged" <<'NGINX'
-    location = / {
-        return 301 https://management.makanapp.org/enter$is_args$args;
-    }
-    location = /login {
-        return 308 https://management.makanapp.org/enter$is_args$args;
-    }
     location / {
         return 301 https://management.makanapp.org$request_uri;
     }
@@ -116,7 +110,7 @@ NGINX
 }
 
 configure_ssl() {
-    local candidate name target staged entry_redirect
+    local candidate name target staged entry_redirect https_status
     install -d -m 755 /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/snippets
     install -d -m 755 "$ACME_ROOT" "$ACME_ROOT/.well-known" "$ACME_ROOT/.well-known/acme-challenge"
     install -d -m 700 /var/backups/makanapp-management
@@ -195,13 +189,14 @@ NGINX
 
     # Check SNI, hostname and the trust chain locally, independently of Docker.
     # An HTTP 502 can mean the application is stopped; it is not a TLS failure.
-    curl --silent --show-error --connect-timeout 10 --max-time 30 \
-        --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null "https://$DOMAIN/enter"
+    https_status=$(curl --silent --show-error --connect-timeout 10 --max-time 30 \
+        --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
+        --write-out '%{http_code}' "https://$DOMAIN/enter")
     entry_redirect=$(curl --silent --show-error --connect-timeout 10 --max-time 30 \
         --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
         --write-out '%{redirect_url}' "http://$DOMAIN/")
-    if [[ "$entry_redirect" != "https://$DOMAIN/enter" ]]; then
-        echo 'Management HTTP root is not redirecting to HTTPS /enter. Check duplicate server_name entries.' >&2
+    if [[ "$entry_redirect" != "https://$DOMAIN/" ]]; then
+        echo 'Management HTTP root is not redirecting to the same URL over HTTPS. Check duplicate server_name entries.' >&2
         rollback_ssl 1
     fi
     trap - ERR
@@ -216,6 +211,9 @@ HOOK
     chmod 755 /etc/letsencrypt/renewal-hooks/deploy/makanapp-management-reload
     systemctl enable --now certbot.timer
     echo "SSL ready: https://$DOMAIN (Nginx backup: $SSL_BACKUP)"
+    if [[ "$https_status" != 200 ]]; then
+        echo "TLS is valid, but management /enter returned HTTP $https_status. Check the application with: sudo bash setup.sh --diagnose" >&2
+    fi
 }
 
 diagnose() {
@@ -258,8 +256,8 @@ diagnose() {
         echo '--- Local Nginx responses for the management hostname ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
-            --write-out 'Local HTTP /enter: %{http_code}; redirect: %{redirect_url}\n' \
-            "http://$DOMAIN/enter" || true
+            --write-out 'Local HTTP /: %{http_code}; redirect: %{redirect_url}\n' \
+            "http://$DOMAIN/" || true
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
             --write-out 'Local HTTPS /enter: %{http_code}; TLS verify: %{ssl_verify_result}\n' \
