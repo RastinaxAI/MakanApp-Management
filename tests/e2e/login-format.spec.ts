@@ -15,19 +15,26 @@ test.beforeEach(async ({ request }) => {
 test('the root opens the canonical entry page and protected pages return there', async ({ request }) => {
   const root = await request.get('/', { maxRedirects: 0 });
   expect(root.status()).toBe(307);
-  expect(root.headers().location).toBe('/enter');
-  const entry = await request.get('/enter', { maxRedirects: 0 });
+  expect(root.headers().location).toBe('/login');
+  const entry = await request.get('/login', { maxRedirects: 0 });
   expect(entry.status()).toBe(200);
   expect(await entry.text()).toContain('شماره همراه');
   const protectedPage = await request.get('/admin', { maxRedirects: 0 });
   expect(protectedPage.status()).toBe(307);
-  expect(protectedPage.headers().location).toBe('/enter');
+  expect(protectedPage.headers().location).toBe('/login');
 });
 
-test('legacy login links preserve query parameters when moved to enter', async ({ request }) => {
-  const response = await request.get('/login?step=mfa&access=owner-required', { maxRedirects: 0 });
-  expect(response.status()).toBe(308);
-  expect(response.headers().location).toBe('/enter?step=mfa&access=owner-required');
+test('both entry links render the owner login without permanent redirect loops', async ({ request }) => {
+  for (const path of ['/login', '/enter']) {
+    const response = await request.get(path + '?access=owner-required', { maxRedirects: 0 });
+    expect(response.status()).toBe(200);
+    expect(response.headers().location).toBeUndefined();
+    const html = await response.text();
+    expect(html).toContain('data-application="makan-management-panel"');
+    expect(html).toContain('data-screen="owner-login"');
+    expect(html).toContain('login-brand-panel');
+    expect(html).not.toContain('به ماکان خوش آمدید');
+  }
 });
 
 test('login constrains the national mobile and six-digit OTP before sending', async ({ page }) => {
@@ -37,7 +44,7 @@ test('login constrains the national mobile and six-digit OTP before sending', as
     if (r.url().endsWith('/api/auth/challenge')) challenges++;
     if (r.url().endsWith('/api/auth/verify')) verifications++;
   });
-  await page.goto('/enter');
+  await page.goto('/login');
   const phone = page.getByLabel('شماره همراه', { exact: true });
   await expect(phone).toHaveAttribute('maxlength', '11');
   for (const value of ['08120000105', '0912000010']) {

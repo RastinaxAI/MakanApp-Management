@@ -1,0 +1,51 @@
+{
+  "release": "MakanManagement-server-20261101",
+  "entryPath": "/login",
+  "legacyEntry": "/enter renders the same owner form without redirect loops",
+  "archiveFiles": 101,
+  "archiveBytes": 2195355,
+  "sha256": "602ca0416217453c44829b1602517183e809b46fd194710f7ce8adb5256371f1",
+  "dockerImage": "sha256:d2cacba688375f827acc9af88677f47ba32f033b90d8eb74ed0e5b49074e7921",
+  "unitTests": 135,
+  "browserTests": 18,
+  "productionDockerTests": 8,
+  "linuxNginxTlsChecks": 26,
+  "localUiComparison": {
+    "same": true,
+    "reference": {
+      "brandColor": "rgb(17, 33, 58)",
+      "buttonColor": "rgb(23, 101, 220)",
+      "columns": "713.25px 871.75px",
+      "copy": "ماکان مدیریت یکپارچه آموزش فضای مدیریت ماکان مدیریت یکپارچه پلتفرم ماکان سازمان‌ها، حساب‌ها و خدمات آموزشی را در یک فضای منظم مدیریت کنید. سازمان‌ها مدیریت، راه‌اندازی و پیگیری آموزش مرور وضعیت کلاس‌ها و فعالیت‌ها دسترسی‌ها کنترل نقش‌ها و امنیت حساب‌ها ویژه مالک پلتفرم ۱ شماره همراه ۲ کد ورود ورود به پنل مدیریت با شماره همراه حساب مالک پلتفرم وارد شوید. شماره همراه شماره همراه باید ۱۱ رقم باشد و با 09 شروع شود؛ مانند 09100000000. دریافت کد ورود نصب پنل روی دستگاه ورود به این فضا فقط برای مالک پلتفرم مجاز است.",
+      "font": "\"Vazirmatn Variable\", sans-serif",
+      "formMaxWidth": "380px",
+      "headings": [
+        "مدیریت یکپارچهپلتفرم ماکان",
+        "ورود به پنل مدیریت"
+      ],
+      "phoneMaxLength": 11,
+      "phonePattern": "09[0-9]{9}",
+      "title": "ماکان | پنل مدیریت"
+    },
+    "rebuilt": {
+      "brandColor": "rgb(17, 33, 58)",
+      "buttonColor": "rgb(23, 101, 220)",
+      "columns": "713.25px 871.75px",
+      "copy": "ماکان مدیریت یکپارچه آموزش فضای مدیریت ماکان مدیریت یکپارچه پلتفرم ماکان سازمان‌ها، حساب‌ها و خدمات آموزشی را در یک فضای منظم مدیریت کنید. سازمان‌ها مدیریت، راه‌اندازی و پیگیری آموزش مرور وضعیت کلاس‌ها و فعالیت‌ها دسترسی‌ها کنترل نقش‌ها و امنیت حساب‌ها ویژه مالک پلتفرم ۱ شماره همراه ۲ کد ورود ورود به پنل مدیریت با شماره همراه حساب مالک پلتفرم وارد شوید. شماره همراه شماره همراه باید ۱۱ رقم باشد و با 09 شروع شود؛ مانند 09100000000. دریافت کد ورود نصب پنل روی دستگاه ورود به این فضا فقط برای مالک پلتفرم مجاز است.",
+      "font": "\"Vazirmatn Variable\", sans-serif",
+      "formMaxWidth": "380px",
+      "headings": [
+        "مدیریت یکپارچهپلتفرم ماکان",
+        "ورود به پنل مدیریت"
+      ],
+      "phoneMaxLength": 11,
+      "phonePattern": "09[0-9]{9}",
+      "title": "ماکان | پنل مدیریت"
+    }
+  },
+  "remoteDeploymentPerformed": false,
+  "remoteObservedCertificate": "app.makanapp.org",
+  "remoteObservedLogin": "client welcome page rather than owner management",
+  "remoteSsh": "root authentication refused; user has no key",
+  "secretFilesIncluded": false
+}

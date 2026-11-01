@@ -9,9 +9,6 @@ const config: NextConfig = {
   devIndicators: false,
   turbopack: { root: process.cwd() },
   serverExternalPackages: [],
-  async redirects() {
-    return [{ source: '/login', destination: '/enter', permanent: true }];
-  },
   async headers() {
     return [
       {

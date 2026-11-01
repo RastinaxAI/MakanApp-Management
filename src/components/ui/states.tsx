@@ -61,7 +61,7 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
       {err.problem.traceId && <small dir="ltr">شناسه پیگیری: {err.problem.traceId}</small>}
       {err.status === 401 ? (
         <Button asChild>
-          <Link href="/enter">ورود به حساب</Link>
+          <Link href="/login">ورود به حساب</Link>
         </Button>
       ) : (
         onRetry &&

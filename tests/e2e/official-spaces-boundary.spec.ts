@@ -9,7 +9,7 @@ async function control(body: Record<string, unknown>) {
   });
 }
 async function login(page: Page) {
-  await page.goto('/enter');
+  await page.goto('/login');
   await page.getByLabel('شماره همراه', { exact: true }).fill('09120000000');
   await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
   await page.getByLabel('کد ورود', { exact: true }).fill('123456');

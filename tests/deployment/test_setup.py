@@ -80,6 +80,7 @@ if name == 'nginx':
         marker.touch(); sys.exit(35)
     result = subprocess.run([os.environ['TEST_NGINX'], '-t', '-e', 'stderr', '-p', str(root), '-c', str(root/'nginx.conf')], capture_output=True)
     if result.returncode: sys.stderr.buffer.write(result.stderr)
+    if failure == 'duplicate': print('nginx: [warn] conflicting server name "management.makanapp.org" on 0.0.0.0:80, ignored', file=sys.stderr)
     sys.exit(result.returncode)
 if name == 'certbot':
     if failure == 'certbot': sys.exit(36)
@@ -87,10 +88,14 @@ if name == 'certbot':
     target.mkdir(parents=True, exist_ok=True)
     for file in ['fullchain.pem','privkey.pem']: shutil.copy2(Path(os.environ['GOOD_CERT'])/file,target/file)
 if name == 'curl' and failure == 'curl': sys.exit(60)
+if name == 'curl' and failure == 'curl-race' and not (root/'first-handshake-failed').exists():
+    (root/'first-handshake-failed').touch(); sys.exit(60)
 if name == 'curl' and any(arg.endswith('/api/health') for arg in args):
     if failure == 'identity-html': print('<html>Web app</html>'); sys.exit(0)
     print(json.dumps({'application': 'makan-client' if failure == 'identity' else 'makan-management-panel', 'status': 'ok'}), end='')
-if name == 'curl' and '%{redirect_url}' in args: print('https://management.makanapp.org/enter' if failure == 'redirect' else 'https://management.makanapp.org/', end='')
+if name == 'curl' and any(arg.endswith('/login') for arg in args) and '--write-out' not in args:
+    print('<main>Web app login</main>' if failure == 'wrong-login' else '<div data-application="makan-management-panel" data-screen="owner-login"></div>', end='')
+if name == 'curl' and '%{redirect_url}' in args: print('https://management.makanapp.org/login' if failure == 'redirect' else 'https://management.makanapp.org/', end='')
 if name == 'curl' and '%{http_code}' in args: print('502' if failure == 'application' else '200', end='')
 if name == 'docker':
     if args == ['ps','-aq'] and (root/'containers.jsonl').exists(): print('test-container')
@@ -222,7 +227,7 @@ sys.exit(0)
             return value
         assert http_get('/')[:2] == (301,'https://management.makanapp.org/')
         assert http_get('/?step=mfa')[:2] == (301,'https://management.makanapp.org/?step=mfa')
-        assert http_get('/enter?step=mfa')[:2] == (301,'https://management.makanapp.org/enter?step=mfa')
+        assert http_get('/login?step=mfa')[:2] == (301,'https://management.makanapp.org/login?step=mfa')
         assert http_get('/login?access=owner-required')[:2] == (301,'https://management.makanapp.org/login?access=owner-required')
         token = first.root/'acme/.well-known/acme-challenge/test-token'
         token.write_text('ACME verification')
@@ -240,7 +245,7 @@ sys.exit(0)
         assert https_get('app.makanapp.org', '/api/health') == (200, None, b'APP')
         assert len(forwarded) == 1
         print('PASS: real Nginx forwards management to its dedicated upstream while app SNI/HTTPS still serves the separate web app')
-        for path, expected in [('/',(302,'/enter')),('/login?step=mfa',(308,'/enter?step=mfa'))]:
+        for path, expected in [('/',(302,'/login'))]:
             with context.wrap_socket(socket.create_connection(('127.0.0.1',39443),timeout=3),server_hostname='management.makanapp.org') as connection:
                 connection.sendall(f'GET {path} HTTP/1.1\r\nHost: management.makanapp.org\r\nConnection: close\r\n\r\n'.encode())
                 response=http.client.HTTPResponse(connection)
@@ -252,6 +257,9 @@ sys.exit(0)
                 assert target.path + ('?' + target.query if target.query else '') == expected[1]
                 response.read()
         print('PASS: actual Nginx HTTP root upgrades to the same HTTPS root URL; query strings, login alias, ACME and trusted SNI/TLS work')
+        assert https_get('management.makanapp.org', '/login')[0] == 200
+        assert https_get('management.makanapp.org', '/enter')[0] == 200
+        print('PASS: Nginx forwards both login URLs without redirecting the login page to another application')
     finally:
         daemon.terminate()
         daemon.wait(timeout=5)
@@ -263,6 +271,14 @@ sys.exit(0)
     assert result.returncode == 0 and not any(c[0]=='certbot' for c in first.calls), (result.stdout, result.stderr)
     print('PASS: repeat repair reuses valid certificate without reissuance')
 
+    warming = Fixture('reload-handshake-race')
+    result = warming.run('curl-race')
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert (warming.root/'first-handshake-failed').exists()
+    assert 'listen 39443 ssl;' in warming.site.read_text()
+    warming.others_intact()
+    print('PASS: TLS validation tolerates a transient handshake during Nginx reload and still verifies the hostname')
+
     suffix = Fixture('suffix')
     suffix.cert('management.makanapp.org-0001', management)
     result = suffix.run()
@@ -272,7 +288,7 @@ sys.exit(0)
     suffix.others_intact()
     print('PASS: valid suffixed lineage selected; wrong-host certificate rejected')
 
-    for failure in ['certbot','nginx','curl','redirect']:
+    for failure in ['certbot','nginx','duplicate','curl','redirect']:
         fixture = Fixture(f'failure-{failure}')
         result = fixture.run(failure)
         assert result.returncode != 0, failure
@@ -292,7 +308,8 @@ sys.exit(0)
     deploy.container('makan-management', port=3000)
     for file in ['Dockerfile','compose.yaml','package.json','package-lock.json','.env.docker.example',
                  'next.config.ts','tsconfig.json','postcss.config.mjs','contracts/platform-permissions.json',
-                 'scripts/docker-start.mjs','src/app/api/health/route.ts','src/app/(protected)/admin/[[...section]]/page.tsx']:
+                 'scripts/docker-start.mjs','src/app/api/health/route.ts','src/app/login/page.tsx',
+                 'src/features/auth/login.tsx','src/app/(protected)/admin/[[...section]]/page.tsx']:
         destination = deploy.project/file
         destination.parent.mkdir(parents=True,exist_ok=True)
         shutil.copy2(REPO/file,destination)
@@ -308,8 +325,16 @@ sys.exit(0)
     assert not incomplete.calls, incomplete.calls
     incomplete.restored()
     print('PASS: incomplete source stops before package, firewall, Nginx or Docker changes')
+    shutil.copy2(REPO/'postcss.config.mjs', incomplete.project/'postcss.config.mjs')
+    login_source = incomplete.project/'src/features/auth/login.tsx'
+    login_source.write_text(login_source.read_text().replace('makan-management-panel', 'makan-client'))
+    result = incomplete.run(mode='deploy')
+    assert result.returncode != 0 and 'Wrong source' in result.stderr
+    assert not incomplete.calls, incomplete.calls
+    incomplete.restored()
+    print('PASS: source from another MakanApp service cannot deploy as the owner panel')
     secret = '12'*32
-    envtext = (deploy.project/'.env.docker.example').read_text().replace('SESSION_SECRET=',f'SESSION_SECRET={secret}').replace('http://94.184.32.84:8090','https://backend.example.test')
+    envtext = (deploy.project/'.env.docker.example').read_text().replace('SESSION_SECRET=',f'SESSION_SECRET={secret}').replace('http://94.184.32.84','https://backend.example.test')
     (deploy.project/'.env.docker').write_text(envtext)
     result = deploy.run('build','deploy')
     assert result.returncode == 37, (result.stdout,result.stderr)
@@ -321,6 +346,17 @@ sys.exit(0)
     assert ssl_index < build_index
     deploy.others_intact()
     print('PASS: full deployment validates Compose; TLS survives failed app build; existing backend and session key preserved')
+
+    for retired_origin in ['http://94.184.32.84:8090', 'http://94.184.32.84:8090/']:
+        (deploy.project/'.env.docker').write_text(envtext.replace('https://backend.example.test', retired_origin))
+        result = deploy.run(mode='--repair')
+        assert result.returncode == 0, (result.stdout, result.stderr)
+        updated = (deploy.project/'.env.docker').read_text()
+        assert '\nBACKEND_BASE_URL=http://94.184.32.84\n' in '\n' + updated
+        assert ':8090' not in updated
+        assert f'SESSION_SECRET={secret}' in updated
+        deploy.others_intact()
+    print('PASS: retired backend origins migrate to port 80 without changing session secrets or other applications')
 
     deploy.log.write_text('')
     result = subprocess.run(['bash', str(deploy.script), '--repair'],
@@ -338,10 +374,10 @@ sys.exit(0)
     deploy.others_intact()
     print('PASS: repair builds and runs only isolated management, ignores inherited legacy namespace/port, preserves secrets and performs no system upgrade')
 
-    for wrong_app in ['identity', 'identity-html']:
+    for wrong_app in ['identity', 'identity-html', 'wrong-login']:
         result = deploy.run(wrong_app, '--repair')
         assert result.returncode != 0
-        assert 'Unexpected application' in result.stderr
+        assert ('Wrong login page' if wrong_app == 'wrong-login' else 'Unexpected application') in result.stderr
         deploy.others_intact()
         print(f'PASS: HTTP 200 with {wrong_app} cannot pass management deployment validation')
 

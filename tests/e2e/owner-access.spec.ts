@@ -8,7 +8,7 @@ async function control(data: Record<string, unknown>) {
   });
 }
 async function verify(page: Page) {
-  await page.goto('/enter');
+  await page.goto('/login');
   await page.getByLabel('شماره همراه', { exact: true }).fill('09120000000');
   await page.getByRole('button', { name: 'دریافت کد ورود' }).click();
   await page.getByLabel('کد ورود', { exact: true }).fill('123456');
@@ -36,7 +36,7 @@ for (const role of [
     await expect(page.locator('.app-shell')).toHaveCount(0);
     expect((await page.request.get('/api/session')).status()).toBe(401);
     await page.goto('/admin/users');
-    await expect(page).toHaveURL(/\/enter$/);
+    await expect(page).toHaveURL(/\/login$/);
   });
 }
 test('platform me 403 rejects an authenticated school Manager before creating a local session', async ({
@@ -85,7 +85,7 @@ test('revoking owner role invalidates session and blocks direct BFF access', asy
   expect((await response.json()).code).toBe('PLATFORM_OWNER_REQUIRED');
   expect((await page.request.get('/api/session')).status()).toBe(401);
   await page.goto('/admin');
-  await expect(page).toHaveURL(/\/enter$/);
+  await expect(page).toHaveURL(/\/login$/);
 });
 test('revocation is checked on a direct page request before any protected shell is returned', async ({
   page,
@@ -96,10 +96,10 @@ test('revocation is checked on a direct page request before any protected shell 
   await control({ manager: true });
   const denied = await page.request.get('/admin/organizations', { maxRedirects: 0 });
   expect(denied.status()).toBe(307);
-  expect(denied.headers().location).toMatch(/^\/enter(?:\?access=owner-required)?$/);
+  expect(denied.headers().location).toMatch(/^\/login(?:\?access=owner-required)?$/);
   expect(await denied.text()).not.toContain('class="app-shell"');
   await page.goto('/admin');
-  await expect(page).toHaveURL(/\/enter(?:\?access=owner-required)?$/);
+  await expect(page).toHaveURL(/\/login(?:\?access=owner-required)?$/);
   await expect(page.locator('.app-shell')).toHaveCount(0);
 });
 test('owner status never grants a school Manager workspace', async ({ page }) => {

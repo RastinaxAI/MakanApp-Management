@@ -116,7 +116,7 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
     }
   }
   return (
-    <div className="login-page">
+    <div className="login-page" data-application="makan-management-panel" data-screen="owner-login">
       <aside className="login-brand-panel">
         <div className="brand">
           <BrandMark />

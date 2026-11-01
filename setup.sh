@@ -15,7 +15,7 @@ Default       Install Ubuntu dependencies, configure HTTPS, build and run the pa
 --diagnose    Print a read-only diagnostic report.
 
 Upload the complete project to /var/www/makanapp/management first.
-Public URL: https://management.makanapp.org/enter
+Public URL: https://management.makanapp.org/login
 HELP
         exit 0
         ;;
@@ -49,6 +49,7 @@ check_project_inputs() {
     for required in Dockerfile compose.yaml package.json package-lock.json .env.docker.example \
         next.config.ts tsconfig.json postcss.config.mjs contracts/platform-permissions.json \
         scripts/docker-start.mjs src/app/api/health/route.ts \
+        src/app/login/page.tsx src/features/auth/login.tsx \
         'src/app/(protected)/admin/[[...section]]/page.tsx'; do
         if [[ ! -f "$PROJECT_DIR/$required" ]]; then
             echo "Missing $PROJECT_DIR/$required. Upload the complete project first." >&2
@@ -57,6 +58,10 @@ check_project_inputs() {
     done
     if [[ ! -d "$PROJECT_DIR/public" ]]; then
         echo "Missing $PROJECT_DIR/public. Upload the complete public assets folder first." >&2
+        return 1
+    fi
+    if ! grep -Fq 'data-application="makan-management-panel"' "$PROJECT_DIR/src/features/auth/login.tsx"; then
+        echo 'Wrong source: the owner management login is missing. Upload MakanManagement, not the web app.' >&2
         return 1
     fi
 }
@@ -129,8 +134,38 @@ sys.exit(0 if body == {"application": "makan-management-panel", "status": "ok"}
 '
 }
 
+check_management_login() {
+    curl --fail --silent --show-error --noproxy '*' --connect-timeout 5 --max-time 15 "$@" | \
+        python3 -c '
+from html.parser import HTMLParser
+import sys
+
+class OwnerLogin(HTMLParser):
+    found = False
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if (attrs.get("data-application") == "makan-management-panel"
+                and attrs.get("data-screen") == "owner-login"):
+            self.found = True
+
+page = OwnerLogin()
+page.feed(sys.stdin.read())
+sys.exit(0 if page.found else
+         "Wrong login page: management is serving another app or an old image. Check the uploaded source and duplicate Nginx server_name entries.")
+'
+}
+
 reload_nginx() {
-    nginx -t
+    local validation
+    if ! validation=$(nginx -t 2>&1); then
+        printf '%s\n' "$validation" >&2
+        return 1
+    fi
+    printf '%s\n' "$validation"
+    if [[ "$validation" == *'conflicting server name "management.makanapp.org"'* ]]; then
+        echo 'Duplicate management.makanapp.org virtual host. Run setup.sh --diagnose and keep this domain in one active site only.' >&2
+        return 1
+    fi
     if systemctl is-active --quiet nginx; then
         systemctl reload nginx
     else
@@ -207,7 +242,7 @@ NGINX
 }
 
 configure_ssl() {
-    local candidate name target staged entry_redirect https_status
+    local candidate name target staged entry_redirect https_status attempt
     install -d -m 755 /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/snippets
     install -d -m 755 "$ACME_ROOT" "$ACME_ROOT/.well-known" "$ACME_ROOT/.well-known/acme-challenge"
     install -d -m 700 /var/backups/makanapp-management
@@ -246,10 +281,7 @@ gzip_min_length 256;
 gzip_types text/plain text/css text/javascript application/javascript application/json application/xml text/xml image/svg+xml;
 
 location = / {
-    return 302 /enter$is_args$args;
-}
-location = /login {
-    return 308 /enter$is_args$args;
+    return 302 /login$is_args$args;
 }
 location / {
 NGINX
@@ -288,9 +320,20 @@ NGINX
 
     # Check SNI, hostname and the trust chain locally, independently of Docker.
     # An HTTP 502 can mean the application is stopped; it is not a TLS failure.
-    https_status=$(curl --silent --show-error --noproxy '*' --connect-timeout 10 --max-time 30 \
-        --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
-        --write-out '%{http_code}' "https://$DOMAIN/enter")
+    # A successful reload returns before the new workers accept connections.
+    # Retry the verified handshake briefly while old workers leave the listener.
+    for attempt in {1..10}; do
+        if https_status=$(curl --silent --show-error --noproxy '*' --connect-timeout 3 --max-time 5 \
+            --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
+            --write-out '%{http_code}' "https://$DOMAIN/login" 2>&1); then
+            break
+        fi
+        if [[ "$attempt" -eq 10 ]]; then
+            printf '%s\n' "$https_status" >&2
+            rollback_ssl 1
+        fi
+        sleep 1
+    done
     entry_redirect=$(curl --silent --show-error --noproxy '*' --connect-timeout 10 --max-time 30 \
         --resolve "$DOMAIN:80:127.0.0.1" --output /dev/null \
         --write-out '%{redirect_url}' "http://$DOMAIN/")
@@ -311,7 +354,7 @@ HOOK
     systemctl enable --now certbot.timer
     echo "SSL ready: https://$DOMAIN (Nginx backup: $SSL_BACKUP)"
     if [[ "$https_status" != 200 ]]; then
-        echo "TLS is valid, but management /enter returned HTTP $https_status. Check the application with: sudo bash setup.sh --diagnose" >&2
+        echo "TLS is valid, but management /login returned HTTP $https_status. Check the application with: sudo bash setup.sh --diagnose" >&2
     fi
 }
 
@@ -350,8 +393,8 @@ diagnose() {
     if command -v curl >/dev/null 2>&1; then
         echo '--- Direct application response ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
-            --output /dev/null --write-out 'Upstream /enter: HTTP %{http_code}\n' \
-            -H "Host: $DOMAIN" "http://127.0.0.1:$MANAGEMENT_PORT/enter" || true
+            --output /dev/null --write-out 'Upstream /login: HTTP %{http_code}\n' \
+            -H "Host: $DOMAIN" "http://127.0.0.1:$MANAGEMENT_PORT/login" || true
         echo '--- Management application identity ---'
         check_management_identity "http://127.0.0.1:$MANAGEMENT_PORT/api/health" && \
             echo "Identity verified: $COMPOSE_PROJECT" || true
@@ -362,13 +405,13 @@ diagnose() {
             "http://$DOMAIN/" || true
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --resolve "$DOMAIN:443:127.0.0.1" --output /dev/null \
-            --write-out 'Local HTTPS /enter: %{http_code}; TLS verify: %{ssl_verify_result}\n' \
-            "https://$DOMAIN/enter" || true
+            --write-out 'Local HTTPS /login: %{http_code}; TLS verify: %{ssl_verify_result}\n' \
+            "https://$DOMAIN/login" || true
         echo '--- Public DNS, TLS and application response ---'
         curl --silent --show-error --connect-timeout 3 --max-time 8 \
             --output /dev/null \
-            --write-out 'Public HTTPS /enter: %{http_code}; IP: %{remote_ip}; TLS verify: %{ssl_verify_result}\n' \
-            "https://$DOMAIN/enter" || true
+            --write-out 'Public HTTPS /login: %{http_code}; IP: %{remote_ip}; TLS verify: %{ssl_verify_result}\n' \
+            "https://$DOMAIN/login" || true
     fi
     echo 'Diagnostic report complete. No configuration was changed.'
 }
@@ -457,6 +500,10 @@ updates = {
     'MAKAN_PORT': '3101',
     'COMPOSE_PROJECT_NAME': 'makan-management-panel',
 }
+# Migrate the retired test endpoint; preserve deliberately configured alternatives.
+if settings.get('BACKEND_BASE_URL', '').strip("\"'") in ('', 'http://94.184.32.84:8090', 'http://94.184.32.84:8090/'):
+    updates['BACKEND_BASE_URL'] = 'http://94.184.32.84'
+
 result = []
 written = set()
 for line in lines:
@@ -497,11 +544,13 @@ sys.exit(0 if valid else "Deployment configuration is not isolated for the manag
 # Provision TLS before application builds so a build failure cannot skip SSL.
 configure_ssl
 "${COMPOSE[@]}" build web
-"${COMPOSE[@]}" up -d --wait --wait-timeout 240 web
+"${COMPOSE[@]}" up -d --force-recreate --wait --wait-timeout 240 web
 
 check_management_identity "http://127.0.0.1:$MANAGEMENT_PORT/api/health"
 check_management_identity --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/api/health"
 check_management_identity "https://$DOMAIN/api/health"
-curl --fail --silent --show-error --noproxy '*' --connect-timeout 10 --max-time 30 --output /dev/null "https://$DOMAIN/enter"
+check_management_login "http://127.0.0.1:$MANAGEMENT_PORT/login"
+check_management_login --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/login"
+check_management_login "https://$DOMAIN/login"
 
-echo 'Setup complete: https://management.makanapp.org'
+echo 'Setup complete: https://management.makanapp.org/login'

@@ -1,20 +1,3 @@
-import { LoginForm } from '@/features/auth/login';
-import { connection } from 'next/server';
-import { serverConfig } from '@/lib/server/config';
-import { ownerPolicyConfigured } from '@/lib/owner-policy';
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { canonicalLocalLoginUrl } from '@/lib/login-origin';
-export default async function Page() {
-  await connection();
-  const config = serverConfig();
-  const canonical = canonicalLocalLoginUrl((await headers()).get('host'), config.origin);
-  if (canonical) redirect(canonical);
-  return (
-    <LoginForm
-      accessTesting={
-        config.allowUnconfiguredOwnerOtp && !ownerPolicyConfigured(config.ownerRoleKeys)
-      }
-    />
-  );
-}
+// Render the same owner panel for old links, including browsers that cached
+// the former /login -> /enter permanent redirect. Do not create a redirect loop.
+export { default } from '../login/page';

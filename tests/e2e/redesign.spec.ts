@@ -7,7 +7,7 @@ async function ready(page: Page) {
   await expect(page.locator('.skeleton-wrap')).toHaveCount(0);
 }
 async function login(page: Page) {
-  await page.goto('/enter');
+  await page.goto('/login');
   await page.getByLabel('شماره همراه', { exact: true }).fill('09120000000');
   await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
   await page.getByLabel('کد ورود', { exact: true }).fill('123456');
@@ -30,7 +30,7 @@ test.beforeEach(async () => {
 test('new workspace and core pages fit desktop tablet and mobile', async ({ page }) => {
   test.setTimeout(120000);
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/enter');
+  await page.goto('/login');
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: folder + '/login-desktop.png' });
   await login(page);

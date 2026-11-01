@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 async function login(page: Page) {
-  await page.goto('/enter');
+  await page.goto('/login');
   await page.getByLabel('شماره همراه', { exact: true }).fill('09120000000');
   await page.getByRole('button', { name: 'دریافت کد ورود', exact: true }).click();
   await page.getByLabel('کد ورود', { exact: true }).fill('123456');
@@ -81,7 +81,7 @@ test('manifest, icons, worker headers and static-only cache are installable', as
   const worker = await request.get('/sw.js');
   expect(worker.headers()['service-worker-allowed']).toBe('/');
   expect(worker.headers()['cache-control']).toContain('no-store');
-  await page.goto('/enter');
+  await page.goto('/login');
   await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
     'href',
     '/manifest.webmanifest',
@@ -201,7 +201,7 @@ test('logout revokes the push device and unsubscribes before the owner session e
   await expect(page.getByText('اعلان‌ها روی این مرورگر فعال‌اند.', { exact: true })).toBeVisible();
   await page.locator('.account-trigger').click();
   await page.getByText('خروج از حساب', { exact: true }).click();
-  await expect(page).toHaveURL(/\/enter$/);
+  await expect(page).toHaveURL(/\/login$/);
   const state = await (await request.get('http://127.0.0.1:4100/__inspect')).json();
   expect(state.pushDevices).toEqual([]);
   expect(

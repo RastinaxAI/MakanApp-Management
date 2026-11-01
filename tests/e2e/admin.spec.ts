@@ -15,7 +15,7 @@ async function inspect() {
   };
 }
 async function login(page: Page) {
-  await page.goto('/enter');
+  await page.goto('/login');
   await page.getByLabel('شماره همراه', { exact: true }).fill('۰۹۱۲۰۰۰۰۰۰۰');
   await page.getByRole('button', { name: 'دریافت کد ورود' }).click();
   await page.getByLabel('کد ورود', { exact: true }).fill('۱۲۳۴۵۶');
@@ -30,7 +30,7 @@ test('direct routes require a server session and BFF rejects foreign origins', a
   request,
 }) => {
   await page.goto('/admin/organizations');
-  await expect(page).toHaveURL(/\/enter$/);
+  await expect(page).toHaveURL(/\/login$/);
   const res = await request.post('/api/auth/challenge', {
     headers: { Origin: 'https://foreign.example' },
     data: { phoneNumber: '09120000000' },
@@ -50,9 +50,9 @@ test('OTP login hides tokens, uses totals and logout clears access', async ({ pa
   expect(await session.text()).not.toMatch(/test-access|test-refresh|accessToken|refreshToken/);
   await page.getByRole('button', { name: /مدیر آزمایشی/ }).click();
   await page.getByRole('menuitem', { name: 'خروج از حساب' }).click();
-  await expect(page).toHaveURL(/\/enter$/);
+  await expect(page).toHaveURL(/\/login$/);
   await page.goto('/admin');
-  await expect(page).toHaveURL(/\/enter$/);
+  await expect(page).toHaveURL(/\/login$/);
 });
 test('organization list filters persist through refresh and Back', async ({ page }) => {
   await login(page);
@@ -254,7 +254,7 @@ test('RTL responsive layouts fit 375, 768, 1440 and save review screenshots', as
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.screenshot({ path: 'docs/screenshots/dashboard-dark-1440.png', fullPage: true });
   await page.getByRole('button', { name: 'فعال کردن حالت روشن' }).click();
-  await page.goto('/enter');
+  await page.goto('/login');
   await expect(page.getByLabel('شماره همراه', { exact: true })).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: 'docs/screenshots/login-1440.png', fullPage: true });
