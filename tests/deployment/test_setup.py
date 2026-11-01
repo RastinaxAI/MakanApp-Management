@@ -110,7 +110,7 @@ sys.exit(0)
             self.script = self.root/'setup.sh'
             text = (REPO/'setup.sh').read_text().replace('${EUID}', '${TEST_EUID:-0}')
             text = text.replace('3101', str(MANAGEMENT_PORT))
-            for original, replacement in [('/var/www/makanapp/management',self.project),('/etc/nginx',self.nginx),('/etc/letsencrypt',self.root/'etc/letsencrypt'),('/var/www/letsencrypt',self.root/'acme'),('/var/backups/makanapp-management',self.root/'backups'),('/etc/ssl/certs',ca)]:
+            for original, replacement in [('/var/www/makanapp/management',self.project),('/var/www/makanapp',self.root/'www'),('/etc/nginx',self.nginx),('/etc/letsencrypt',self.root/'etc/letsencrypt'),('/var/www/letsencrypt',self.root/'acme'),('/var/backups/makanapp-management',self.root/'backups'),('/etc/ssl/certs',ca)]:
                 text = text.replace(original,str(replacement))
             text = text.replace('listen 80;', 'listen 39180;').replace('listen [::]:80;', 'listen [::]:39180;').replace('listen 443 ssl;', 'listen 39443 ssl;').replace('listen [::]:443 ssl;', 'listen [::]:39443 ssl;')
             self.script.write_text(text)
@@ -290,10 +290,24 @@ sys.exit(0)
 
     deploy = Fixture('build-failure')
     deploy.container('makan-management', port=3000)
-    for file in ['Dockerfile','compose.yaml','package.json','package-lock.json','.env.docker.example','scripts/docker-start.mjs','src/app/api/health/route.ts','src/app/(protected)/admin/[[...section]]/page.tsx']:
+    for file in ['Dockerfile','compose.yaml','package.json','package-lock.json','.env.docker.example',
+                 'next.config.ts','tsconfig.json','postcss.config.mjs','contracts/platform-permissions.json',
+                 'scripts/docker-start.mjs','src/app/api/health/route.ts','src/app/(protected)/admin/[[...section]]/page.tsx']:
         destination = deploy.project/file
         destination.parent.mkdir(parents=True,exist_ok=True)
         shutil.copy2(REPO/file,destination)
+    (deploy.project/'public').mkdir()
+    incomplete = Fixture('incomplete-source')
+    for file in deploy.project.rglob('*'):
+        target = incomplete.project/file.relative_to(deploy.project)
+        if file.is_dir(): target.mkdir(parents=True,exist_ok=True)
+        elif file.name != 'postcss.config.mjs': shutil.copy2(file,target)
+    result = incomplete.run(mode='deploy')
+    assert result.returncode != 0
+    assert 'postcss.config.mjs' in result.stderr
+    assert not incomplete.calls, incomplete.calls
+    incomplete.restored()
+    print('PASS: incomplete source stops before package, firewall, Nginx or Docker changes')
     secret = '12'*32
     envtext = (deploy.project/'.env.docker.example').read_text().replace('SESSION_SECRET=',f'SESSION_SECRET={secret}').replace('http://94.184.32.84:8090','https://backend.example.test')
     (deploy.project/'.env.docker').write_text(envtext)

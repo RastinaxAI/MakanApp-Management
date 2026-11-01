@@ -2,6 +2,63 @@
 
 ## استقرار روی سرور management.makanapp.org
 
+### اجرای سریع روی Ubuntu
+
+| تنظیم | مقدار |
+| --- | --- |
+| رکورد DNS | `A` با نام `management` و مقدار `89.46.217.168` |
+| مسیر پروژه | `/var/www/makanapp/management` |
+| نشانی ورود | `https://management.makanapp.org/enter` |
+| ایمیل SSL | `rastinaxoffice@gmail.com` |
+| ارتباط داخلی Nginx با برنامه | `127.0.0.1:3101` |
+
+۱. رکورد DNS را تنظیم کنید و تا انتشار آن صبر کنید. پورت‌های `80` و `443` در فایروال ارائه‌دهندهٔ سرور باز باشند. اگر DNS دارای پروکسی است، برای راه‌اندازی اولیه آن را روی DNS only بگذارید.
+
+۲. مسیر را بسازید و **کل پروژه** را در آن قرار دهید:
+
+```bash
+sudo mkdir -p /var/www/makanapp/management
+```
+
+فایل `setup.sh` باید مستقیماً در همین مسیر باشد. `Dockerfile`، `compose.yaml`، فایل‌های تنظیمات Next.js، `package.json` و `package-lock.json`، `.env.docker.example` و پوشه‌های `src`، `public`، `scripts` و `contracts` را منتقل کنید. `node_modules`، `.next`، فایل‌های env محلی و پوشه‌های نشست را منتقل نکنید. در به‌روزرسانی‌ها، `.env.docker` موجود روی سرور را حفظ کنید.
+
+۳. نصب اولیه و اجرای پنل:
+
+```bash
+cd /var/www/makanapp/management
+chmod +x setup.sh
+sudo ./setup.sh
+```
+
+اسکریپت وابستگی‌ها و Docker را آماده می‌کند، فایل تنظیمات و کلید نشست خصوصی را در نصب تازه می‌سازد، HTTPS را تنظیم می‌کند و سپس پنل را می‌سازد و اجرا می‌کند. پیش از ارتقای بسته‌ها، وجود فایل‌های ضروری پروژه بررسی می‌شود. لازم نیست روی سرور جداگانه `npm install` یا `npm run build` اجرا کنید.
+
+۴. بعد از پیام موفقیت، نشانی ورود را باز کنید:
+
+```text
+https://management.makanapp.org/enter
+```
+
+برای انتشار نسخه‌های بعدی، فایل‌های جدید پروژه را جایگزین کنید و اجرا کنید:
+
+```bash
+cd /var/www/makanapp/management
+sudo ./setup.sh --repair
+```
+
+| کار | دستور در پوشهٔ پروژه |
+| --- | --- |
+| وضعیت برنامه | `sudo docker compose --project-name makan-management-panel --env-file .env.docker ps` |
+| مشاهدهٔ خطاهای برنامه | `sudo docker compose --project-name makan-management-panel --env-file .env.docker logs --tail 100 web` |
+| بررسی بدون تغییر تنظیمات | `sudo ./setup.sh --diagnose` |
+| اصلاح SSL بدون ساخت دوبارهٔ برنامه | `sudo ./setup.sh --ssl-only` |
+| راهنمای گزینه‌های اسکریپت | `./setup.sh --help` |
+
+**این پنل به اجرای Next.js نیاز دارد.** Nginx درخواست‌ها را به کانتینر برنامه می‌فرستد؛ فایل `.next` به‌تنهایی یک سایت استاتیک قابل آپلود نیست. نسخهٔ جداگانهٔ اسکریپت SPA کنار گذاشته شده و فایل اصلی `setup.sh` تنها مسیر راه‌اندازی این پروژه است. ساخت صفحهٔ موقت `index.html` و تنظیم `try_files` برای این پنل استفاده نمی‌شود.
+
+دستورهای این بخش باید روی سرور Ubuntu اجرا شوند. بررسی محلی فایل‌ها، تأییدکنندهٔ اجرای نصب، DNS یا صدور گواهی روی سرور `89.46.217.168` نیست.
+
+### جزئیات استقرار و عیب‌یابی
+
 اسکریپت `setup.sh` پنل فعلی Next.js را با Docker می‌سازد و اجرا می‌کند. Nginx دامنهٔ مدیریت را به برنامه روی `127.0.0.1:3101` می‌فرستد؛ پورت داخلی کانتینر `3000` است. نشانی عمومی `https://management.makanapp.org` است.
 
 مدیریت با پروژهٔ Docker به نام `makan-management-panel`، ایمیج `makan-management-panel:local` و volume نشست `makan-management-panel_management_sessions` اجرا می‌شود. نام‌ها و پورت قدیمیِ مشترک با وب‌اپ استفاده نمی‌شوند؛ اسکریپت هیچ کانتینر یا volume قدیمی را متوقف یا حذف نمی‌کند. پس از این جداسازی، ورود دوباره به پنل لازم است و نشست‌های قبلی در volume قبلی باقی می‌مانند.

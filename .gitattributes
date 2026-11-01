@@ -1,0 +1,2 @@
+# Keep the Linux deployment entry point executable after a Windows checkout.
+/setup.sh text eol=lf

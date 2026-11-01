@@ -6,7 +6,17 @@ MODE="${1:-deploy}"
 case "$MODE" in
     deploy|--repair|--ssl-only|--diagnose) ;;
     --help|-h)
-        echo 'Usage: sudo bash setup.sh [--repair|--ssl-only|--diagnose]'
+        cat <<'HELP'
+Usage: sudo bash setup.sh [--repair|--ssl-only|--diagnose]
+
+Default       Install Ubuntu dependencies, configure HTTPS, build and run the panel.
+--repair      Deploy an update without upgrading the operating system.
+--ssl-only    Repair this domain's HTTPS without rebuilding the application.
+--diagnose    Print a read-only diagnostic report.
+
+Upload the complete project to /var/www/makanapp/management first.
+Public URL: https://management.makanapp.org/enter
+HELP
         exit 0
         ;;
     *) echo 'Usage: sudo bash setup.sh [--repair|--ssl-only|--diagnose]' >&2; exit 1 ;;
@@ -33,6 +43,23 @@ CERT_DIR="/etc/letsencrypt/live/$DOMAIN"
 ACME_ROOT=/var/www/letsencrypt
 TLS_CHAIN=
 SSL_BACKUP=
+
+check_project_inputs() {
+    local required
+    for required in Dockerfile compose.yaml package.json package-lock.json .env.docker.example \
+        next.config.ts tsconfig.json postcss.config.mjs contracts/platform-permissions.json \
+        scripts/docker-start.mjs src/app/api/health/route.ts \
+        'src/app/(protected)/admin/[[...section]]/page.tsx'; do
+        if [[ ! -f "$PROJECT_DIR/$required" ]]; then
+            echo "Missing $PROJECT_DIR/$required. Upload the complete project first." >&2
+            return 1
+        fi
+    done
+    if [[ ! -d "$PROJECT_DIR/public" ]]; then
+        echo "Missing $PROJECT_DIR/public. Upload the complete public assets folder first." >&2
+        return 1
+    fi
+}
 
 check_management_port() {
     local metadata= container_ids
@@ -355,13 +382,8 @@ export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=a
 
 if [[ "$MODE" != --ssl-only ]]; then
-    for required in Dockerfile compose.yaml package.json package-lock.json .env.docker.example scripts/docker-start.mjs \
-        src/app/api/health/route.ts 'src/app/(protected)/admin/[[...section]]/page.tsx'; do
-        if [[ ! -f "$PROJECT_DIR/$required" ]]; then
-            echo "Missing $PROJECT_DIR/$required. Upload the complete project first." >&2
-            exit 1
-        fi
-    done
+    check_project_inputs
+    install -d -m 755 /var/www/makanapp "$PROJECT_DIR"
     echo "Deploying management panel: project=$COMPOSE_PROJECT; upstream=127.0.0.1:$MANAGEMENT_PORT"
 fi
 
