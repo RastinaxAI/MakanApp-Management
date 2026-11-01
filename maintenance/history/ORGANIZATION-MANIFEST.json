@@ -1,0 +1,546 @@
+[
+  {
+    "source": "archive",
+    "target": "maintenance/history/archive"
+  },
+  {
+    "source": "assets",
+    "target": "maintenance/history/assets"
+  },
+  {
+    "source": "output",
+    "target": "maintenance/history/output"
+  },
+  {
+    "source": "reports",
+    "target": "maintenance/history/reports"
+  },
+  {
+    "source": "infra",
+    "target": "maintenance/history/infra"
+  },
+  {
+    "source": "tmp",
+    "target": "maintenance/generated/tmp"
+  },
+  {
+    "source": "test-results",
+    "target": "maintenance/generated/test-results"
+  },
+  {
+    "source": "playwright-report",
+    "target": "maintenance/generated/playwright-report"
+  },
+  {
+    "source": "docs/admin-integration-20261030-verification.json",
+    "target": "maintenance/history/docs/admin-integration-20261030-verification.json"
+  },
+  {
+    "source": "docs/admin-integration-20261030.md",
+    "target": "maintenance/history/docs/admin-integration-20261030.md"
+  },
+  {
+    "source": "docs/admin-integration-42c51a3-verification.json",
+    "target": "maintenance/history/docs/admin-integration-42c51a3-verification.json"
+  },
+  {
+    "source": "docs/admin-integration-42c51a3.md",
+    "target": "maintenance/history/docs/admin-integration-42c51a3.md"
+  },
+  {
+    "source": "docs/admin-integration-release.md",
+    "target": "maintenance/history/docs/admin-integration-release.md"
+  },
+  {
+    "source": "docs/admin-integration-verification.json",
+    "target": "maintenance/history/docs/admin-integration-verification.json"
+  },
+  {
+    "source": "docs/API_GAPS.md",
+    "target": "maintenance/history/docs/API_GAPS.md"
+  },
+  {
+    "source": "docs/attachment-receiver-client-qa.json",
+    "target": "maintenance/history/docs/attachment-receiver-client-qa.json"
+  },
+  {
+    "source": "docs/cleanup-pending.json",
+    "target": "maintenance/history/docs/cleanup-pending.json"
+  },
+  {
+    "source": "docs/cleanup-verification.json",
+    "target": "maintenance/history/docs/cleanup-verification.json"
+  },
+  {
+    "source": "docs/client-only-scope-qa.json",
+    "target": "maintenance/history/docs/client-only-scope-qa.json"
+  },
+  {
+    "source": "docs/command-line-cleanup-verification.json",
+    "target": "maintenance/history/docs/command-line-cleanup-verification.json"
+  },
+  {
+    "source": "docs/contrast-report.json",
+    "target": "maintenance/history/docs/contrast-report.json"
+  },
+  {
+    "source": "docs/delivery.md",
+    "target": "maintenance/history/docs/delivery.md"
+  },
+  {
+    "source": "docs/deployment.md",
+    "target": "maintenance/history/docs/deployment.md"
+  },
+  {
+    "source": "docs/DESIGN.md",
+    "target": "maintenance/history/docs/DESIGN.md"
+  },
+  {
+    "source": "docs/docker-verification.json",
+    "target": "maintenance/history/docs/docker-verification.json"
+  },
+  {
+    "source": "docs/docker.md",
+    "target": "maintenance/history/docs/docker.md"
+  },
+  {
+    "source": "docs/feature-flags.md",
+    "target": "maintenance/history/docs/feature-flags.md"
+  },
+  {
+    "source": "docs/guide-captures.json",
+    "target": "maintenance/history/docs/guide-captures.json"
+  },
+  {
+    "source": "docs/integration-guide-client-fixture-qa.json",
+    "target": "maintenance/history/docs/integration-guide-client-fixture-qa.json"
+  },
+  {
+    "source": "docs/integration-guide-live-qa.json",
+    "target": "maintenance/history/docs/integration-guide-live-qa.json"
+  },
+  {
+    "source": "docs/jalali-calendar-client-qa.json",
+    "target": "maintenance/history/docs/jalali-calendar-client-qa.json"
+  },
+  {
+    "source": "docs/live-api-check.json",
+    "target": "maintenance/history/docs/live-api-check.json"
+  },
+  {
+    "source": "docs/live-test-account-probe.json",
+    "target": "maintenance/history/docs/live-test-account-probe.json"
+  },
+  {
+    "source": "docs/live-test-account-summary.json",
+    "target": "maintenance/history/docs/live-test-account-summary.json"
+  },
+  {
+    "source": "docs/live-test-accounts-international-history.json",
+    "target": "maintenance/history/docs/live-test-accounts-international-history.json"
+  },
+  {
+    "source": "docs/live-test-accounts.json",
+    "target": "maintenance/history/docs/live-test-accounts.json"
+  },
+  {
+    "source": "docs/live-test-browser-international-history.json",
+    "target": "maintenance/history/docs/live-test-browser-international-history.json"
+  },
+  {
+    "source": "docs/live-test-browser-results.json",
+    "target": "maintenance/history/docs/live-test-browser-results.json"
+  },
+  {
+    "source": "docs/live-test-summary-international-history.json",
+    "target": "maintenance/history/docs/live-test-summary-international-history.json"
+  },
+  {
+    "source": "docs/login-diagnostic-20261029.json",
+    "target": "maintenance/history/docs/login-diagnostic-20261029.json"
+  },
+  {
+    "source": "docs/login-followup-20261029.json",
+    "target": "maintenance/history/docs/login-followup-20261029.json"
+  },
+  {
+    "source": "docs/login-mfa-verification.json",
+    "target": "maintenance/history/docs/login-mfa-verification.json"
+  },
+  {
+    "source": "docs/login-origin-verification.json",
+    "target": "maintenance/history/docs/login-origin-verification.json"
+  },
+  {
+    "source": "docs/login-ui-qa-20261029.json",
+    "target": "maintenance/history/docs/login-ui-qa-20261029.json"
+  },
+  {
+    "source": "docs/navigation-media-qa.json",
+    "target": "maintenance/history/docs/navigation-media-qa.json"
+  },
+  {
+    "source": "docs/navigation-media-ui-qa.json",
+    "target": "maintenance/history/docs/navigation-media-ui-qa.json"
+  },
+  {
+    "source": "docs/otp-connection-check.json",
+    "target": "maintenance/history/docs/otp-connection-check.json"
+  },
+  {
+    "source": "docs/otp-login.md",
+    "target": "maintenance/history/docs/otp-login.md"
+  },
+  {
+    "source": "docs/owner-09120000105-check.json",
+    "target": "maintenance/history/docs/owner-09120000105-check.json"
+  },
+  {
+    "source": "docs/owner-access-source.txt",
+    "target": "maintenance/history/docs/owner-access-source.txt"
+  },
+  {
+    "source": "docs/owner-contract-check.json",
+    "target": "maintenance/history/docs/owner-contract-check.json"
+  },
+  {
+    "source": "docs/owner-grant-check.json",
+    "target": "maintenance/history/docs/owner-grant-check.json"
+  },
+  {
+    "source": "docs/owner-live-api-check.json",
+    "target": "maintenance/history/docs/owner-live-api-check.json"
+  },
+  {
+    "source": "docs/owner-panel-guide.md",
+    "target": "maintenance/history/docs/owner-panel-guide.md"
+  },
+  {
+    "source": "docs/owner-panel-release.md",
+    "target": "maintenance/history/docs/owner-panel-release.md"
+  },
+  {
+    "source": "docs/owner-panel-verification.json",
+    "target": "maintenance/history/docs/owner-panel-verification.json"
+  },
+  {
+    "source": "docs/owner-role-grant-attempt.json",
+    "target": "maintenance/history/docs/owner-role-grant-attempt.json"
+  },
+  {
+    "source": "docs/owner-test-summary.json",
+    "target": "maintenance/history/docs/owner-test-summary.json"
+  },
+  {
+    "source": "docs/performance-and-guide-20261031.json",
+    "target": "maintenance/history/docs/performance-and-guide-20261031.json"
+  },
+  {
+    "source": "docs/performance-cleanup-release.md",
+    "target": "maintenance/history/docs/performance-cleanup-release.md"
+  },
+  {
+    "source": "docs/performance-verification.json",
+    "target": "maintenance/history/docs/performance-verification.json"
+  },
+  {
+    "source": "docs/PLAN.md",
+    "target": "maintenance/history/docs/PLAN.md"
+  },
+  {
+    "source": "docs/PROGRESS.md",
+    "target": "maintenance/history/docs/PROGRESS.md"
+  },
+  {
+    "source": "docs/pwa-release.md",
+    "target": "maintenance/history/docs/pwa-release.md"
+  },
+  {
+    "source": "docs/pwa-verification.json",
+    "target": "maintenance/history/docs/pwa-verification.json"
+  },
+  {
+    "source": "docs/responsive-release.md",
+    "target": "maintenance/history/docs/responsive-release.md"
+  },
+  {
+    "source": "docs/responsive-verification.json",
+    "target": "maintenance/history/docs/responsive-verification.json"
+  },
+  {
+    "source": "docs/school-access-qa.json",
+    "target": "maintenance/history/docs/school-access-qa.json"
+  },
+  {
+    "source": "docs/school-final-review.json",
+    "target": "maintenance/history/docs/school-final-review.json"
+  },
+  {
+    "source": "docs/school-live-qa.json",
+    "target": "maintenance/history/docs/school-live-qa.json"
+  },
+  {
+    "source": "docs/seeded-account-test.md",
+    "target": "maintenance/history/docs/seeded-account-test.md"
+  },
+  {
+    "source": "docs/seeded-live-account-verification.json",
+    "target": "maintenance/history/docs/seeded-live-account-verification.json"
+  },
+  {
+    "source": "docs/test-server-404-20261029.json",
+    "target": "maintenance/history/docs/test-server-404-20261029.json"
+  },
+  {
+    "source": "docs/test-server-connection-20261029.json",
+    "target": "maintenance/history/docs/test-server-connection-20261029.json"
+  },
+  {
+    "source": "docs/test-summary.json",
+    "target": "maintenance/history/docs/test-summary.json"
+  },
+  {
+    "source": "docs/testing.md",
+    "target": "maintenance/history/docs/testing.md"
+  },
+  {
+    "source": "docs/ui-matrix.md",
+    "target": "maintenance/history/docs/ui-matrix.md"
+  },
+  {
+    "source": "docs/ui-redesign-20261030-verification.json",
+    "target": "maintenance/history/docs/ui-redesign-20261030-verification.json"
+  },
+  {
+    "source": "docs/ui-redesign-20261030.md",
+    "target": "maintenance/history/docs/ui-redesign-20261030.md"
+  },
+  {
+    "source": "docs/upgrade-browser-check.json",
+    "target": "maintenance/history/docs/upgrade-browser-check.json"
+  },
+  {
+    "source": "docs/upgrade-contract-audit.json",
+    "target": "maintenance/history/docs/upgrade-contract-audit.json"
+  },
+  {
+    "source": "docs/upgrade-dependency-audit.json",
+    "target": "maintenance/history/docs/upgrade-dependency-audit.json"
+  },
+  {
+    "source": "docs/upgrade-live-browser-check.json",
+    "target": "maintenance/history/docs/upgrade-live-browser-check.json"
+  },
+  {
+    "source": "docs/upgrade-live-route-check.json",
+    "target": "maintenance/history/docs/upgrade-live-route-check.json"
+  },
+  {
+    "source": "docs/upgrade-route-check.json",
+    "target": "maintenance/history/docs/upgrade-route-check.json"
+  },
+  {
+    "source": "docs/visual-handbook-release.md",
+    "target": "maintenance/history/docs/visual-handbook-release.md"
+  },
+  {
+    "source": "docs/visual-handbook-verification.json",
+    "target": "maintenance/history/docs/visual-handbook-verification.json"
+  },
+  {
+    "source": "docs/screenshots/admin-42c51a3",
+    "target": "maintenance/history/docs/screenshots/admin-42c51a3"
+  },
+  {
+    "source": "docs/screenshots/admin-commercial-20261030",
+    "target": "maintenance/history/docs/screenshots/admin-commercial-20261030"
+  },
+  {
+    "source": "docs/screenshots/client-only",
+    "target": "maintenance/history/docs/screenshots/client-only"
+  },
+  {
+    "source": "docs/screenshots/handbook",
+    "target": "maintenance/history/docs/screenshots/handbook"
+  },
+  {
+    "source": "docs/screenshots/integration-guide",
+    "target": "maintenance/history/docs/screenshots/integration-guide"
+  },
+  {
+    "source": "docs/screenshots/jalali-calendar",
+    "target": "maintenance/history/docs/screenshots/jalali-calendar"
+  },
+  {
+    "source": "docs/screenshots/login-diagnostic",
+    "target": "maintenance/history/docs/screenshots/login-diagnostic"
+  },
+  {
+    "source": "docs/screenshots/navigation-media",
+    "target": "maintenance/history/docs/screenshots/navigation-media"
+  },
+  {
+    "source": "docs/screenshots/school",
+    "target": "maintenance/history/docs/screenshots/school"
+  },
+  {
+    "source": "docs/screenshots/upgrade-design-review",
+    "target": "maintenance/history/docs/screenshots/upgrade-design-review"
+  },
+  {
+    "source": "docs/screenshots/upgrade-live-atlas",
+    "target": "maintenance/history/docs/screenshots/upgrade-live-atlas"
+  },
+  {
+    "source": "docs/screenshots/account-without-mfa.png",
+    "target": "maintenance/history/docs/screenshots/account-without-mfa.png"
+  },
+  {
+    "source": "docs/screenshots/dashboard-1440.png",
+    "target": "maintenance/history/docs/screenshots/dashboard-1440.png"
+  },
+  {
+    "source": "docs/screenshots/dashboard-dark-1440.png",
+    "target": "maintenance/history/docs/screenshots/dashboard-dark-1440.png"
+  },
+  {
+    "source": "docs/screenshots/demo-1440.png",
+    "target": "maintenance/history/docs/screenshots/demo-1440.png"
+  },
+  {
+    "source": "docs/screenshots/demo-375.png",
+    "target": "maintenance/history/docs/screenshots/demo-375.png"
+  },
+  {
+    "source": "docs/screenshots/demo-768.png",
+    "target": "maintenance/history/docs/screenshots/demo-768.png"
+  },
+  {
+    "source": "docs/screenshots/login-1440.png",
+    "target": "maintenance/history/docs/screenshots/login-1440.png"
+  },
+  {
+    "source": "docs/screenshots/organizations-1440.png",
+    "target": "maintenance/history/docs/screenshots/organizations-1440.png"
+  },
+  {
+    "source": "docs/screenshots/organizations-375.png",
+    "target": "maintenance/history/docs/screenshots/organizations-375.png"
+  },
+  {
+    "source": "docs/screenshots/organizations-768.png",
+    "target": "maintenance/history/docs/screenshots/organizations-768.png"
+  },
+  {
+    "source": "docs/screenshots/otp-request-current.png",
+    "target": "maintenance/history/docs/screenshots/otp-request-current.png"
+  },
+  {
+    "source": "docs/screenshots/owner-login-2026-10-28.png",
+    "target": "maintenance/history/docs/screenshots/owner-login-2026-10-28.png"
+  },
+  {
+    "source": "docs/screenshots/owner-mfa-login.png",
+    "target": "maintenance/history/docs/screenshots/owner-mfa-login.png"
+  },
+  {
+    "source": "docs/screenshots/owner-panel-desktop.png",
+    "target": "maintenance/history/docs/screenshots/owner-panel-desktop.png"
+  },
+  {
+    "source": "docs/screenshots/owner-panel-mobile.png",
+    "target": "maintenance/history/docs/screenshots/owner-panel-mobile.png"
+  },
+  {
+    "source": "docs/screenshots/owner-setup-choices.png",
+    "target": "maintenance/history/docs/screenshots/owner-setup-choices.png"
+  },
+  {
+    "source": "docs/screenshots/pwa-notifications-mobile.png",
+    "target": "maintenance/history/docs/screenshots/pwa-notifications-mobile.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-account-1024.png",
+    "target": "maintenance/history/docs/screenshots/responsive-account-1024.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-account-1440.png",
+    "target": "maintenance/history/docs/screenshots/responsive-account-1440.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-account-1920.png",
+    "target": "maintenance/history/docs/screenshots/responsive-account-1920.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-account-320.png",
+    "target": "maintenance/history/docs/screenshots/responsive-account-320.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-account-375.png",
+    "target": "maintenance/history/docs/screenshots/responsive-account-375.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-account-430.png",
+    "target": "maintenance/history/docs/screenshots/responsive-account-430.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-account-768.png",
+    "target": "maintenance/history/docs/screenshots/responsive-account-768.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-mobile-review.jpg",
+    "target": "maintenance/history/docs/screenshots/responsive-mobile-review.jpg"
+  },
+  {
+    "source": "docs/screenshots/responsive-setup-320.png",
+    "target": "maintenance/history/docs/screenshots/responsive-setup-320.png"
+  },
+  {
+    "source": "docs/screenshots/responsive-tablet-review.jpg",
+    "target": "maintenance/history/docs/screenshots/responsive-tablet-review.jpg"
+  },
+  {
+    "source": "docs/screenshots/responsive-users-mobile.jpg",
+    "target": "maintenance/history/docs/screenshots/responsive-users-mobile.jpg"
+  },
+  {
+    "source": "docs/screenshots/setup-mobile.png",
+    "target": "maintenance/history/docs/screenshots/setup-mobile.png"
+  },
+  {
+    "source": "scripts/build-visual-handbook.cjs",
+    "target": "maintenance/history/scripts/build-visual-handbook.cjs"
+  },
+  {
+    "source": "scripts/generate-client-contract.mjs",
+    "target": "maintenance/history/scripts/generate-client-contract.mjs"
+  },
+  {
+    "source": "scripts/check-contrast.mjs",
+    "target": "maintenance/history/scripts/check-contrast.mjs"
+  },
+  {
+    "source": "tests/live",
+    "target": "maintenance/history/tests/live"
+  },
+  {
+    "source": "tests/e2e/admin.spec.ts",
+    "target": "maintenance/history/tests/e2e/admin.spec.ts"
+  },
+  {
+    "source": "playwright.personal.config.ts",
+    "target": "maintenance/history/config/playwright.personal.config.ts"
+  },
+  {
+    "source": "components.json",
+    "target": "maintenance/history/config/components.json"
+  },
+  {
+    "source": "tsconfig.tsbuildinfo",
+    "target": "maintenance/generated/types/tsconfig-before-cleanup.tsbuildinfo"
+  },
+  {
+    "source": "docs/backend-gaps.md",
+    "target": "maintenance/history/docs/backend-gaps.md"
+  }
+]

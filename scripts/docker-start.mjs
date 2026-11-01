@@ -3,7 +3,7 @@ import { constants, accessSync, mkdirSync } from 'node:fs';
 // Validate runtime settings before listening; do not print environment values or secrets.
 try {
   if (!/^[a-f0-9]{64}$/i.test(process.env.SESSION_SECRET ?? '')) {
-    throw new Error('SESSION_SECRET must contain 64 hexadecimal characters. See docs/docker.md.');
+    throw new Error('SESSION_SECRET must contain 64 hexadecimal characters. See docs/SERVER.md.');
   }
   for (const key of ['BACKEND_BASE_URL', 'APP_ORIGIN']) {
     const url = new URL(process.env[key]);

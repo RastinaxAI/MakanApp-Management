@@ -150,7 +150,7 @@ test('contract selection keeps the correct owner and fits desktop tablet and mob
   await expect(
     page.getByRole('heading', { name: 'قرارداد تجاری کاربر آزمایشی', exact: true }),
   ).toBeVisible();
-  await fs.mkdir('docs/screenshots/admin-commercial-20261030', { recursive: true });
+  await fs.mkdir('maintenance/generated/screenshots/admin-commercial-20261030', { recursive: true });
   for (const [name, width] of [
     ['desktop', 1440],
     ['tablet', 820],
@@ -161,7 +161,7 @@ test('contract selection keeps the correct owner and fits desktop tablet and mob
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
       .toBe(true);
     await page.screenshot({
-      path: `docs/screenshots/admin-commercial-20261030/${name}.png`,
+      path: `maintenance/generated/screenshots/admin-commercial-20261030/${name}.png`,
       fullPage: true,
     });
   }

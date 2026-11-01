@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "tsBuildInfoFile": "./maintenance/generated/types/tsconfig.tsbuildinfo",
     "plugins": [{ "name": "next" }],
     "paths": { "@/*": ["./src/*"] }
   },
@@ -25,5 +26,5 @@
     "tests/**/*.ts",
     "*.config.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "maintenance", "release"]
 }

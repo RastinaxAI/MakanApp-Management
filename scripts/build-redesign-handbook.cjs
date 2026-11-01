@@ -292,7 +292,7 @@ const html = `<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-
 </style></head><body>${cover}${body}${mobile}${help}</body></html>`;
 
 async function main() {
-  for (const dir of ['tmp/pdfs', 'output/pdf', 'public/guides'])
+  for (const dir of ['maintenance/generated/pdfs', 'maintenance/generated/pdf', 'public/guides'])
     fs.mkdirSync(path.join(root, dir), { recursive: true });
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
@@ -307,9 +307,9 @@ async function main() {
       );
     if (heights.some((p) => p.height > 687))
       throw new Error('Page overflow: ' + JSON.stringify(heights.filter((p) => p.height > 687)));
-    fs.writeFileSync(path.join(root, 'tmp/pdfs/redesign-guide.html'), html);
+    fs.writeFileSync(path.join(root, 'maintenance/generated/pdfs/redesign-guide.html'), html);
     await page.pdf({
-      path: path.join(root, 'output/pdf/MakanApp_Visual_User_Guide_FA.pdf'),
+      path: path.join(root, 'maintenance/generated/pdf/MakanApp_Visual_User_Guide_FA.pdf'),
       format: 'A4',
       landscape: true,
       preferCSSPageSize: true,
@@ -324,7 +324,7 @@ async function main() {
     await browser.close();
   }
   fs.copyFileSync(
-    path.join(root, 'output/pdf/MakanApp_Visual_User_Guide_FA.pdf'),
+    path.join(root, 'maintenance/generated/pdf/MakanApp_Visual_User_Guide_FA.pdf'),
     path.join(root, 'public/guides/makan-owner-guide.pdf'),
   );
 }

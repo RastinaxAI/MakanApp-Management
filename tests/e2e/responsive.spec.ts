@@ -58,7 +58,7 @@ for (const width of [320, 375, 430, 768, 1024, 1440, 1920]) {
     }
     expect(errors).toEqual([]);
     await page.screenshot({
-      path: `docs/screenshots/responsive-account-${width}.png`,
+      path: `maintenance/generated/screenshots/responsive-account-${width}.png`,
       fullPage: true,
     });
   });
@@ -126,6 +126,6 @@ test('tablet filters and narrow setup dialog retain controls without a real muta
     dialog.getByRole('button', { name: 'انتخاب مدیر اولیه', exact: true }),
   ).toBeVisible();
   expect(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
-  await page.screenshot({ path: 'docs/screenshots/responsive-setup-320.png', fullPage: false });
+  await page.screenshot({ path: 'maintenance/generated/screenshots/responsive-setup-320.png', fullPage: false });
   await dialog.getByRole('button', { name: 'بستن', exact: true }).click();
 });

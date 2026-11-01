@@ -7,3 +7,5 @@ src/generated
 test-results
 playwright-report
 next-env.d.ts
+maintenance
+release

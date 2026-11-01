@@ -68,9 +68,9 @@ test('metadata strips excess official flags and private fields rather than creat
   await expect(page.getByText(/مشاهده این فهرست، مجوز ورود به گفتگو/)).toBeVisible();
   await expect(page.getByText('PRIVATE_CONTENT_NOT_FOR_METADATA')).toHaveCount(0);
   await expect(page.getByText('گروه رسمی آزمایشی', { exact: true })).toHaveCount(0);
-  await fs.mkdir('docs/screenshots/admin-42c51a3', { recursive: true });
-  await page.screenshot({ path: 'docs/screenshots/admin-42c51a3/messaging-desktop.png', fullPage: true });
+  await fs.mkdir('maintenance/generated/screenshots/admin-42c51a3', { recursive: true });
+  await page.screenshot({ path: 'maintenance/generated/screenshots/admin-42c51a3/messaging-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-  await page.screenshot({ path: 'docs/screenshots/admin-42c51a3/messaging-mobile.png', fullPage: true });
+  await page.screenshot({ path: 'maintenance/generated/screenshots/admin-42c51a3/messaging-mobile.png', fullPage: true });
 });

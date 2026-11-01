@@ -40987,10 +40987,7 @@
     }
   ],
   "x-makan-snapshot": {
-    "date": "2026-10-30",
-    "origin": "http://94.184.32.84:8090",
-    "guideSourceCommit": "42c51a3",
-    "guideRelease": "20261030-official-spaces-42c51a3",
-    "runtimeCommitVerified": false
+    "date": "2026-11-01",
+    "origin": "http://94.184.32.84:8090"
   }
 }

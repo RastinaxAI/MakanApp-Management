@@ -12,3 +12,5 @@ playwright-report/
 tmp/
 __pycache__/
 *.pyc
+maintenance/generated/
+release/

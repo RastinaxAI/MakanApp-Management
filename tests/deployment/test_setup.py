@@ -334,7 +334,7 @@ sys.exit(0)
     incomplete.restored()
     print('PASS: source from another MakanApp service cannot deploy as the owner panel')
     secret = '12'*32
-    envtext = (deploy.project/'.env.docker.example').read_text().replace('SESSION_SECRET=',f'SESSION_SECRET={secret}').replace('http://94.184.32.84','https://backend.example.test')
+    envtext = (deploy.project/'.env.docker.example').read_text().replace('SESSION_SECRET=',f'SESSION_SECRET={secret}').replace('http://94.184.32.84:8090','https://backend.example.test')
     (deploy.project/'.env.docker').write_text(envtext)
     result = deploy.run('build','deploy')
     assert result.returncode == 37, (result.stdout,result.stderr)
@@ -347,16 +347,36 @@ sys.exit(0)
     deploy.others_intact()
     print('PASS: full deployment validates Compose; TLS survives failed app build; existing backend and session key preserved')
 
-    for retired_origin in ['http://94.184.32.84:8090', 'http://94.184.32.84:8090/']:
+    for retired_origin in ['http://94.184.32.84', 'http://94.184.32.84/']:
         (deploy.project/'.env.docker').write_text(envtext.replace('https://backend.example.test', retired_origin))
         result = deploy.run(mode='--repair')
         assert result.returncode == 0, (result.stdout, result.stderr)
         updated = (deploy.project/'.env.docker').read_text()
-        assert '\nBACKEND_BASE_URL=http://94.184.32.84\n' in '\n' + updated
-        assert ':8090' not in updated
+        assert '\nBACKEND_BASE_URL=http://94.184.32.84:8090\n' in '\n' + updated
+        assert 'BACKEND_BASE_URL=http://94.184.32.84:8090' in updated
         assert f'SESSION_SECRET={secret}' in updated
         deploy.others_intact()
-    print('PASS: retired backend origins migrate to port 80 without changing session secrets or other applications')
+    print('PASS: retired backend origins migrate to port 8090 without changing session secrets or other applications')
+
+    for mode in ['--update', '--start']:
+        deploy.log.write_text('')
+        previous_site = deploy.site.read_text()
+        previous_proxy = deploy.proxy.read_text()
+        result = deploy.run(mode=mode)
+        assert result.returncode == 0, (result.stdout, result.stderr)
+        calls = deploy.calls
+        assert not any(c[0] in ['nginx', 'certbot'] for c in calls), calls
+        assert not any(c[0] == 'ufw' for c in calls), calls
+        assert not any(c[0] == 'apt-get' and 'upgrade' in c for c in calls)
+        assert deploy.site.read_text() == previous_site
+        assert deploy.proxy.read_text() == previous_proxy
+        builds = [c for c in calls if c[0] == 'docker' and 'build' in c]
+        assert bool(builds) == (mode == '--update'), calls
+        starts = [c for c in calls if c[0] == 'docker' and 'up' in c]
+        assert starts and '--no-build' in starts[0] and '--force-recreate' not in starts[0]
+        assert f'SESSION_SECRET={secret}' in (deploy.project/'.env.docker').read_text()
+        deploy.others_intact()
+    print('PASS: update rebuilds only the app; start skips build; both preserve TLS, session secret and other sites')
 
     deploy.log.write_text('')
     result = subprocess.run(['bash', str(deploy.script), '--repair'],
@@ -381,7 +401,7 @@ sys.exit(0)
         deploy.others_intact()
         print(f'PASS: HTTP 200 with {wrong_app} cannot pass management deployment validation')
 
-    shutil.copy2(REPO/'archive/client-before-admin-20261029/compose.yaml', deploy.project/'compose.yaml')
+    shutil.copy2(REPO/'tests/fixtures/legacy-client-compose.yaml', deploy.project/'compose.yaml')
     result = deploy.run(mode='--repair')
     assert result.returncode != 0
     assert 'not isolated' in result.stderr

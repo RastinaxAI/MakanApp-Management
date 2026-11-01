@@ -4,13 +4,15 @@ umask 077
 
 MODE="${1:-deploy}"
 case "$MODE" in
-    deploy|--repair|--ssl-only|--diagnose) ;;
+    deploy|--repair|--update|--start|--ssl-only|--diagnose) ;;
     --help|-h)
         cat <<'HELP'
-Usage: sudo bash setup.sh [--repair|--ssl-only|--diagnose]
+Usage: sudo bash setup.sh [--update|--start|--repair|--ssl-only|--diagnose]
 
-Default       Install Ubuntu dependencies, configure HTTPS, build and run the panel.
---repair      Deploy an update without upgrading the operating system.
+Default       Install missing dependencies, configure HTTPS, build and run the panel.
+--update      Build and deploy code updates; preserve existing Nginx and TLS settings.
+--start       Start the existing image without rebuilding or changing Nginx/TLS.
+--repair      Rebuild the panel and repair this domain's Nginx/TLS configuration.
 --ssl-only    Repair this domain's HTTPS without rebuilding the application.
 --diagnose    Print a read-only diagnostic report.
 
@@ -19,14 +21,14 @@ Public URL: https://management.makanapp.org/login
 HELP
         exit 0
         ;;
-    *) echo 'Usage: sudo bash setup.sh [--repair|--ssl-only|--diagnose]' >&2; exit 1 ;;
+    *) echo 'Usage: sudo bash setup.sh [--update|--start|--repair|--ssl-only|--diagnose]' >&2; exit 1 ;;
 esac
 if [[ "$#" -gt 1 ]]; then
     echo 'Too many arguments.' >&2
     exit 1
 fi
 if [[ "${EUID}" -ne 0 ]]; then
-    echo 'Run this script as root: sudo bash setup.sh [--repair|--ssl-only|--diagnose]' >&2
+    echo 'Run this script as root: sudo bash setup.sh [--update|--start|--repair|--ssl-only|--diagnose]' >&2
     exit 1
 fi
 
@@ -432,11 +434,9 @@ fi
 
 if [[ "$MODE" == deploy ]]; then
     apt-get update
-    apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
     apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx ufw certbot python3-certbot-nginx python3 openssl ca-certificates curl
     ufw allow OpenSSH
     ufw allow 'Nginx Full'
-    ufw --force enable
 else
     # Repair without a system upgrade or restarting existing applications.
     missing=0
@@ -447,7 +447,9 @@ else
         apt-get update
         apt-get install -y nginx certbot openssl ca-certificates curl python3
     fi
-    if command -v ufw >/dev/null 2>&1; then ufw allow 'Nginx Full'; fi
+    if [[ "$MODE" != --update && "$MODE" != --start ]] && command -v ufw >/dev/null 2>&1; then
+        ufw allow 'Nginx Full'
+    fi
 fi
 
 if [[ "$MODE" == --ssl-only ]]; then
@@ -500,9 +502,9 @@ updates = {
     'MAKAN_PORT': '3101',
     'COMPOSE_PROJECT_NAME': 'makan-management-panel',
 }
-# Migrate the retired test endpoint; preserve deliberately configured alternatives.
-if settings.get('BACKEND_BASE_URL', '').strip("\"'") in ('', 'http://94.184.32.84:8090', 'http://94.184.32.84:8090/'):
-    updates['BACKEND_BASE_URL'] = 'http://94.184.32.84'
+# Migrate only the old unported origin; preserve deliberately configured alternatives.
+if settings.get('BACKEND_BASE_URL', '').strip("\"'") in ('', 'http://94.184.32.84', 'http://94.184.32.84/'):
+    updates['BACKEND_BASE_URL'] = 'http://94.184.32.84:8090'
 
 result = []
 written = set()
@@ -541,10 +543,18 @@ valid = (
 sys.exit(0 if valid else "Deployment configuration is not isolated for the management panel. Upload the current project files.")
 '
 
-# Provision TLS before application builds so a build failure cannot skip SSL.
-configure_ssl
-"${COMPOSE[@]}" build web
-"${COMPOSE[@]}" up -d --force-recreate --wait --wait-timeout 240 web
+# TLS repair is separate from routine updates and restarts.
+if [[ "$MODE" == deploy || "$MODE" == --repair ]]; then configure_ssl; fi
+if [[ "$MODE" == --start ]]; then
+    "${COMPOSE[@]}" up -d --no-build --pull never --wait --wait-timeout 240 web
+else
+    "${COMPOSE[@]}" build web
+    if [[ "$MODE" == --repair ]]; then
+        "${COMPOSE[@]}" up -d --force-recreate --wait --wait-timeout 240 web
+    else
+        "${COMPOSE[@]}" up -d --no-build --wait --wait-timeout 240 web
+    fi
+fi
 
 check_management_identity "http://127.0.0.1:$MANAGEMENT_PORT/api/health"
 check_management_identity --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/api/health"

@@ -5,7 +5,7 @@ const source = JSON.parse(
 );
 const snapshot = source['x-makan-snapshot'] ?? {
   date: '2026-10-18',
-  origin: 'http://94.184.32.84',
+  origin: 'http://94.184.32.84:8090',
 };
 await fs.mkdir('src/generated/api', { recursive: true });
 await fs.writeFile('src/generated/api/schema.d.ts', astToString(await openapiTS(source)));

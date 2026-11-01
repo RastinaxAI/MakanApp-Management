@@ -3,6 +3,7 @@ export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: false,
   workers: 1,
+  outputDir: 'maintenance/generated/test-results',
   timeout: 45000,
   expect: { timeout: 15000 },
   use: {
@@ -17,5 +18,8 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 180000,
   },
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: [
+    ['list'],
+    ['html', { open: 'never', outputFolder: 'maintenance/generated/playwright-report' }],
+  ],
 });

@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "api:generate": "node scripts/generate-contract.mjs",
     "api:update": "node scripts/fetch-contract.mjs",
+    "release:package": "node scripts/package-release.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },

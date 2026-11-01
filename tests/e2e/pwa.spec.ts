@@ -226,5 +226,5 @@ test('personal notifications can be marked read and remain usable on narrow phon
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
     true,
   );
-  await page.screenshot({ path: 'docs/screenshots/pwa-notifications-mobile.png', fullPage: true });
+  await page.screenshot({ path: 'maintenance/generated/screenshots/pwa-notifications-mobile.png', fullPage: true });
 });

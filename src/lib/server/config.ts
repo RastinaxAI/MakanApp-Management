@@ -6,7 +6,7 @@ function json<T>(value: string | undefined, fallback: T): T {
   return JSON.parse(value) as T;
 }
 export function serverConfig() {
-  const backend = new URL(process.env.BACKEND_BASE_URL ?? 'http://94.184.32.84');
+  const backend = new URL(process.env.BACKEND_BASE_URL ?? 'http://94.184.32.84:8090');
   if (
     !['http:', 'https:'].includes(backend.protocol) ||
     backend.username ||

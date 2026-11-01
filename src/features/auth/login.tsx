@@ -1,9 +1,6 @@
 'use client';
 import { BrandMark } from '@/components/ui/brand';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import {
   ArrowLeft,
   ShieldCheck,
@@ -17,14 +14,16 @@ import { InstallPanel } from '@/features/pwa/install';
 import { Button } from '@/components/ui/button';
 import { request } from '@/lib/api/client';
 import { ApiError } from '@/lib/api/errors';
-import { latinDigits, number } from '@/lib/formatting';
+import { number } from '@/lib/formatting';
 import type { components } from '@/generated/api/schema';
-import { phoneInputSchema, otpInputSchema } from '@/lib/auth-input';
-
-const schema = z.object({
-  phoneNumber: phoneInputSchema,
-  code: z.string().optional(),
-});
+import {
+  mobilePattern,
+  codePattern,
+  mobileError,
+  codeError,
+  normalizeMobile,
+  normalizeCode,
+} from '@/lib/login-input';
 export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }) {
   const router = useRouter();
   const [accessNotice, setAccessNotice] = useState('');
@@ -35,10 +34,9 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
     [error, setError] = useState<ApiError | null>(null),
     [rateUntil, setRateUntil] = useState(0),
     [busy, setBusy] = useState(false);
-  const form = useForm<z.input<typeof schema>, unknown, z.output<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: { phoneNumber: '', code: '' },
-  });
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [codeInput, setCodeInput] = useState('');
+  const [fieldError, setFieldError] = useState<{ phone?: string; code?: string }>({});
   useEffect(() => {
     const access = new URLSearchParams(window.location.search).get('access');
     if (access === 'owner-required')
@@ -55,30 +53,37 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
     ? Math.max(0, Math.ceil((Date.parse(challenge.expiresAtUtc) - now) / 1000))
     : 0;
   const resendAt = Math.max(rateUntil, challenge ? Date.parse(challenge.resendAvailableAtUtc) : 0);
-  async function submit(values: z.output<typeof schema>) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busy || now < rateUntil || (challenge && remaining <= 0)) return;
+    const phone = normalizeMobile(phoneNumber);
+    const code = normalizeCode(codeInput);
+    if (!mobilePattern.test(phone)) {
+      setFieldError({ phone: mobileError });
+      return;
+    }
+    if (challenge && !codePattern.test(code)) {
+      setFieldError({ code: codeError });
+      return;
+    }
+    setFieldError({});
     setBusy(true);
     setError(null);
     try {
       if (!challenge) {
         const result = await request<components['schemas']['RequestOtpResult']>(
           '/api/auth/challenge',
-          { method: 'POST', body: JSON.stringify({ phoneNumber: values.phoneNumber }) },
+          { method: 'POST', body: JSON.stringify({ phoneNumber: phone }) },
         );
         setChallenge(result);
         setNow(Date.now());
         setTimeout(() => document.getElementById('otp-code')?.focus(), 50);
       } else {
-        const parsedCode = otpInputSchema.safeParse(values.code ?? '');
-        if (!parsedCode.success) {
-          form.setError('code', { message: 'کد ورود باید دقیقاً ۶ رقم باشد.' });
-          return;
-        }
-        const code = parsedCode.data;
         await request<{ authenticated: true }>('/api/auth/verify', {
           method: 'POST',
           body: JSON.stringify({
             challengeId: challenge.challengeId,
-            phoneNumber: values.phoneNumber,
+            phoneNumber: phone,
             code,
             deviceName: 'Makan Management Web',
           }),
@@ -102,11 +107,11 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
         await request('/api/auth/challenge', {
           method: 'POST',
           body: JSON.stringify({
-            phoneNumber: latinDigits(form.getValues('phoneNumber')).replace(/[\s-]/g, ''),
+            phoneNumber: normalizeMobile(phoneNumber),
           }),
         }),
       );
-      form.setValue('code', '');
+      setCodeInput('');
     } catch (e) {
       const err = e instanceof ApiError ? e : new ApiError(503);
       setError(err);
@@ -185,7 +190,7 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
           <p className="login-intro">
             {challenge ? (
               <>
-                کد ارسال‌شده به <bdi dir="ltr">{form.getValues('phoneNumber')}</bdi> را وارد کنید.
+                کد ارسال‌شده به <bdi dir="ltr">{normalizeMobile(phoneNumber)}</bdi> را وارد کنید.
               </>
             ) : (
               'با شماره همراه حساب مالک پلتفرم وارد شوید.'
@@ -202,7 +207,7 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
               {accessNotice}
             </div>
           )}
-          <form className="form-grid login-form" onSubmit={form.handleSubmit(submit)} noValidate>
+          <form className="form-grid login-form" onSubmit={submit} noValidate>
             {!challenge ? (
               <label htmlFor="phone-number">
                 شماره همراه
@@ -217,12 +222,15 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
                   pattern="09[0-9]{9}"
                   placeholder="09123456789"
                   autoFocus
-                  aria-invalid={!!form.formState.errors.phoneNumber}
-                  {...form.register('phoneNumber')}
+                  name="phoneNumber"
+                  aria-invalid={!!fieldError.phone}
+                  value={phoneNumber}
+                  onChange={(event) => {
+                    setPhoneNumber(event.target.value);
+                    setFieldError({});
+                  }}
                 />
-                {form.formState.errors.phoneNumber && (
-                  <span className="field-error">{form.formState.errors.phoneNumber.message}</span>
-                )}
+                {fieldError.phone && <span className="field-error">{fieldError.phone}</span>}
                 <span className="field-help">
                   شماره همراه باید ۱۱ رقم باشد و با 09 شروع شود؛ مانند 09100000000.
                 </span>
@@ -241,12 +249,15 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
                     maxLength={6}
                     pattern="[0-9]{6}"
                     aria-describedby="otp-help"
-                    aria-invalid={!!form.formState.errors.code}
-                    {...form.register('code')}
+                    name="code"
+                    aria-invalid={!!fieldError.code}
+                    value={codeInput}
+                    onChange={(event) => {
+                      setCodeInput(event.target.value);
+                      setFieldError({});
+                    }}
                   />
-                  {form.formState.errors.code && (
-                    <span className="field-error">{form.formState.errors.code.message}</span>
-                  )}
+                  {fieldError.code && <span className="field-error">{fieldError.code}</span>}
                   <span id="otp-help" className="field-help">
                     کد ۶ رقمی ارسال‌شده را وارد کنید.
                   </span>
@@ -294,7 +305,8 @@ export function LoginForm({ accessTesting = false }: { accessTesting?: boolean }
                 onClick={() => {
                   setChallenge(null);
                   setError(null);
-                  form.setValue('code', '');
+                  setCodeInput('');
+                  setFieldError({});
                 }}
               >
                 <ArrowRight size={16} />
