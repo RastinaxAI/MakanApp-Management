@@ -17,6 +17,9 @@ type Schema = {
   maximum?: number;
   minLength?: number;
   maxLength?: number;
+  pattern?: string;
+  'x-normalization'?: string;
+  'x-normalized-max-length'?: number;
 };
 export type Operation = {
   path: string;
@@ -59,8 +62,13 @@ export function validator(input: Schema, utcField = false): z.ZodType {
   } else if (input.type === 'array') result = z.array(validator(input.items ?? {}));
   else if (input.type === 'string') {
     let v = z.string();
+    if (input['x-normalization'] === 'trim') v = v.trim();
     if (input.minLength) v = v.min(input.minLength);
     if (input.maxLength) v = v.max(input.maxLength);
+    if (input['x-normalized-max-length'] !== undefined) v = v.max(input['x-normalized-max-length']);
+    if (input.pattern) v = v.regex(new RegExp(input.pattern));
+    if (input.format === 'byte')
+      v = v.regex(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/);
     result =
       input.format === 'uuid'
         ? // The .NET API also returns canonical non-versioned Guid seed IDs.
@@ -78,9 +86,12 @@ export function validator(input: Schema, utcField = false): z.ZodType {
               v.datetime({ offset: true }),
             )
           : v;
-  } else if (input.type === 'integer') result = z.number().int();
-  else if (input.type === 'number') result = z.number();
-  else if (input.type === 'boolean') result = z.boolean();
+  } else if (input.type === 'integer' || input.type === 'number') {
+    let number = input.type === 'integer' ? z.number().int() : z.number();
+    if (input.minimum !== undefined) number = number.min(input.minimum);
+    if (input.maximum !== undefined) number = number.max(input.maximum);
+    result = number;
+  } else if (input.type === 'boolean') result = z.boolean();
   return input.nullable ? result.nullable() : result;
 }
 const matchers = contract.operations.map((o) => ({

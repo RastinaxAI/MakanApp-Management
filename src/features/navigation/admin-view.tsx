@@ -5,6 +5,18 @@ import { LoadingSkeleton } from '@/components/ui/states';
 const Dashboard = dynamic(() => import('@/features/overview/dashboard').then((m) => m.Dashboard), {
   loading: () => <LoadingSkeleton />,
 });
+const PersonalClassesPage = dynamic(
+  () => import('@/features/personal-classes/pages').then((m) => m.PersonalClassesPage),
+  { loading: () => <LoadingSkeleton /> },
+);
+const PersonalClassRequestDetail = dynamic(
+  () => import('@/features/personal-classes/pages').then((m) => m.PersonalClassRequestDetail),
+  { loading: () => <LoadingSkeleton /> },
+);
+const PersonalClassDetail = dynamic(
+  () => import('@/features/personal-classes/pages').then((m) => m.PersonalClassDetail),
+  { loading: () => <LoadingSkeleton /> },
+);
 const OrganizationsPage = dynamic(
   () => import('@/features/organizations/pages').then((m) => m.OrganizationsPage),
   { loading: () => <LoadingSkeleton /> },
@@ -26,6 +38,15 @@ const EducationPage = dynamic(
 const ClassDetail = dynamic(() => import('@/features/education/pages').then((m) => m.ClassDetail), {
   loading: () => <LoadingSkeleton />,
 });
+const LibraryPage = dynamic(() => import('@/features/library/pages').then((m) => m.LibraryPage), {
+  loading: () => <LoadingSkeleton />,
+});
+const LibraryDetail = dynamic(
+  () => import('@/features/library/pages').then((m) => m.LibraryDetail),
+  {
+    loading: () => <LoadingSkeleton />,
+  },
+);
 const RolesPage = dynamic(() => import('@/features/iam/pages').then((m) => m.RolesPage), {
   loading: () => <LoadingSkeleton />,
 });
@@ -68,6 +89,12 @@ const ModerationDetail = dynamic(
 export function AdminView({ section, id }: { section: string; id?: string }) {
   if (id) {
     switch (section) {
+      case 'personal-class-requests':
+        return <PersonalClassRequestDetail id={id} />;
+      case 'personal-classes':
+        return <PersonalClassDetail id={id} />;
+      case 'library':
+        return <LibraryDetail id={id} />;
       case 'organizations':
         return <OrganizationDetail id={id} />;
       case 'users':
@@ -83,6 +110,11 @@ export function AdminView({ section, id }: { section: string; id?: string }) {
     }
   }
   switch (section) {
+    case 'personal-classes':
+    case 'personal-class-requests':
+      return <PersonalClassesPage />;
+    case 'library':
+      return <LibraryPage />;
     case 'organizations':
       return <OrganizationsPage />;
     case 'users':

@@ -54,6 +54,7 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
             : 'اطلاعات دریافت نشد'}
       </h3>
       <p>{err.message}</p>
+      {err.problem.code && <small dir="ltr">{err.problem.code}</small>}
       {err.problem.code === 'PERMISSION_MAPPING_UNVERIFIED' && (
         <p>نگاشت مجوز این عملیات هنوز توسط تیم Backend تأیید نشده است.</p>
       )}
@@ -76,6 +77,23 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
   );
 }
 const statuses: Record<string, string> = {
+  Submitted: 'ارسال‌شده',
+  UnderReview: 'در حال بررسی',
+  NeedsChanges: 'نیازمند اصلاح',
+  Approved: 'تأیید تشکیل',
+  Provisioning: 'در حال آماده‌سازی',
+  Library: 'کتابخانه',
+  Document: 'سند',
+  Image: 'تصویر',
+  Hidden: 'پنهان',
+  Archived: 'بایگانی‌شده',
+  Ready: 'آماده',
+  Processing: 'در حال پردازش',
+  NotRequested: 'درخواست نشده',
+  PendingValidation: 'در انتظار بررسی',
+  FileValidated: 'فایل بررسی شده',
+  ReviewRequired: 'نیازمند بررسی',
+  Rejected: 'ردشده',
   Private: 'خصوصی',
   Public: 'عمومی',
   Healthy: 'سالم',

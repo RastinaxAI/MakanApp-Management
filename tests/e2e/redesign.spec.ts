@@ -1,6 +1,9 @@
 import { test, expect, type Page } from '@playwright/test';
 import fs from 'node:fs/promises';
-const folder = 'docs/screenshots/redesign-20261030';
+const folder =
+  process.env.MAKAN_GUIDE_SCREENSHOTS === 'true'
+    ? 'docs/screenshots/redesign-20261030'
+    : 'maintenance/generated/redesign-screenshots';
 async function ready(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('main h1')).toBeVisible();

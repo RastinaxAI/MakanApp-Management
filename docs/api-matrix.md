@@ -1,6 +1,6 @@
 # ماتریس قرارداد اجرایی
 
-Snapshot: 2026-11-01، سرور http://94.184.32.84:8090. تولیدشده از OpenAPI واقعی محیط. شناسه نسخه سند اثبات نسخه مستقرشده سرور نیست.
+Snapshot: 2026-11-05، سرور http://94.184.32.84:8090. تولیدشده از OpenAPI واقعی محیط. شناسه نسخه سند اثبات نسخه مستقرشده سرور نیست.
 
 این ماتریس فقط عملیات مجاز پنل مالک و حساب جاری اپراتور را پوشش می‌دهد. وجود API گروه و کانال رسمی در OpenAPI کامل، آن را به قابلیت این پنل تبدیل نمی‌کند؛ مسیرهای مدرسه، گفتگوی خصوصی، پاسخ آموزشی و Repair/Backfill در واسط پنل ارائه نمی‌شوند. مجوزهای زیر نگاشت پیش‌فرض مستند هستند؛ تنظیمات صریح محیط و مجوز جاری پاسخ سرور نیز بررسی می‌شوند.
 
@@ -19,6 +19,14 @@ Snapshot: 2026-11-01، سرور http://94.184.32.84:8090. تولیدشده از 
 | پلتفرم | `GET /api/admin/v1/users/{userId}/communication-age` | بدون بدنه | CommunicationAgeResult | — | platform.users.manage |
 | پلتفرم | `POST /api/admin/v1/users/{userId}/communication-age/verifications` | VerifyCommunicationAgeCommand | CommunicationAgeResult | — | platform.users.manage |
 | پلتفرم | `POST /api/admin/v1/users/{userId}/communication-age/resolve` | VerifyCommunicationAgeCommand | CommunicationAgeResult | — | platform.users.manage |
+| پلتفرم | `GET /api/v1/sources/{id}` | بدون بدنه | EducationalSourceResult | revision | platform.library.sources.manage |
+| پلتفرم | `GET /api/v1/sources/{id}/processing` | بدون بدنه | EducationalSourceResult | revision | platform.library.sources.manage |
+| پلتفرم | `PATCH /api/v1/sources/{id}/draft` | UpdateSourceDraftCommand | EducationalSourceResult | — | platform.library.sources.manage |
+| پلتفرم | `POST /api/v1/sources/{id}/versions` | CreateSourceVersionCommand | EducationalSourceResult | — | platform.library.sources.manage |
+| پلتفرم | `POST /api/v1/sources/{id}/publish` | SourceMutationCommand | EducationalSourceResult | — | platform.library.sources.manage |
+| پلتفرم | `POST /api/v1/sources/{id}/archive` | SourceMutationCommand | EducationalSourceResult | — | platform.library.sources.manage |
+| پلتفرم | `PUT /api/v1/sources/{id}/visibility` | SourceVisibilityCommand | EducationalSourceResult | — | platform.library.sources.manage |
+| پلتفرم | `GET /api/v1/sources/{id}/content` | بدون بدنه | بدون JSON / باینری | revision | platform.library.sources.manage |
 | حساب اپراتور | `GET /api/v1/notifications/devices/web-push/configuration` | بدون بدنه | WebPushClientConfiguration | — | فقط حساب جاری؛ کنترل Backend |
 | حساب اپراتور | `GET /api/v1/notifications/devices` | بدون بدنه | PushDevicePageResult | page, pageSize, includeRevoked | فقط حساب جاری؛ کنترل Backend |
 | حساب اپراتور | `POST /api/v1/notifications/devices` | RegisterPushDeviceCommand | PushDeviceRegistrationResult | — | فقط حساب جاری؛ کنترل Backend |
@@ -55,15 +63,17 @@ Snapshot: 2026-11-01، سرور http://94.184.32.84:8090. تولیدشده از 
 | پلتفرم | `GET /api/admin/v1/role-assignments` | بدون بدنه | PlatformRoleAssignmentPage | userId, roleKey, activeOnly, page, pageSize | platform.roles.read |
 | پلتفرم | `POST /api/admin/v1/role-assignments` | GrantPlatformRoleCommand | PlatformRoleMutationResult | — | platform.roles.manage |
 | پلتفرم | `DELETE /api/admin/v1/role-assignments/{assignmentId}` | EndPlatformRoleAssignmentCommand | PlatformRoleMutationResult | — | platform.roles.manage |
+| پلتفرم | `GET /api/admin/v1/library/sources` | بدون بدنه | SourcePage | Scope, ClassId, Search, Page, PageSize, Status, SourceType | platform.library.sources.manage |
+| پلتفرم | `POST /api/admin/v1/library/sources` | CreateEducationalSourceCommand | EducationalSourceResult | — | platform.library.sources.manage |
 | پلتفرم | `GET /api/admin/v1/messaging/conversations` | بدون بدنه | PlatformConversationMetadataPage | organizationId, type, scope, visibility, status, page, pageSize | platform.messaging.read_metadata |
 | پلتفرم | `GET /api/admin/v1/moderation/cases` | بدون بدنه | PlatformModerationCasePage | status, priority, page, pageSize | platform.moderation.review |
 | پلتفرم | `GET /api/admin/v1/moderation/cases/{caseId}` | بدون بدنه | PlatformModerationCaseDetail | — | platform.moderation.review |
-| پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/expanded-context` | PlatformModerationVersionCommand | PlatformModerationCaseDetail | — | platform.moderation.review |
+| پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/expanded-context` | PlatformModerationVersionCommand | PlatformModerationCaseDetail | — | platform.moderation.enforce + platform.moderation.review |
 | پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/actions` | PlatformModerationActionCommand | PlatformModerationCaseDetail | — | platform.moderation.review |
 | پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/start-review` | PlatformModerationVersionCommand | PlatformModerationCaseDetail | — | platform.moderation.review |
 | پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/resolve` | PlatformCompleteModerationCommand | PlatformModerationCaseDetail | — | platform.moderation.review |
 | پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/dismiss` | PlatformCompleteModerationCommand | PlatformModerationCaseDetail | — | platform.moderation.review |
-| پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/enforce-content-removal` | PlatformModerationVersionCommand | PlatformModerationCaseDetail | — | platform.moderation.review |
+| پلتفرم | `POST /api/admin/v1/moderation/cases/{caseId}/enforce-content-removal` | PlatformModerationVersionCommand | PlatformModerationCaseDetail | — | platform.moderation.enforce + platform.moderation.review |
 | پلتفرم | `GET /api/admin/v1/moderation/cases/{caseId}/evidence/files/{fileAssetId}` | بدون بدنه | بدون JSON / باینری | — | platform.moderation.review |
 | پلتفرم | `GET /api/admin/v1/organizations` | بدون بدنه | PlatformOrganizationPage | search, status, page, pageSize, sortBy, sortDirection | platform.organizations.read |
 | پلتفرم | `POST /api/admin/v1/organizations` | CreatePlatformOrganizationCommand | PlatformProvisioningResult | — | platform.organizations.manage |
@@ -75,7 +85,15 @@ Snapshot: 2026-11-01، سرور http://94.184.32.84:8090. تولیدشده از 
 | پلتفرم | `POST /api/admin/v1/organizations/{organizationId}/invitations` | CreatePlatformInvitationCommand | PlatformInvitationResult | — | platform.organizations.manage |
 | پلتفرم | `PUT /api/admin/v1/organizations/{organizationId}/memberships/{membershipId}/role` | ChangePlatformMembershipRoleCommand | PlatformMembershipMutationResult | — | platform.organizations.manage |
 | پلتفرم | `DELETE /api/admin/v1/organizations/{organizationId}/memberships/{membershipId}` | EndPlatformMembershipCommand | PlatformMembershipMutationResult | — | platform.organizations.manage |
-| پلتفرم | `GET /api/admin/v1/provisioning` | بدون بدنه | PlatformProvisioningPage | status, page, pageSize | platform.provisioning.read |
+| پلتفرم | `PUT /api/admin/v1/personal-classes/{classId}/academic-permissions/{membershipId}` | SetPersonalClassAcademicPermissionCommand | PersonalClassAcademicPermissionDto | — | platform.personal_classes.academic_permissions.manage |
+| پلتفرم | `GET /api/admin/v1/personal-classes/{classId}/academic-permissions` | بدون بدنه | PersonalClassPageOfPersonalClassAcademicPermissionDto | page, pageSize | platform.personal_classes.academic_permissions.manage |
+| پلتفرم | `GET /api/admin/v1/personal-classes/{classId}/history` | بدون بدنه | PersonalClassPageOfPersonalClassHistoryItem | page, pageSize | platform.personal_classes.read |
+| پلتفرم | `GET /api/admin/v1/personal-classes/{classId}/memberships` | بدون بدنه | PersonalClassPageOfPlatformPersonalClassMembershipDto | search, role, activeOnly, page, pageSize | platform.personal_classes.read |
+| پلتفرم | `GET /api/admin/v1/personal-class-requests` | بدون بدنه | PersonalClassPageOfPersonalClassRequestDto | status, page, pageSize | platform.personal_classes.read |
+| پلتفرم | `GET /api/admin/v1/personal-class-requests/{id}` | بدون بدنه | PersonalClassRequestDto | — | platform.personal_classes.read |
+| پلتفرم | `POST /api/admin/v1/personal-class-requests/{id}/review` | ReviewPersonalClassRequestCommand | PersonalClassRequestDto | — | platform.personal_classes.review |
+| پلتفرم | `GET /api/admin/v1/personal-class-requests/{id}/history` | بدون بدنه | PersonalClassPageOfPersonalClassDecisionDto | page, pageSize | platform.personal_classes.read |
+| پلتفرم | `GET /api/admin/v1/provisioning` | بدون بدنه | PlatformProvisioningPage | status, page, pageSize, clientOperationId | platform.provisioning.read |
 | پلتفرم | `POST /api/admin/v1/provisioning` | ProvisionOrganizationCommand | PlatformProvisioningResult | — | platform.provisioning.manage |
 | پلتفرم | `GET /api/admin/v1/operations/notifications` | بدون بدنه | PlatformNotificationOperations | — | platform.notifications.read |
 | پلتفرم | `GET /api/admin/v1/operations/jobs` | بدون بدنه | PlatformJobOperations | — | platform.operations.read |
@@ -88,5 +106,10 @@ Snapshot: 2026-11-01، سرور http://94.184.32.84:8090. تولیدشده از 
 | پلتفرم | `POST /api/admin/v1/users/{userId}/sessions/{sessionId}/revoke` | RevokePlatformSessionsCommand | PlatformSessionRevocationResult | — | platform.sessions.manage |
 | حساب اپراتور | `GET /api/v1/me` | بدون بدنه | CurrentUserResult | — | فقط حساب جاری؛ کنترل Backend |
 | حساب اپراتور | `PATCH /api/v1/me/profile` | CompleteProfileCommand | CurrentUserResult | — | فقط حساب جاری؛ کنترل Backend |
+
+علامت + یعنی همه مجوزهای ذکرشده با هم لازم‌اند. مسیر اختصاصی GET /api/realtime فقط اعلان تغییر access و کلاس شخصی را از جریان حساب دریافت می‌کند؛ محتوای گفتگو، Hub token و جریان خام به مرورگر منتقل نمی‌شوند. رویداد منبع وضعیت نهایی نیست و فقط refetch را راه می‌اندازد.
+
+
+بارگذاری فایل کتابخانه از مسیر اختصاصی POST /api/library/upload به POST /api/v1/files با multipart و فیلد File انجام می‌شود. این مسیر فقط برای مالک دارای مجوز مستقل کتابخانه است؛ فایل‌های عمومی و مسیرهای منابع شخصی/مدرسه در واسط عمومی باز نمی‌شوند. دانلود منابع Library به scope و canDownload جاری وابسته است.
 
 برای required/nullable، enum و جزئیات فیلدها، contracts/openapi.json مرجع دقیق snapshot است. فهرست تاریخی PDF مبنای تولید نیست.

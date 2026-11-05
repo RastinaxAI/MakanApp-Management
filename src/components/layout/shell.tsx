@@ -42,6 +42,8 @@ const groups: { label: string; items: [string, string, LucideIcon, string][] }[]
       ['organizations', 'سازمان‌ها', Building2, '/api/admin/v1/organizations'],
       ['users', 'کاربران', Users, '/api/admin/v1/users'],
       ['education', 'آموزش', GraduationCap, '/api/admin/v1/education/classes'],
+      ['personal-classes', 'کلاس‌های شخصی', GraduationCap, '/api/admin/v1/personal-class-requests'],
+      ['library', 'منابع کتابخانه', BookOpen, '/api/admin/v1/library/sources'],
     ],
   },
   {
@@ -72,6 +74,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const [offline, setOffline] = useState(false);
   const mobileTrigger = useRef<HTMLButtonElement>(null);
   const active = (slug: string) =>
+    (slug === 'personal-classes' && pathname.startsWith('/admin/personal-class-requests')) ||
     pathname === '/admin' + (slug ? '/' + slug : '') ||
     (!!slug && pathname.startsWith('/admin/' + slug + '/'));
   const visibleGroups = groups

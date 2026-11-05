@@ -74,7 +74,7 @@ export function UserDetail({ id }: { id: string }) {
           { key: 'profile', label: 'مشخصات و عضویت‌ها' },
           { key: 'sessions', label: 'نشست‌ها' },
           { key: 'history', label: 'سوابق مدیریتی' },
-          { key: 'security', label: 'امنیت و سن ارتباطی' },
+          { key: 'security', label: 'بررسی اطلاعات سن' },
           ...(can(`/api/admin/v1/commerce/users/${id}/subscription`)
             ? [{ key: 'commercial', label: 'قرارداد و سهمیه‌ها' }]
             : []),
@@ -151,8 +151,8 @@ function CommunicationAge({ id }: { id: string }) {
   if (!can(path)) return null;
   return (
     <Panel
-      title="سن ارتباطی"
-      description="اطلاعات فقط در محدوده مجوز و جریان امنیتی سرور نمایش داده می‌شود."
+      title="بررسی اطلاعات سن"
+      description="اطلاعات سن و بررسی هویت، مجوز پیام‌رسانی ایجاد یا محدود نمی‌کند. این اطلاعات فقط در جریان مستقل بررسی سرور استفاده می‌شود."
     >
       {q.isPending ? (
         <LoadingSkeleton />

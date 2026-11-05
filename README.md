@@ -1,5 +1,7 @@
 # پنل مدیریت ماکان
 
+اتصال جاری بر اساس راهنمای `vNext` و OpenAPI سرور تست در ۵ نوامبر ۲۰۲۶ به‌روز شده است؛ انتخاب مدیر و نسخه عضویت خودکار، پیگیری دقیق درخواست سازمان و مدل نوع‌دار فراگیران متصل‌اند. [راهنمای کلاس‌های شخصی](docs/PERSONAL-CLASSES.md) و [گزارش همین اتصال](docs/INTEGRATION-VNEXT.md) را ببینید.
+
 پنل فارسی مالک پلتفرم، با همان طراحی سرمه‌ای و روشن. ورود فقط برای `PlatformOwner` همراه با `platform.access` است و مجوز هر عملیات جدا بررسی می‌شود. شماره همراه 11 رقمی با شروع 09 و کد ورود دقیقاً 6 رقمی است.
 
 ## اتصال فعال
@@ -21,17 +23,30 @@
 npm run release:package
 ```
 
-بسته و فایل `.sha256` کنارش را به `/tmp` سرور منتقل کنید. `YYYYMMDD` را با تاریخ نام بسته عوض کنید و برای **به‌روزرسانی نصب موجود** اجرا کنید:
+بسته آمادهٔ این تحویل `MakanManagement-server-20261105.tar.gz` است؛ `setup.sh` و راهنماها داخل آن هستند. فایل فشرده و فایل `.sha256` کنارش را از ویندوز به سرور بفرستید:
+
+```powershell
+cd C:\Users\OmidrezaBagheriyan\Desktop\MakanManagement
+scp .\release\MakanManagement-server-20261105.tar.gz .\release\MakanManagement-server-20261105.tar.gz.sha256 omid@89.46.217.168:/tmp/
+ssh omid@89.46.217.168
+```
+
+رمز SSH و sudo در زمان درخواست وارد می‌شوند و داخل فایل‌ها نوشته نمی‌شوند. برای **این ارتقا روی نصب موجود**، داخل نشست سرور اجرا کنید. این بلوک در خطای checksum یا نصب متوقف می‌شود:
 
 ```bash
+sudo bash -e <<'DEPLOY'
 cd /tmp
-sha256sum -c MakanManagement-server-YYYYMMDD.tar.gz.sha256
-sudo tar -xzf MakanManagement-server-YYYYMMDD.tar.gz -C /var/www/makanapp/management
+sha256sum -c MakanManagement-server-20261105.tar.gz.sha256
+install -d -m 755 /var/www/makanapp/management
+tar --no-same-owner --no-same-permissions -xzf MakanManagement-server-20261105.tar.gz -C /var/www/makanapp/management
 cd /var/www/makanapp/management
-sudo bash ./setup.sh --update
+bash ./setup.sh --update
+DEPLOY
 ```
 
 در **نصب تازه** ابتدا پوشه اختصاصی `/var/www/makanapp/management` را بسازید، بسته را در آن استخراج و `sudo bash ./setup.sh` را اجرا کنید. پیش‌نیاز DNS و HTTPS و راهنمای کامل در [SERVER.md](docs/SERVER.md) است. فایل خصوصی `.env.docker` نصب موجود را با نمونه جایگزین نکنید.
+
+برای ارتقای این نسخه روی نصب فعلی از `--update` استفاده کنید؛ تنظیم موجود HTTPS حفظ می‌شود. اگر Nginx قدیمی دارید، روش اعمال سقف آپلود کتابخانه در راهنمای سرور آمده است. نام بسته در تحویل‌های بعدی با تاریخ جدید جایگزین می‌شود.
 
 ## دستورهای سرور
 
@@ -45,6 +60,16 @@ sudo bash ./setup.sh --update
 | گزارش وضعیت بدون تغییر            | `sudo bash ./setup.sh --diagnose`            |
 
 `--update` تنظیم SSL را دوباره نمی‌نویسد؛ `--start` اصلاً برنامه را نمی‌سازد. نصب و آپدیت ارتقای کلی سیستم‌عامل انجام نمی‌دهند. برنامه فعلی تا موفقیت build روشن می‌ماند. بررسی سلامت و هویت واقعی صفحه مالک پس از اجرا انجام می‌شود. این مخزن سایت استاتیک نیست؛ `.next` به‌تنهایی قابل آپلود نیست.
+
+پیش از build، تنظیمات در پوشهٔ خصوصی `app.*` زیر `/var/backups/makanapp-management` ذخیره و image قبلیِ قابل شناسایی با نام `makan-management-panel:previous` حفظ می‌شود. برای بازگشت به همان image:
+
+```bash
+cd /var/www/makanapp/management
+sudo docker image tag makan-management-panel:previous makan-management-panel:local
+sudo bash ./setup.sh --start
+```
+
+بازگشت image به وجود image قبلی نیاز دارد و تنظیمات خصوصی یا volume نشست را به نسخه قدیمی برنمی‌گرداند. در نصب تازه‌ای که image قبلی ندارد، اسکریپت این موضوع را اعلام می‌کند. روش بازیابی فایل و پشتیبان کامل سورس قبل از استخراج در راهنمای سرور آمده است.
 
 ## اجرای محلی ویندوز
 
@@ -77,3 +102,7 @@ docker compose --env-file .env.docker up -d --build --wait --wait-timeout 240
 | `release`               | بسته آماده ارسال به سرور؛ gitignored           |
 
 [راهنمای تصویری قابل ارسال (PDF)](public/guides/makan-owner-guide.pdf) در منوی خود پنل نیز در دسترس است. پرونده‌ها و نشست‌های خصوصی cache آفلاین نمی‌شوند. فایل‌های env و پوشه‌های نشست، خصوصی و جدا از بسته انتشار هستند.
+
+مدیریت منابع کتابخانه پلتفرم نیز متصل است. [راهنمای کتابخانه](docs/LIBRARY.md)، [ماتریس اتصال‌ها](docs/api-matrix.md) و [گزارش تحویل قبلی کتابخانه](docs/INTEGRATION-154c437.md) در پوشه `docs` قرار دارند. PDF تصویری قبلی هنوز بخش جدید کتابخانه را پوشش نمی‌دهد.
+
+اگر تنظیم قدیمی Nginx از پیش باقی مانده است، یک بار `sudo bash ./setup.sh --ssl-only` را اجرا کنید؛ توضیح کامل در راهنمای سرور آمده است.

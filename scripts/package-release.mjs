@@ -34,6 +34,11 @@ const files = [
   'scripts/docker-start.mjs',
   'docs/SERVER.md',
   'docs/DEVELOPMENT.md',
+  'docs/LIBRARY.md',
+  'docs/INTEGRATION-154c437.md',
+  'docs/INTEGRATION-80c2e61.md',
+  'docs/INTEGRATION-VNEXT.md',
+  'docs/PERSONAL-CLASSES.md',
 ];
 async function collect(directory) {
   for (const entry of (await fs.readdir(directory, { withFileTypes: true })).sort((a, b) =>

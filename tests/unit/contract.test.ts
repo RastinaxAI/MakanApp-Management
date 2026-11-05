@@ -141,8 +141,10 @@ describe('Live schema contracts', () => {
       }),
     ).toEqual({ reason: 'پایان انتساب' });
   });
-  it('does not invent a learner schema', () => {
-    expect(contract.schemas.PlatformClassDetail.properties?.activeLearners.items).toEqual({});
+  it('uses the published named learner schema and preserves a nullable connected account', () => {
+    expect(contract.schemas.PlatformClassDetail.properties?.activeLearners.items).toEqual({
+      $ref: '#/components/schemas/PlatformClassPerson',
+    });
     expect(contract.schemas.PlatformEnrollmentItem.properties?.userId.nullable).toBe(true);
   });
   it('honors date-time and UUID validation', () => {

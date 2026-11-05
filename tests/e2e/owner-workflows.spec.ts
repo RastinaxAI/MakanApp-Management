@@ -151,3 +151,50 @@ test('explicit validation rejection allows correction while ambiguous failures p
   const events = (await inspect()).events.filter((e) => e.path.endsWith('/provisioning'));
   expect(events[1].body.clientOperationId).not.toBe(events[0].body.clientOperationId);
 });
+
+test('lost provisioning response is recovered with one exact lookup beyond six hundred unrelated requests', async ({
+  page,
+}) => {
+  await login(page);
+  const d = await start(page);
+  await d.getByRole('button', { name: 'ادامه', exact: true }).click();
+  await control({ provisionResponseLost: true, provisioningStatus: 'Completed' });
+  await d.getByRole('button', { name: 'ثبت نهایی سازمان', exact: true }).click();
+  await expect(d.getByRole('alert')).toBeVisible();
+  const raw = await (await fetch('http://127.0.0.1:4100/__inspect')).json();
+  const target = raw.provisions[0];
+  const unrelated = Array.from({ length: 1000 }, (_, i) => ({
+    ...target,
+    clientOperationId: 'other-' + i,
+  }));
+  await control({ provisions: [...unrelated, target] });
+  await d.getByRole('button', { name: 'بررسی نتیجه درخواست', exact: true }).click();
+  await expect(d.getByRole('heading', { name: 'مدرسه نوآور' })).toBeVisible();
+  const result = await (await fetch('http://127.0.0.1:4100/__inspect')).json();
+  const lookups = result.readQueries.filter(
+    (p: string) => p.includes('/provisioning?') && p.includes('clientOperationId='),
+  );
+  expect(lookups).toHaveLength(1);
+  expect(new URL(lookups[0], 'http://fixture').searchParams.get('clientOperationId')).toBe(
+    target.clientOperationId,
+  );
+  expect(
+    result.events.filter((e: { path: string }) => e.path.endsWith('/provisioning')),
+  ).toHaveLength(1);
+});
+
+test('education uses named learner metadata and preserves learners without a linked account', async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto('/admin/education/00000000-0000-4000-8000-000000000006');
+  await expect(page.getByText('فراگیر بدون حساب', { exact: true })).toBeVisible();
+  await expect(page.getByText('بدون حساب کاربری متصل', { exact: true })).toBeVisible();
+  const state = await (await page.request.get('/api/session')).json();
+  const r = await page.request.get(
+    '/api/backend/api/admin/v1/education/classes/00000000-0000-4000-8000-000000000006',
+    { headers: { Origin: new URL(page.url()).origin, 'X-Makan-Context': state.revision } },
+  );
+  expect(r.status()).toBe(200);
+  expect(await r.text()).not.toContain('DO_NOT_EXPOSE_PRIVATE_ANSWER');
+});

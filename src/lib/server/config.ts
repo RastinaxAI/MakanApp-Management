@@ -1,6 +1,7 @@
 import 'server-only';
 import path from 'node:path';
 import documentedBindings from '../../../contracts/platform-permissions.json';
+import type { PermissionBinding } from '@/lib/permissions';
 function json<T>(value: string | undefined, fallback: T): T {
   if (!value) return fallback;
   return JSON.parse(value) as T;
@@ -30,8 +31,8 @@ export function serverConfig() {
     // remain possible; possession of the policy is still checked for every operation.
     bindings: {
       ...documentedBindings,
-      ...json<Record<string, string>>(process.env.PERMISSION_BINDINGS, {}),
-    } as Record<string, string>,
+      ...json<Record<string, PermissionBinding>>(process.env.PERMISSION_BINDINGS, {}),
+    } as Record<string, PermissionBinding>,
     // Exact backend role keys; never infer owner from a school role or a display label.
     ownerRoleKeys: json<unknown>(process.env.PLATFORM_OWNER_ROLE_KEYS, []),
     // Allows real negative login tests from the local app; never bypasses owner authorization.

@@ -13,11 +13,20 @@ export const errorMessages: Record<number, string> = {
   409: 'وضعیت تغییر کرده یا با این اقدام تعارض دارد. اطلاعات تازه را بررسی کنید.',
   410: 'این دعوت یا منبع پایان یافته است.',
   412: 'اطلاعات توسط کاربر دیگری تغییر کرده است. نسخه تازه را بررسی کنید.',
+  413: 'فایل خالی است یا حجم آن بیش از ۲۰ مگابایت مجاز پنل است.',
   422: 'این اقدام با سیاست‌های سامانه سازگار نیست.',
   429: 'درخواست‌ها بیش از حد مجاز است. کمی صبر کنید.',
   502: 'ارتباط با سرویس برقرار نشد.',
   503: 'سرویس موقتاً در دسترس نیست.',
   504: 'زمان پاسخ‌گویی تمام شد. پیش از تکرار اقدام، نتیجه را بررسی کنید.',
+};
+const businessMessages: Record<string, string> = {
+  PERSONAL_CLASS_MANAGER_REQUIRED:
+    'این عضویت دیگر مدیر فعال و مجاز کلاس نیست. اعضای کلاس را دوباره بررسی کنید.',
+  MEMBERSHIP_LOOKUP_INCOMPLETE:
+    'بررسی کامل عضویت ممکن نشد؛ مجوزی ارسال نشده است. دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.',
+  GRANT_HISTORY_REVIEW_REQUIRED:
+    'چند مجوز جاری برای این عضویت برگشت؛ پیش از تغییر، سوابق را با پشتیبانی بررسی کنید.',
 };
 const serviceMessages: Record<string, string> = {
   OTP_SERVICE_UNAVAILABLE:
@@ -42,7 +51,8 @@ export class ApiError extends Error {
           ? 'ورود به این پنل فقط برای مالک پلتفرم مجاز است. این حساب دسترسی مالک ندارد.'
           : problem.code === 'OWNER_ACCESS_NOT_CONFIGURED'
             ? 'ورود مالک هنوز پیکربندی نشده است. با مسئول سامانه تماس بگیرید.'
-            : (status >= 500 && problem.code && serviceMessages[problem.code]) ||
+            : (status === 409 && problem.code && businessMessages[problem.code]) ||
+              (status >= 500 && problem.code && serviceMessages[problem.code]) ||
               errorMessages[status] ||
               'دریافت اطلاعات با مشکل روبه‌رو شد.',
     );

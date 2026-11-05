@@ -1,6 +1,6 @@
 {
   "source": "MakanApp-Frontend-Backend-Contract.pdf",
-  "reviewedAt": "2026-10-30",
+  "reviewedAt": "2026-11-05",
   "pages": {
     "DELETE /api/admin/v1/organizations/{organizationId}/memberships/{membershipId}": 163,
     "DELETE /api/admin/v1/role-assignments/{assignmentId}": 147,
@@ -107,6 +107,151 @@
       "source": "MakanApp_AdminPanel_Backend_Integration_Guide_20261030_e11d4ec_FA.docx",
       "section": "10.3",
       "release": "20261030-e11d4ec"
-    }
+    },
+    "GET /api/v1/sources/{id}": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "GET /api/v1/sources/{id}/processing": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "PATCH /api/v1/sources/{id}/draft": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "POST /api/v1/sources/{id}/versions": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "POST /api/v1/sources/{id}/publish": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "POST /api/v1/sources/{id}/archive": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "PUT /api/v1/sources/{id}/visibility": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "GET /api/v1/sources/{id}/content": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "GET /api/admin/v1/library/sources": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "POST /api/admin/v1/library/sources": {
+      "source": "MakanApp-AdminPanel-Backend-154c437-FA.pdf",
+      "section": "6",
+      "pages": [
+        5,
+        6
+      ],
+      "release": "154c437"
+    },
+    "POST /api/admin/v1/moderation/cases/{caseId}/expanded-context": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "10",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "POST /api/admin/v1/moderation/cases/{caseId}/enforce-content-removal": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "10",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "PUT /api/admin/v1/personal-classes/{classId}/academic-permissions/{membershipId}": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "9",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "GET /api/admin/v1/personal-classes/{classId}/academic-permissions": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "9",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "GET /api/admin/v1/personal-classes/{classId}/history": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "8-9",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "GET /api/admin/v1/personal-class-requests": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "8-9",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "GET /api/admin/v1/personal-class-requests/{id}": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "8-9",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "POST /api/admin/v1/personal-class-requests/{id}/review": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "8-9",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "GET /api/admin/v1/personal-class-requests/{id}/history": {
+      "source": "MakanApp_Platform_Admin_Backend_Integration_Guide_80c2e61_FA.pdf",
+      "section": "8-9",
+      "release": "80c2e61",
+      "policySource": "Live OpenAPI x-platform-permissions"
+    },
+    "GET /api/admin/v1/personal-classes/{classId}/memberships": "vNext guide pages 11-12; verified live x-platform-permissions 2026-11-05"
   }
 }

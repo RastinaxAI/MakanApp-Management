@@ -352,6 +352,11 @@ function CommandForm({
       {error && (
         <div className="form-message error" role="alert">
           {error.message}
+          {error.problem.code && (
+            <small className="block mt-2" dir="ltr">
+              {error.problem.code}
+            </small>
+          )}
           {error.problem.traceId && (
             <small className="block mt-2" dir="ltr">
               {error.problem.traceId}

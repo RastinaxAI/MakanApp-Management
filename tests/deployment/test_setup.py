@@ -98,7 +98,10 @@ if name == 'curl' and any(arg.endswith('/login') for arg in args) and '--write-o
 if name == 'curl' and '%{redirect_url}' in args: print('https://management.makanapp.org/login' if failure == 'redirect' else 'https://management.makanapp.org/', end='')
 if name == 'curl' and '%{http_code}' in args: print('502' if failure == 'application' else '200', end='')
 if name == 'docker':
-    if args == ['ps','-aq'] and (root/'containers.jsonl').exists(): print('test-container')
+    if args[:2] == ['image','inspect']:
+        if (root/'image.json').exists(): print((root/'image.json').read_text()); sys.exit(0)
+        sys.exit(1)
+    if args[:2] == ['ps','-aq'] and (root/'containers.jsonl').exists(): print('test-container')
     if args[0] == 'inspect' and (root/'containers.jsonl').exists(): print((root/'containers.jsonl').read_text())
     if 'config' in args:
         result = subprocess.run([os.environ['REAL_DOCKER']]+args, capture_output=True)
@@ -187,6 +190,7 @@ sys.exit(0)
     assert not any(c[0] in ['apt-get','chown'] for c in first.calls)
     assert all(c[1] in ['info','ps','inspect'] for c in first.calls if c[0] == 'docker')
     assert f'proxy_pass http://127.0.0.1:{MANAGEMENT_PORT};' in first.proxy.read_text()
+    assert 'client_max_body_size 21m;' in first.proxy.read_text()
     assert not any(c[0]=='systemctl' and 'restart' in c for c in first.calls)
     assert all('--insecure' not in c and '-k' not in c for c in first.calls)
     print('PASS: repair wrong-host certificate without Docker mutations or source; dedicated upstream, real OpenSSL/Nginx validation, app/default settings preserved')
@@ -195,6 +199,14 @@ sys.exit(0)
     import ssl, http.client, http.server, time, threading
     forwarded = []
     class ManagementHandler(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            received = len(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
+            body = json.dumps({'receivedBytes': received}).encode()
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
         def do_GET(self):
             forwarded.append((self.path, self.headers.get('Host')))
             body = json.dumps({'application': 'makan-management-panel', 'status': 'ok'}).encode()
@@ -260,6 +272,19 @@ sys.exit(0)
         assert https_get('management.makanapp.org', '/login')[0] == 200
         assert https_get('management.makanapp.org', '/enter')[0] == 200
         print('PASS: Nginx forwards both login URLs without redirecting the login page to another application')
+        def https_upload(size, send_body=True):
+            with context.wrap_socket(socket.create_connection(('127.0.0.1',39443),timeout=5),server_hostname='management.makanapp.org') as connection:
+                headers = f'POST /api/library/upload HTTP/1.1\r\nHost: management.makanapp.org\r\nContent-Length: {size}\r\nConnection: close\r\n\r\n'
+                connection.sendall(headers.encode())
+                if send_body:
+                    connection.sendall(b'x' * size)
+                response = http.client.HTTPResponse(connection)
+                response.begin()
+                return response.status, response.read()
+        status, body = https_upload(2 * 1024 * 1024)
+        assert status == 200 and json.loads(body)['receivedBytes'] == 2 * 1024 * 1024
+        assert https_upload(22 * 1024 * 1024, send_body=False)[0] == 413
+        print('PASS: real TLS/Nginx accepts Library upload above the former 1MB default and rejects requests above 21MB')
     finally:
         daemon.terminate()
         daemon.wait(timeout=5)
@@ -309,6 +334,8 @@ sys.exit(0)
     for file in ['Dockerfile','compose.yaml','package.json','package-lock.json','.env.docker.example',
                  'next.config.ts','tsconfig.json','postcss.config.mjs','contracts/platform-permissions.json',
                  'scripts/docker-start.mjs','src/app/api/health/route.ts','src/app/login/page.tsx',
+                 'src/features/personal-classes/pages.tsx','src/features/personal-classes/review.tsx',
+                 'src/app/api/realtime/route.ts','src/lib/personal-class-policy.ts','src/generated/api/contract.json','src/features/personal-classes/membership-picker.tsx','src/lib/personal-class-context.ts',
                  'src/features/auth/login.tsx','src/app/(protected)/admin/[[...section]]/page.tsx']:
         destination = deploy.project/file
         destination.parent.mkdir(parents=True,exist_ok=True)
@@ -334,6 +361,20 @@ sys.exit(0)
     incomplete.restored()
     print('PASS: source from another MakanApp service cannot deploy as the owner panel')
     secret = '12'*32
+    previous_image = 'sha256:' + 'a'*64
+    (deploy.root/'image.json').write_text(json.dumps({'id': previous_image, 'labels': {'org.makan.application':'makan-management-panel'}}))
+    missing_env = Fixture('missing-existing-environment')
+    missing_env.container('makan-management-panel', 'makan-management-panel')
+    for item in ['Dockerfile', 'compose.yaml', 'package.json', 'package-lock.json', '.env.docker.example', 'next.config.ts', 'tsconfig.json', 'postcss.config.mjs']:
+        shutil.copy2(REPO/item, missing_env.project/item)
+    for item in ['src', 'contracts', 'scripts', 'public']:
+        shutil.copytree(REPO/item, missing_env.project/item, dirs_exist_ok=True)
+    result = missing_env.run(mode='--update')
+    assert result.returncode != 0 and 'refusing to replace the session key' in result.stderr, (result.stdout, result.stderr)
+    assert not (missing_env.project/'.env.docker').exists()
+    assert not any(c[0]=='docker' and 'build' in c for c in missing_env.calls)
+    missing_env.restored()
+    print('PASS: missing private env in an existing deployment stops before creating a new session key or building')
     envtext = (deploy.project/'.env.docker.example').read_text().replace('SESSION_SECRET=',f'SESSION_SECRET={secret}').replace('http://94.184.32.84:8090','https://backend.example.test')
     (deploy.project/'.env.docker').write_text(envtext)
     result = deploy.run('build','deploy')
@@ -344,8 +385,40 @@ sys.exit(0)
     ssl_index = next(i for i,c in enumerate(deploy.calls) if c[0]=='curl')
     build_index = next(i for i,c in enumerate(deploy.calls) if c[0]=='docker' and 'build' in c)
     assert ssl_index < build_index
+    backups = list((deploy.root/'backups').glob('app.*'))
+    assert len(backups) == 1
+    assert (backups[0]/'env.before').read_text() == envtext
+    assert (backups[0]/'previous-image-id').read_text().strip() == previous_image
+    assert (backups[0]/'env.before').stat().st_mode & 0o777 == 0o600
+    assert backups[0].stat().st_mode & 0o777 == 0o700
+    assert secret not in result.stdout + result.stderr
+    assert any(c[:3] == ['docker','image','tag'] and c[-2:] == [previous_image,'makan-management-panel:previous'] for c in deploy.calls)
+    tag_index = next(i for i,c in enumerate(deploy.calls) if c[:3] == ['docker','image','tag'])
+    assert tag_index < build_index
     deploy.others_intact()
     print('PASS: full deployment validates Compose; TLS survives failed app build; existing backend and session key preserved')
+    print('PASS: private settings and prior image are retained before build without printing the session secret')
+
+    release_file = deploy.project/'src/app/api/realtime/route.ts'
+    release_bytes = release_file.read_bytes()
+    release_file.unlink()
+    result = deploy.run(mode='--update')
+    assert result.returncode != 0 and 'src/app/api/realtime/route.ts' in result.stderr
+    assert not deploy.calls
+    release_file.write_bytes(release_bytes)
+    print('PASS: incomplete vNext upload stops before system, private settings or Docker mutations')
+
+    wrong_image = Fixture('wrong-image-identity')
+    for item in deploy.project.rglob('*'):
+        target = wrong_image.project/item.relative_to(deploy.project)
+        if item.is_dir(): target.mkdir(parents=True,exist_ok=True)
+        else: shutil.copy2(item,target)
+    (wrong_image.root/'image.json').write_text(json.dumps({'id':previous_image,'labels':{'org.makan.application':'makan-client'}}))
+    result = wrong_image.run(mode='--update')
+    assert result.returncode != 0 and 'unexpected identity' in result.stderr
+    assert not any(c[:3] == ['docker','image','tag'] or (c[0]=='docker' and 'build' in c) for c in wrong_image.calls)
+    wrong_image.others_intact()
+    print('PASS: a foreign image cannot overwrite the management rollback tag or start a build')
 
     for retired_origin in ['http://94.184.32.84', 'http://94.184.32.84/']:
         (deploy.project/'.env.docker').write_text(envtext.replace('https://backend.example.test', retired_origin))
@@ -359,6 +432,7 @@ sys.exit(0)
     print('PASS: retired backend origins migrate to port 8090 without changing session secrets or other applications')
 
     for mode in ['--update', '--start']:
+        backup_count = len(list((deploy.root/'backups').glob('app.*')))
         deploy.log.write_text('')
         previous_site = deploy.site.read_text()
         previous_proxy = deploy.proxy.read_text()
@@ -372,6 +446,8 @@ sys.exit(0)
         assert deploy.proxy.read_text() == previous_proxy
         builds = [c for c in calls if c[0] == 'docker' and 'build' in c]
         assert bool(builds) == (mode == '--update'), calls
+        assert len(list((deploy.root/'backups').glob('app.*'))) == backup_count + (mode == '--update')
+        assert any(c[:3] == ['docker','image','tag'] for c in calls) == (mode == '--update')
         starts = [c for c in calls if c[0] == 'docker' and 'up' in c]
         assert starts and '--no-build' in starts[0] and '--force-recreate' not in starts[0]
         assert f'SESSION_SECRET={secret}' in (deploy.project/'.env.docker').read_text()

@@ -9,6 +9,7 @@ import { operationFor, operationKey } from '@/lib/api/contract';
 import { hasCapability } from '@/lib/permissions';
 import { LoadingSkeleton, ErrorState } from '@/components/ui/states';
 import { alignPushIdentity, disablePush } from '@/features/pwa/push-client';
+import { AdminRealtime } from './realtime';
 export type SessionState = {
   user: components['schemas']['CurrentUserResult'];
   platform: components['schemas']['PlatformMeResult'] | null;
@@ -32,6 +33,7 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<SessionState | null>(null);
   const [error, setError] = useState<unknown>();
   const [changing, setChanging] = useState(false);
+  const permissionReloads = useRef(new Map<string, number>());
   const current = useRef<SessionState | null>(null),
     generation = useRef(0),
     loadAbort = useRef<AbortController | null>(null);
@@ -126,12 +128,22 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
     revision: session.revision,
     isCurrent: () => current.current === session && renderedEpoch === generation.current,
     onContextChanged: () => void reload(),
+    onPermissionDenied: (path) => {
+      const key = session.user.id + ':' + path + ':' + [...(session.platform?.permissions??[])].sort().join('|');
+      const last = permissionReloads.current.get(key);
+      if (last !== undefined && Date.now() - last < 30000) return;
+      permissionReloads.current.set(key, Date.now());
+      if (permissionReloads.current.size > 64)
+        permissionReloads.current.delete(permissionReloads.current.keys().next().value!);
+      void reload();
+    },
   };
   function can(path: string, method = 'GET') {
     const op = operationFor(method, path);
     if (!op) return false;
     if (path === '/api/admin/v1/me') return !!session?.platform;
-    if (path.startsWith('/api/admin/')) return hasCapability(session!.capabilities, path, method);
+    if (path.startsWith('/api/admin/') || path.startsWith('/api/v1/sources/'))
+      return hasCapability(session!.capabilities, path, method);
     return (
       !/^\/api\/v1\/(organization|academic|reports\/manager|dashboards\/manager)/.test(path) ||
       (session?.context?.workspaceType === 'Organization' &&
@@ -177,6 +189,7 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
       value={{ session, guard, can, reload, switchWorkspace, logout, changing }}
     >
       <QueryClientProvider client={cache}>
+        <AdminRealtime />
         <div key={session.revision} aria-busy={changing}>
           {changing ? (
             <div className="context-loading">

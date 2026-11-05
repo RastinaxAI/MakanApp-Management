@@ -146,6 +146,31 @@ export function ClassDetail({ id }: { id: string }) {
           <Panel title="مشخصات کلاس">
             <DataView value={data.class} />
           </Panel>
+          <Panel
+            title="فراگیران فعال در خلاصه پاسخ"
+            description={
+              data.activeLearnersTruncated
+                ? 'فهرست محدود شده؛ فهرست کامل در تب فراگیران است.'
+                : 'خلاصه فراگیران فعال همین کلاس'
+            }
+          >
+            {data.activeLearners.length ? (
+              <ul className="readiness-list">
+                {data.activeLearners.map((person) => (
+                  <li key={person.referenceId}>
+                    <div>
+                      <strong>{person.displayName}</strong>
+                      <p className="field-help">
+                        {person.userId ? 'حساب کاربری متصل دارد' : 'بدون حساب کاربری متصل'}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="field-help">فراگیر فعالی در خلاصه پاسخ وجود ندارد.</p>
+            )}
+          </Panel>
           <Panel title="خلاصه جلسات">
             <DataView value={data.sessions} />
           </Panel>

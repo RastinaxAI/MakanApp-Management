@@ -17,6 +17,10 @@ Default       Install missing dependencies, configure HTTPS, build and run the p
 --diagnose    Print a read-only diagnostic report.
 
 Upload the complete project to /var/www/makanapp/management first.
+Release inputs: vNext-20261105 (manager memberships, exact provisioning lookup and typed education).
+Build modes back up private settings and retain the prior management image when available.
+Rollback: sudo docker image tag makan-management-panel:previous makan-management-panel:local
+          sudo bash setup.sh --start
 Public URL: https://management.makanapp.org/login
 HELP
         exit 0
@@ -45,6 +49,7 @@ CERT_DIR="/etc/letsencrypt/live/$DOMAIN"
 ACME_ROOT=/var/www/letsencrypt
 TLS_CHAIN=
 SSL_BACKUP=
+DEPLOY_BACKUP=
 
 check_project_inputs() {
     local required
@@ -52,6 +57,10 @@ check_project_inputs() {
         next.config.ts tsconfig.json postcss.config.mjs contracts/platform-permissions.json \
         scripts/docker-start.mjs src/app/api/health/route.ts \
         src/app/login/page.tsx src/features/auth/login.tsx \
+        src/features/personal-classes/pages.tsx src/features/personal-classes/review.tsx \
+        src/app/api/realtime/route.ts src/lib/personal-class-policy.ts \
+        src/generated/api/contract.json \
+        src/features/personal-classes/membership-picker.tsx src/lib/personal-class-context.ts \
         'src/app/(protected)/admin/[[...section]]/page.tsx'; do
         if [[ ! -f "$PROJECT_DIR/$required" ]]; then
             echo "Missing $PROJECT_DIR/$required. Upload the complete project first." >&2
@@ -66,6 +75,41 @@ check_project_inputs() {
         echo 'Wrong source: the owner management login is missing. Upload MakanManagement, not the web app.' >&2
         return 1
     fi
+}
+
+snapshot_settings() {
+    install -d -m 700 /var/backups/makanapp-management
+    DEPLOY_BACKUP=$(mktemp -d /var/backups/makanapp-management/app.XXXXXX)
+    cp -p "$ENV_FILE" "$DEPLOY_BACKUP/env.before"
+    cp "$PROJECT_DIR/compose.yaml" "$DEPLOY_BACKUP/compose.yaml"
+    chmod 600 "$DEPLOY_BACKUP/env.before" "$DEPLOY_BACKUP/compose.yaml"
+    printf '%s\n' 'vNext-20261105' > "$DEPLOY_BACKUP/release"
+    echo "Private deployment backup: $DEPLOY_BACKUP"
+}
+
+retain_previous_image() {
+    local metadata previous
+    # Inspect only identity and application labels; never print image environment values.
+    if ! metadata=$(docker image inspect --format \
+        '{"id":{{json .Id}},"labels":{{json .Config.Labels}}}' "$COMPOSE_PROJECT:local" 2>/dev/null); then
+        echo 'No previous local management image; image rollback is unavailable for this installation.'
+        return 0
+    fi
+    previous=$(python3 -c '
+import json, re, sys
+try:
+    value = json.load(sys.stdin)
+except (ValueError, TypeError):
+    sys.exit("Cannot verify the previous management image.")
+image = value.get("id", "")
+if (not re.fullmatch(r"sha256:[a-f0-9]{64}", image)
+        or (value.get("labels") or {}).get("org.makan.application") != "makan-management-panel"):
+    sys.exit("Existing management image has an unexpected identity; refusing to replace its rollback tag.")
+print(image)
+' <<< "$metadata")
+    docker image tag "$previous" "$COMPOSE_PROJECT:previous"
+    printf '%s\n' "$previous" > "$DEPLOY_BACKUP/previous-image-id"
+    echo 'Rollback image retained: makan-management-panel:previous'
 }
 
 check_management_port() {
@@ -281,6 +325,7 @@ gzip_vary on;
 gzip_comp_level 5;
 gzip_min_length 256;
 gzip_types text/plain text/css text/javascript application/javascript application/json application/xml text/xml image/svg+xml;
+client_max_body_size 21m;
 
 location = / {
     return 302 /login$is_args$args;
@@ -468,10 +513,19 @@ docker buildx version
 check_management_port
 
 if [[ ! -f "$ENV_FILE" ]]; then
+    # A missing file in an existing installation is not a request to rotate the key.
+    existing_management=$(docker ps -aq \
+        --filter "label=com.docker.compose.project=$COMPOSE_PROJECT" \
+        --filter 'label=com.docker.compose.service=web')
+    if [[ -n "$existing_management" ]]; then
+        echo 'Existing management installation has no .env.docker. Restore its private settings from backup before updating; refusing to replace the session key.' >&2
+        exit 1
+    fi
     install -m 600 "$PROJECT_DIR/.env.docker.example" "$ENV_FILE"
 fi
 chown root:root "$ENV_FILE"
 chmod 600 "$ENV_FILE"
+if [[ "$MODE" != --start ]]; then snapshot_settings; fi
 
 # Read dotenv as data, never as executable shell code. Retain configured secrets
 # and backend/permission settings while selecting the public HTTPS origin.
@@ -519,6 +573,10 @@ for line in lines:
 result.extend(f'{key}={value}' for key, value in updates.items() if key not in written)
 path.write_text('\n'.join(result) + '\n')
 PYTHON
+if [[ -n "$DEPLOY_BACKUP" ]]; then
+    cp -p "$ENV_FILE" "$DEPLOY_BACKUP/env.deployed"
+    chmod 600 "$DEPLOY_BACKUP/env.deployed"
+fi
 
 cd "$PROJECT_DIR"
 # Match the loopback upstream even when the invoking shell has MAKAN_PORT set.
@@ -548,6 +606,7 @@ if [[ "$MODE" == deploy || "$MODE" == --repair ]]; then configure_ssl; fi
 if [[ "$MODE" == --start ]]; then
     "${COMPOSE[@]}" up -d --no-build --pull never --wait --wait-timeout 240 web
 else
+    retain_previous_image
     "${COMPOSE[@]}" build web
     if [[ "$MODE" == --repair ]]; then
         "${COMPOSE[@]}" up -d --force-recreate --wait --wait-timeout 240 web

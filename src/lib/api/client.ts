@@ -9,6 +9,7 @@ type GetResult<P extends GetPaths> = paths[P] extends {
 export type ContextGuard = {
   revision: string;
   onContextChanged?: () => void;
+  onPermissionDenied?: (path: string) => void;
   isCurrent?: () => boolean;
 };
 export async function request<T>(
@@ -28,7 +29,9 @@ export async function request<T>(
       cache: 'no-store',
       credentials: 'same-origin',
       headers: {
-        ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(init.body && !(init.body instanceof FormData)
+          ? { 'Content-Type': 'application/json' }
+          : {}),
         ...(guard ? { 'X-Makan-Context': guard.revision } : {}),
         ...init.headers,
       },
@@ -47,6 +50,11 @@ export async function request<T>(
     ensureCurrent();
     const p = parseProblem(body, response.status, response.headers.get('Retry-After'));
     if (p.code === 'CONTEXT_CHANGED') guard?.onContextChanged?.();
+    if (
+      response.status === 403 &&
+      ['PERMISSION_DENIED', 'PLATFORM_ACCESS_DENIED', 'AUTH_FORBIDDEN'].includes(p.code ?? '')
+    )
+      guard?.onPermissionDenied?.(path);
     if (
       (response.status === 401 || p.code === 'PLATFORM_OWNER_REQUIRED') &&
       typeof window !== 'undefined'

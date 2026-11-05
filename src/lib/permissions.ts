@@ -1,12 +1,18 @@
 import { operationFor, operationKey } from '@/lib/api/contract';
+export type PermissionBinding = string | readonly string[];
 
 export function hasVerifiedPermission(
-  bindings: Record<string, string>,
+  bindings: Record<string, PermissionBinding>,
   permissions: readonly string[],
   operation: string,
 ) {
   const required = bindings[operation];
-  return typeof required === 'string' && required.length > 0 && permissions.includes(required);
+  const keys = typeof required === 'string' ? [required] : required;
+  return (
+    Array.isArray(keys) &&
+    keys.length > 0 &&
+    keys.every((key) => typeof key === 'string' && key.length > 0 && permissions.includes(key))
+  );
 }
 
 export function hasCapability(capabilities: readonly string[], path: string, method = 'GET') {
@@ -16,6 +22,10 @@ export function hasCapability(capabilities: readonly string[], path: string, met
 
 // A parent navigation section is visible if at least one actual read operation is available.
 const sectionReads: Record<string, readonly string[]> = {
+  'personal-classes': [
+    '/api/admin/v1/personal-class-requests',
+    '/api/admin/v1/personal-classes/00000000-0000-0000-0000-000000000001/academic-permissions',
+  ],
   education: ['classes', 'teachers', 'enrollments', 'assignments', 'exams'].map(
     (part) => '/api/admin/v1/education/' + part,
   ),

@@ -50,6 +50,8 @@ export function ListView({
   const [expanded, setExpanded] = useState(false);
   const operation = operationFor('GET', endpoint);
   const queryNames = operation?.parameters.filter((p) => p.in === 'query').map((p) => p.name) ?? [];
+  const searchName = queryNames.includes('Search') ? 'Search' : 'search';
+  const statusName = queryNames.includes('Status') ? 'Status' : 'status';
   const params = new URLSearchParams();
   for (const key of queryNames) {
     const value = fixed[key] ?? search.get(key);
@@ -57,9 +59,18 @@ export function ListView({
   }
   if (queryNames.includes('page') && !params.has('page')) params.set('page', '1');
   if (queryNames.includes('pageNumber') && !params.has('pageNumber')) params.set('pageNumber', '1');
-  if (queryNames.includes('pageSize') && !params.has('pageSize')) params.set('pageSize', '20');
+  if (queryNames.includes('pageSize') && !params.has('pageSize'))
+    params.set(
+      'pageSize',
+      String(operation?.parameters.find((p) => p.name === 'pageSize')?.schema.default ?? 20),
+    );
+  if (queryNames.includes('Page') && !params.has('Page')) params.set('Page', '1');
   if (queryNames.includes('PageNumber') && !params.has('PageNumber')) params.set('PageNumber', '1');
-  if (queryNames.includes('PageSize') && !params.has('PageSize')) params.set('PageSize', '20');
+  if (queryNames.includes('PageSize') && !params.has('PageSize'))
+    params.set(
+      'PageSize',
+      String(operation?.parameters.find((p) => p.name === 'PageSize')?.schema.default ?? 20),
+    );
   const query = useApi<unknown>(endpoint + (params.size ? '?' + params : ''));
   function collect(form: HTMLFormElement) {
     const values: Record<string, string> = {};
@@ -76,10 +87,16 @@ export function ListView({
       if (value) next.set(key, value);
       else next.delete(key);
     }
-    if (!('page' in values) && !('pageNumber' in values) && !('PageNumber' in values)) {
+    if (
+      !('page' in values) &&
+      !('pageNumber' in values) &&
+      !('PageNumber' in values) &&
+      !('Page' in values)
+    ) {
       next.delete('page');
       next.delete('pageNumber');
       next.delete('PageNumber');
+      next.delete('Page');
     }
     router.push(pathname + (next.size ? '?' + next : ''), { scroll: false });
   }
@@ -93,11 +110,13 @@ export function ListView({
   const rows = items.filter(isRecord);
   const total =
     pageData && typeof pageData.totalCount === 'number' ? pageData.totalCount : undefined;
-  const pageName = queryNames.includes('PageNumber')
-    ? 'PageNumber'
-    : queryNames.includes('pageNumber')
-      ? 'pageNumber'
-      : 'page';
+  const pageName = queryNames.includes('Page')
+    ? 'Page'
+    : queryNames.includes('PageNumber')
+      ? 'PageNumber'
+      : queryNames.includes('pageNumber')
+        ? 'pageNumber'
+        : 'page';
   const sizeName = queryNames.includes('PageSize') ? 'PageSize' : 'pageSize';
   const page = Math.max(1, Number(params.get(pageName) ?? 1) || 1);
   const size = Math.max(1, Number(params.get(sizeName) ?? 20) || 20);
@@ -156,6 +175,9 @@ export function ListView({
         'pageNumber',
         'pageSize',
         'PageNumber',
+        'Page',
+        'Search',
+        'Status',
         'PageSize',
         'search',
         'sortBy',
@@ -166,7 +188,7 @@ export function ListView({
   const inlineNames = extraNames.filter((key) => !!referenceKind(key)).slice(0, 2);
   const activeFilters = queryNames.filter(
     (key) =>
-      !/^(page|pageNumber|pageSize|PageNumber|PageSize|sortBy|sortDirection)$/.test(key) &&
+      !/^(page|pageNumber|pageSize|Page|PageNumber|PageSize|sortBy|sortDirection)$/.test(key) &&
       !(key in fixed) &&
       !!search.get(key),
   );
@@ -197,19 +219,23 @@ export function ListView({
             update(collect(e.currentTarget));
           }}
         >
-          {queryNames.includes('search') && (
+          {queryNames.includes(searchName) && (
             <div className="search-input">
               <Search size={17} />
               <input
-                name="search"
+                name={searchName}
                 aria-label="جست‌وجو"
-                defaultValue={search.get('search') ?? ''}
+                defaultValue={search.get(searchName) ?? ''}
                 placeholder="جست‌وجو در فهرست…"
               />
             </div>
           )}
-          {queryNames.includes('status') && (
-            <select name="status" aria-label="وضعیت" defaultValue={search.get('status') ?? ''}>
+          {queryNames.includes(statusName) && (
+            <select
+              name={statusName}
+              aria-label="وضعیت"
+              defaultValue={search.get(statusName) ?? ''}
+            >
               <option value="">همه وضعیت‌ها</option>
               {statusValues.map((v) => (
                 <option key={v} value={v}>
@@ -228,7 +254,7 @@ export function ListView({
               <option value="asc">قدیمی‌ترین ابتدا</option>
             </select>
           )}
-          {(extraNames.length > 0 || queryNames.includes('status')) && (
+          {(extraNames.length > 0 || queryNames.includes(statusName)) && (
             <Button
               className="filters-mobile-trigger"
               type="button"
@@ -240,8 +266,8 @@ export function ListView({
               <span>فیلترها{activeFilters.length ? ` (${number(activeFilters.length)})` : ''}</span>
             </Button>
           )}
-          {(queryNames.includes('search') ||
-            queryNames.includes('status') ||
+          {(queryNames.includes(searchName) ||
+            queryNames.includes(statusName) ||
             extraNames.length > 0) && (
             <Button type="submit" variant="outline" size="sm">
               اعمال فیلتر
@@ -319,10 +345,10 @@ export function ListView({
                 setExpanded(false);
               }}
             >
-              {queryNames.includes('status') && (
+              {queryNames.includes(statusName) && (
                 <label>
                   وضعیت
-                  <select name="status" defaultValue={search.get('status') ?? ''}>
+                  <select name={statusName} defaultValue={search.get(statusName) ?? ''}>
                     <option value="">همه وضعیت‌ها</option>
                     {statusValues.map((v) => (
                       <option key={v} value={v}>
@@ -504,5 +530,6 @@ const filterLabels: Record<string, string> = {
   to: 'پایان بازه',
   academicPeriodId: 'شناسه دوره',
   teacherMembershipId: 'شناسه عضویت معلم',
+  SourceType: 'نوع منبع',
   learnerOrganizationPersonId: 'شناسه پرونده فراگیر',
 };

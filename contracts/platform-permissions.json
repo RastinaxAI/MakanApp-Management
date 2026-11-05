@@ -37,8 +37,14 @@
   "POST /api/admin/v1/commerce/plans/{planId}/versions": "platform.commerce.manage",
   "POST /api/admin/v1/moderation/cases/{caseId}/actions": "platform.moderation.review",
   "POST /api/admin/v1/moderation/cases/{caseId}/dismiss": "platform.moderation.review",
-  "POST /api/admin/v1/moderation/cases/{caseId}/enforce-content-removal": "platform.moderation.review",
-  "POST /api/admin/v1/moderation/cases/{caseId}/expanded-context": "platform.moderation.review",
+  "POST /api/admin/v1/moderation/cases/{caseId}/enforce-content-removal": [
+    "platform.moderation.enforce",
+    "platform.moderation.review"
+  ],
+  "POST /api/admin/v1/moderation/cases/{caseId}/expanded-context": [
+    "platform.moderation.enforce",
+    "platform.moderation.review"
+  ],
   "POST /api/admin/v1/moderation/cases/{caseId}/resolve": "platform.moderation.review",
   "POST /api/admin/v1/moderation/cases/{caseId}/start-review": "platform.moderation.review",
   "POST /api/admin/v1/organizations": "platform.organizations.manage",
@@ -61,5 +67,23 @@
   "GET /api/admin/v1/commerce/plan-versions/{versionId}/validation": "platform.commerce.read",
   "POST /api/admin/v1/commerce/organizations/{ownerId}/commercial-contracts": "platform.commerce.manage",
   "POST /api/admin/v1/commerce/users/{ownerId}/commercial-contracts": "platform.commerce.manage",
-  "GET /api/admin/v1/commerce/history/{targetId}": "platform.commerce.read"
+  "GET /api/admin/v1/commerce/history/{targetId}": "platform.commerce.read",
+  "GET /api/v1/sources/{id}": "platform.library.sources.manage",
+  "GET /api/v1/sources/{id}/processing": "platform.library.sources.manage",
+  "PATCH /api/v1/sources/{id}/draft": "platform.library.sources.manage",
+  "POST /api/v1/sources/{id}/versions": "platform.library.sources.manage",
+  "POST /api/v1/sources/{id}/publish": "platform.library.sources.manage",
+  "POST /api/v1/sources/{id}/archive": "platform.library.sources.manage",
+  "PUT /api/v1/sources/{id}/visibility": "platform.library.sources.manage",
+  "GET /api/v1/sources/{id}/content": "platform.library.sources.manage",
+  "GET /api/admin/v1/library/sources": "platform.library.sources.manage",
+  "POST /api/admin/v1/library/sources": "platform.library.sources.manage",
+  "PUT /api/admin/v1/personal-classes/{classId}/academic-permissions/{membershipId}": "platform.personal_classes.academic_permissions.manage",
+  "GET /api/admin/v1/personal-classes/{classId}/academic-permissions": "platform.personal_classes.academic_permissions.manage",
+  "GET /api/admin/v1/personal-classes/{classId}/history": "platform.personal_classes.read",
+  "GET /api/admin/v1/personal-class-requests": "platform.personal_classes.read",
+  "GET /api/admin/v1/personal-class-requests/{id}": "platform.personal_classes.read",
+  "POST /api/admin/v1/personal-class-requests/{id}/review": "platform.personal_classes.review",
+  "GET /api/admin/v1/personal-class-requests/{id}/history": "platform.personal_classes.read",
+  "GET /api/admin/v1/personal-classes/{classId}/memberships": "platform.personal_classes.read"
 }

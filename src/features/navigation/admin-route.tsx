@@ -4,6 +4,9 @@ const sections = new Set([
   'organizations',
   'users',
   'education',
+  'personal-classes',
+  'personal-class-requests',
+  'library',
   'roles',
   'account',
   'commerce',
@@ -14,6 +17,9 @@ const sections = new Set([
   'moderation',
 ]);
 const detailSections = new Set([
+  'personal-classes',
+  'personal-class-requests',
+  'library',
   'organizations',
   'users',
   'education',

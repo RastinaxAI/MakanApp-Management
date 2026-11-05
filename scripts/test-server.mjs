@@ -3,9 +3,16 @@ import fs from 'node:fs';
 import { createMockBackend } from './mock-backend.mjs';
 const { operations } = JSON.parse(fs.readFileSync('src/generated/api/contract.json', 'utf8'));
 const port = process.env.MAKAN_TEST_PORT ?? '3100';
+const mockPort = Number(process.env.MAKAN_MOCK_PORT ?? '4100');
 const bindings = Object.fromEntries(
   operations
-    .filter((o) => o.path.startsWith('/api/admin/'))
+    .filter(
+      (o) =>
+        o.path.startsWith('/api/admin/') &&
+        !/\/library\/sources|\/personal-class|\/expanded-context$|\/enforce-content-removal$/.test(
+          o.path,
+        ),
+    )
     .map((o) => [o.method + ' ' + o.path, 'fixture.manage']),
 );
 // Exercise the shipped build, avoiding dev watcher/HMR invalidation of active dialogs.
@@ -22,7 +29,7 @@ if (!process.argv.includes('--skip-build')) {
   if (built !== 0) process.exit(typeof built === 'number' ? built : 1);
 }
 const backend = createMockBackend();
-await new Promise((resolve) => backend.listen(4100, '127.0.0.1', resolve));
+await new Promise((resolve) => backend.listen(mockPort, '127.0.0.1', resolve));
 const child = spawn(
   process.execPath,
   ['node_modules/next/dist/bin/next', 'start', '--port', port, '--hostname', '127.0.0.1'],
@@ -31,7 +38,7 @@ const child = spawn(
     windowsHide: true,
     env: {
       ...process.env,
-      BACKEND_BASE_URL: 'http://127.0.0.1:4100',
+      BACKEND_BASE_URL: `http://127.0.0.1:${mockPort}`,
       APP_ORIGIN: `http://127.0.0.1:${port}`,
       SESSION_SECRET: '0'.repeat(64),
       SESSION_DIRECTORY: '.makan-test-sessions',

@@ -139,25 +139,28 @@ function ProvisionForm() {
     setError(null);
     setMessage('');
     try {
-      for (let page = 1; page <= 20; page++) {
-        const res = await request<components['schemas']['PlatformProvisioningPage']>(
-          '/api/backend' + endpoint + '?page=' + page + '&pageSize=30',
-          {},
-          guard,
-        );
-        const found = res.items.find(
-          (item) => item.clientOperationId === payload.clientOperationId,
-        );
-        if (found) {
-          setResult({ request: found, replayed: false });
-          setStep(3);
-          return;
-        }
-        if (page * res.pageSize >= res.totalCount) break;
-      }
-      setMessage(
-        'این شناسه در حداکثر ۶۰۰ درخواست بررسی‌شده پیدا نشد. نبودن آن، اثبات شکست نیست؛ ارسال دوباره فقط با همان اطلاعات و شناسه انجام می‌شود.',
+      const params = new URLSearchParams({
+        clientOperationId: payload.clientOperationId.trim(),
+        page: '1',
+        pageSize: '30',
+      });
+      const res = await request<components['schemas']['PlatformProvisioningPage']>(
+        '/api/backend' + endpoint + '?' + params,
+        {},
+        guard,
       );
+      if (res.items.length === 1 && res.totalCount === 1) {
+        setResult({ request: res.items[0], replayed: false });
+        setStep(3);
+      } else if (res.items.length === 0 && res.totalCount === 0) {
+        setMessage(
+          'نتیجه‌ای برای همین شناسه پیدا نشد؛ نبودن آن، اثبات شکست نیست. در صورت نیاز همان درخواست را دوباره ارسال کنید.',
+        );
+      } else {
+        setMessage(
+          'بیش از یک نتیجه برای این شناسه برگشت. پیش از ارسال دوباره، شناسه پیگیری را با پشتیبانی بررسی کنید.',
+        );
+      }
     } catch (e) {
       setError(e instanceof ApiError ? e : new ApiError(503));
     } finally {

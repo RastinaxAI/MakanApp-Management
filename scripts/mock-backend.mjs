@@ -47,7 +47,16 @@ function reset() {
     notificationRead: false,
     manager: false,
     platformRoles: ['FixtureOwner'],
-    platformPermissions: ['platform.access', 'fixture.manage'],
+    platformPermissions: [
+      'platform.access',
+      'fixture.manage',
+      'platform.library.sources.manage',
+      'platform.personal_classes.read',
+      'platform.personal_classes.review',
+      'platform.personal_classes.academic_permissions.manage',
+      'platform.moderation.review',
+      'platform.moderation.enforce',
+    ],
     platformUserId: ids.user,
     reads: [],
     readDelayMs: 0,
@@ -74,6 +83,25 @@ function reset() {
     planAudience: 'Individual',
     commercialVersion: null,
     commercialHistory: [],
+    sourceVersion: 'source-v1',
+    sourceScope: 'Library',
+    sourcePublished: false,
+    sourceCanDownload: true,
+    librarySources: [],
+    personalVersion: 'AAAAAAAAAAE=',
+    membershipVersion: 'AAAAAAAAAAI=',
+    membershipRole: 'Manager',
+    membershipStatus: 'Active',
+    membershipCanGrant: true,
+    readQueries: [],
+    provisionResponseLost: false,
+    personalStatus: 'Submitted',
+    grantVersion: null,
+    grantCapabilities: 'None',
+    grantIntents: {},
+    accountChanges: [],
+    accountCursorRequests: [],
+    resyncOnce: false,
   };
 }
 reset();
@@ -100,6 +128,7 @@ export function createMockBackend() {
     if (url.pathname === '/__inspect') return send(200, state);
     if (req.method === 'GET') {
       state.reads.push(url.pathname);
+      state.readQueries.push(url.pathname + url.search);
       const snapshot = state;
       snapshot.activeReads++;
       snapshot.maxConcurrentReads = Math.max(snapshot.maxConcurrentReads, snapshot.activeReads);
@@ -269,13 +298,258 @@ export function createMockBackend() {
       state.org = body.membershipId === ids.otherMembership ? ids.otherOrg : ids.org;
       return send(200, context());
     }
+    if (url.pathname === '/api/v1/realtime/account-inbox/changes') {
+      state.accountCursorRequests.push(url.searchParams.get('cursor'));
+      if (state.resyncOnce) {
+        state.resyncOnce = false;
+        return send(409, { code: 'REALTIME_RESYNC_REQUIRED' });
+      }
+      return send(200, {
+        changes: state.accountChanges,
+        nextCursor: 'fixture-cursor',
+        hasMore: false,
+        watermark: 'opaque-watermark',
+        epoch: 'fixture-epoch',
+        contextRevision: 'fixture-context',
+        retryAfterMilliseconds: 15000,
+      });
+    }
     const op = operations.find(
       (o) =>
         o.method === req.method &&
         new RegExp('^' + o.path.replace(/\{[^}]+\}/g, '[^/]+') + '$').test(url.pathname),
     );
+    if (url.pathname === '/api/v1/files' && req.method === 'POST')
+      return send(201, named('FileAssetResult', { id: ids.user, status: 'Ready' }));
     if (!op) return send(404, { status: 404 });
     let result = sample(op.response);
+    const personalRequest = () =>
+      named('PersonalClassRequestDto', {
+        id: ids.user,
+        requesterUserId: ids.user,
+        details: {
+          title: 'کلاس شخصی آزمایشی',
+          purpose: 'آموزش مهارت',
+          description: null,
+          suggestedCapacity: 12,
+          suggestedManagerUserId: ids.user,
+          suggestedTeacherUserId: null,
+        },
+        status: state.personalStatus,
+        version: state.personalVersion,
+        createdClassId: state.personalStatus === 'Approved' ? ids.class : null,
+        progress: {
+          classState: 'Provisioning',
+          managerAccepted: false,
+          groupState: 'Pending',
+          channelState: 'Pending',
+        },
+        privateLearnerAnswers: ['DO_NOT_EXPOSE_PRIVATE_ANSWER'],
+      });
+    const personalGrant = () =>
+      named('PersonalClassAcademicPermissionDto', {
+        id: ids.user,
+        personalClassId: ids.class,
+        membershipId: ids.membership,
+        parentGrantId: null,
+        capabilities: state.grantCapabilities,
+        version: state.grantVersion,
+        isEffective: state.grantCapabilities !== 'None',
+        revokedAtUtc: state.grantCapabilities === 'None' ? now() : null,
+      });
+    if (op.path.startsWith('/api/admin/v1/personal-class-requests')) {
+      if (req.method === 'POST') {
+        if (body.expectedVersion !== state.personalVersion)
+          return send(409, { code: 'PERSONAL_CLASS_VERSION_CONFLICT' });
+        state.personalStatus = body.decision;
+        state.personalVersion = 'AAAAAAAAAAM=';
+        result = personalRequest();
+      } else if (op.path.endsWith('/history'))
+        result = {
+          items: [
+            named('PersonalClassDecisionDto', {
+              action: state.personalStatus,
+              reason: 'تصمیم آزمایشی',
+            }),
+          ],
+          page: 1,
+          pageSize: 30,
+          totalCount: 1,
+        };
+      else if (op.path.endsWith('/{id}')) result = personalRequest();
+      else
+        result = {
+          items: [personalRequest()],
+          page: Number(url.searchParams.get('page') ?? 1),
+          pageSize: Number(url.searchParams.get('pageSize') ?? 30),
+          totalCount: 1,
+        };
+    }
+    if (op.path.startsWith('/api/admin/v1/personal-classes/')) {
+      if (op.path.endsWith('/memberships')) {
+        const member = (overrides) =>
+          named('PlatformPersonalClassMembershipDto', {
+            membershipId: ids.membership,
+            personalClassId: ids.class,
+            userId: ids.user,
+            displayName: 'مدیر آزمایشی',
+            username: 'manager.test',
+            localRoles: state.membershipRole,
+            status: state.membershipStatus,
+            endedAtUtc: null,
+            membershipVersion: state.membershipVersion,
+            canReceivePlatformAcademicGrant: state.membershipCanGrant,
+            ...overrides,
+          });
+        let items = state.personalMemberships ?? [
+          member({}),
+          member({
+            membershipId: ids.user,
+            displayName: 'معلم آزمایشی',
+            localRoles: 'Teacher',
+            canReceivePlatformAcademicGrant: false,
+          }),
+          member({
+            membershipId: ids.org,
+            displayName: 'مدیر سابق',
+            status: 'Ended',
+            endedAtUtc: now(),
+            canReceivePlatformAcademicGrant: false,
+          }),
+        ];
+        const term = url.searchParams.get('search')?.trim().toLowerCase();
+        const role = url.searchParams.get('role');
+        if (role && role !== 'Manager' && role !== 'Teacher')
+          return send(400, { code: 'PLATFORM_QUERY_INVALID' });
+        items = items.filter(
+          (m) =>
+            (!term || (m.displayName + ' ' + m.username).toLowerCase().includes(term)) &&
+            (!role ||
+              m.localRoles
+                .split(',')
+                .map((r) => r.trim())
+                .includes(role)) &&
+            (url.searchParams.get('activeOnly') !== 'true' || m.status === 'Active'),
+        );
+        const page = Number(url.searchParams.get('page') ?? 1),
+          pageSize = Number(url.searchParams.get('pageSize') ?? 30);
+        result = {
+          items: items.slice((page - 1) * pageSize, page * pageSize),
+          page,
+          pageSize,
+          totalCount: items.length,
+        };
+      } else if (req.method === 'PUT') {
+        const prior = state.grantIntents[body.clientOperationId];
+        if (prior) {
+          if (JSON.stringify(prior.body) !== JSON.stringify(body))
+            return send(409, { code: 'PERSONAL_CLASS_REQUEST_CONFLICT' });
+          return send(200, prior.result);
+        }
+        if (
+          state.membershipRole !== 'Manager' ||
+          state.membershipStatus !== 'Active' ||
+          !state.membershipCanGrant
+        )
+          return send(409, { code: 'PERSONAL_CLASS_MANAGER_REQUIRED' });
+        if (
+          body.expectedMembershipVersion !== state.membershipVersion ||
+          body.expectedGrantVersion !== state.grantVersion
+        )
+          return send(409, { code: 'PERSONAL_CLASS_VERSION_CONFLICT' });
+        state.grantCapabilities = body.capabilities;
+        state.grantVersion = 'AAAAAAAAAAQ=';
+        result = personalGrant();
+        state.grantIntents[body.clientOperationId] = { body, result };
+      } else if (op.path.endsWith('/history'))
+        result = {
+          items: [
+            named('PersonalClassHistoryItem', {
+              action: 'GrantChanged',
+              resourceType: 'PersonalClass',
+              privateFeedback: 'DO_NOT_EXPOSE_PRIVATE_FEEDBACK',
+            }),
+          ],
+          page: 1,
+          pageSize: 30,
+          totalCount: 1,
+        };
+      else
+        result = {
+          items: state.grantVersion ? [personalGrant()] : [],
+          page: Number(url.searchParams.get('page') ?? 1),
+          pageSize: Number(url.searchParams.get('pageSize') ?? 30),
+          totalCount: state.grantVersion ? 1 : 0,
+        };
+    }
+    const source = () =>
+      named('EducationalSourceResult', {
+        sourceId: ids.user,
+        scope: state.sourceScope,
+        version: state.sourceVersion,
+        title: 'راهنمای کتابخانه',
+        publicationStatus: state.sourcePublished ? 'Published' : 'Draft',
+        status: 'Active',
+        visibility: 'Hidden',
+        revision: 1,
+        capabilities: {
+          canRead: true,
+          canWrite: !state.sourcePublished,
+          canCreateVersion: true,
+          canPublish: !state.sourcePublished,
+          canArchive: true,
+          canDownload: state.sourceCanDownload,
+          canChangeVisibility: true,
+          canUseForAi: false,
+        },
+        file: {
+          fileAssetId: ids.user,
+          originalFileName: 'guide.pdf',
+          contentType: 'application/pdf',
+          sizeBytes: 16,
+          status: 'Ready',
+        },
+      });
+    if (url.pathname === '/api/admin/v1/library/sources') {
+      if (req.method === 'POST') {
+        const previous = state.librarySources.find(
+          (s) => s.clientOperationId === body.clientOperationId,
+        );
+        result = previous ?? { ...source(), ...body };
+        if (!previous) state.librarySources.push(result);
+      } else {
+        const all = Array.from({ length: 42 }, (_, i) => ({
+          ...source(),
+          sourceId: i === 0 ? ids.user : `10000000-0000-4000-8000-${String(i).padStart(12, '0')}`,
+          title: i === 0 ? 'راهنمای کتابخانه' : 'منبع ' + i,
+        }));
+        const filtered = all.filter(
+          (s) =>
+            !url.searchParams.get('Search') || s.title.includes(url.searchParams.get('Search')),
+        );
+        const page = Number(url.searchParams.get('Page') ?? 1),
+          pageSize = Number(url.searchParams.get('PageSize') ?? 20);
+        result = {
+          page,
+          pageSize,
+          totalCount: filtered.length,
+          items: filtered.slice((page - 1) * pageSize, page * pageSize),
+        };
+      }
+    }
+    if (url.pathname.startsWith('/api/v1/sources/')) {
+      if (req.method !== 'GET') {
+        if (body.expectedVersion !== state.sourceVersion)
+          return send(412, { code: 'SOURCE_VERSION_CONFLICT' });
+        state.sourceVersion += '-next';
+        if (url.pathname.endsWith('/publish')) state.sourcePublished = true;
+      }
+      if (url.pathname.endsWith('/content')) {
+        res.writeHead(200, { 'Content-Type': 'application/pdf' });
+        return res.end('%PDF-fixture');
+      }
+      result = source();
+    }
     if (op.path === '/api/admin/v1/provisioning') {
       if (req.method === 'POST') {
         const previous = state.provisions.find(
@@ -295,9 +569,16 @@ export function createMockBackend() {
           });
         if (!previous) state.provisions.push(item);
         result = { request: item, replayed: !!previous };
+        if (state.provisionResponseLost) {
+          state.provisionResponseLost = false;
+          return send(504, { code: 'TIMEOUT' });
+        }
       } else {
         const items = state.provisions.filter(
-          (p) => !url.searchParams.get('status') || p.status === url.searchParams.get('status'),
+          (p) =>
+            (!url.searchParams.get('status') || p.status === url.searchParams.get('status')) &&
+            (!url.searchParams.get('clientOperationId') ||
+              p.clientOperationId === url.searchParams.get('clientOperationId').trim()),
         );
         const page = Number(url.searchParams.get('page') ?? 1),
           pageSize = Number(url.searchParams.get('pageSize') ?? 30);
@@ -374,7 +655,15 @@ export function createMockBackend() {
           title: 'ریاضی هشتم',
           organization: { id: ids.org, name: 'مدرسه آزمایشی ماکان' },
         }),
-        activeLearners: [{ intentionally: 'untyped-private-value' }],
+        activeLearners: [
+          named('PlatformClassPerson', {
+            referenceId: ids.membership,
+            personId: ids.user,
+            userId: null,
+            displayName: 'فراگیر بدون حساب',
+            privateAnswer: 'DO_NOT_EXPOSE_PRIVATE_ANSWER',
+          }),
+        ],
         activeLearnersTruncated: true,
         activeTeachersTruncated: true,
       });
@@ -524,14 +813,17 @@ export function createMockBackend() {
       state.draftCanPublish = true;
       state.draftVersion = 'draft-v2';
     }
-    if (op.path.endsWith('/validation') || op.path.endsWith('/draft'))
+    if (
+      op.path.startsWith('/api/admin/v1/commerce/') &&
+      (op.path.endsWith('/validation') || op.path.endsWith('/draft'))
+    )
       result = {
         planVersionId: ids.user,
         missingFields: state.draftCanPublish ? [] : ['saleTermsReference'],
         canPublish: state.draftCanPublish,
         version: state.draftVersion,
       };
-    if (op.path.endsWith('/publish')) {
+    if (op.path.startsWith('/api/admin/v1/commerce/') && op.path.endsWith('/publish')) {
       if (!state.draftCanPublish || body.expectedVersion !== state.draftVersion)
         return send(409, { code: 'VERSION_CONFLICT' });
     }

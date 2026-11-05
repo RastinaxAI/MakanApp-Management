@@ -18,6 +18,8 @@ import {
 import { serverConfig } from '@/lib/server/config';
 
 import { hasVerifiedPermission } from '@/lib/permissions';
+import { validPersonalClassCommand } from '@/lib/personal-class-policy';
+import { libraryActionAllowed, type LibrarySource } from '@/lib/library-policy';
 export const runtime = 'nodejs';
 async function handler(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   if (request.method !== 'GET' && !checkOrigin(request)) return problem(403, 'ORIGIN_REJECTED');
@@ -43,7 +45,10 @@ async function handler(request: Request, { params }: { params: Promise<{ path: s
       if (owner.error) return owner.error;
       if (request.headers.get('X-Makan-Context') !== session.revision)
         return problem(409, 'CONTEXT_CHANGED');
-      if (path.startsWith('/api/admin/') && path !== '/api/admin/v1/me') {
+      if (
+        (path.startsWith('/api/admin/') || path.startsWith('/api/v1/sources/')) &&
+        path !== '/api/admin/v1/me'
+      ) {
         const binding = serverConfig().bindings[operationKey(op)];
         if (!binding) return problem(403, 'PERMISSION_MAPPING_UNVERIFIED');
         if (
@@ -99,6 +104,38 @@ async function handler(request: Request, { params }: { params: Promise<{ path: s
       }
       for (const param of op.parameters.filter((p) => p.in === 'query' && p.required))
         if (!query.has(param.name)) return problem(400, 'MISSING_QUERY_PARAMETER');
+      // Shared source routes must never become a browser for personal or school resources.
+      const sourceId = /^\/api\/v1\/sources\/([^/]+)/.exec(path)?.[1];
+      if (sourceId) {
+        if (!validator({ type: 'string', format: 'uuid' }).safeParse(sourceId).success)
+          return problem(400, 'VALIDATION_ERROR');
+        const revision = query.get('revision');
+        if (revision !== null && (!/^\d+$/.test(revision) || Number(revision) < 1))
+          return problem(400, 'INVALID_QUERY_PARAMETER');
+        const check = await authenticatedFetch(
+          id,
+          (await readSession(id))!,
+          `/api/v1/sources/${sourceId}${revision ? '?revision=' + revision : ''}`,
+        );
+        if (!check.response.ok) return safeResponse(check.response);
+        const parsed = validator({
+          $ref: '#/components/schemas/EducationalSourceResult',
+        }).safeParse(await check.response.json().catch(() => null));
+        if (!parsed.success) return problem(502, 'CONTRACT_MISMATCH');
+        const source = parsed.data as LibrarySource;
+        if (source.scope !== 'Library' || source.sourceId.toLowerCase() !== sourceId.toLowerCase())
+          return problem(404);
+        if (!libraryActionAllowed(source, request.method, path))
+          return problem(403, 'PERMISSION_DENIED');
+        if (request.method === 'GET' && !path.endsWith('/content') && !path.endsWith('/processing'))
+          return safeResponse(Response.json(source), op.response);
+      }
+      if (path === '/api/admin/v1/library/sources') {
+        // The catalog is platform-owned; do not accept a school scope selector.
+        if ((query.has('Scope') && query.get('Scope') !== 'Library') || query.has('ClassId'))
+          return problem(400, 'LIBRARY_SCOPE_REQUIRED');
+        if (request.method === 'GET') query.set('Scope', 'Library');
+      }
       let body: string | undefined;
       if (op.body) {
         let input: unknown;
@@ -113,6 +150,16 @@ async function handler(request: Request, { params }: { params: Promise<{ path: s
             { status: 400, code: 'VALIDATION_ERROR', errors: valid.error.flatten().fieldErrors },
             { status: 400 },
           );
+        if (
+          /^\/api\/admin\/v1\/personal-class/.test(path) &&
+          !validPersonalClassCommand(path, valid.data as Record<string, unknown>)
+        )
+          return problem(400, 'VALIDATION_ERROR');
+        if (path === '/api/admin/v1/library/sources') {
+          const value = valid.data as Record<string, unknown>;
+          if (value.scope !== 'Library' || value.classId !== null)
+            return problem(400, 'LIBRARY_SCOPE_REQUIRED');
+        }
         body = JSON.stringify(valid.data);
       }
       const latest = await readSession(id);
@@ -127,6 +174,20 @@ async function handler(request: Request, { params }: { params: Promise<{ path: s
           body,
         },
       );
+      if (path === '/api/admin/v1/library/sources' && response.ok) {
+        const data = await response
+          .clone()
+          .json()
+          .catch(() => null);
+        const parsed = op.response && validator(op.response).safeParse(data);
+        if (!parsed || !parsed.success) return problem(502, 'CONTRACT_MISMATCH');
+        const values =
+          request.method === 'GET'
+            ? (parsed.data as { items: LibrarySource[] }).items
+            : [parsed.data as LibrarySource];
+        if (values.some((source) => source.scope !== 'Library'))
+          return problem(502, 'CONTRACT_MISMATCH');
+      }
       if (path === '/api/v1/workspaces/select' && response.ok) {
         const after = await readSession(id);
         if (after) await writeSession(id, { ...after, revision: randomUUID() });

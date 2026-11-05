@@ -30,6 +30,8 @@ docker run --rm --network none --mount "type=bind,source=$($PWD.Path),target=/wo
 
 خروجی تست‌ها در `maintenance/generated` است. `maintenance/history` سوابق قدیمی است و در build، typecheck و بسته استقرار وارد نمی‌شود. تصاویر جاری راهنما در `docs/screenshots/redesign-20261030` و PDF قابل ارسال در `public/guides/makan-owner-guide.pdf` قرار دارد.
 
+تست‌های تصویری به‌صورت پیش‌فرض تصاویر موقت را در `maintenance/generated/redesign-screenshots` می‌نویسند و تصاویر راهنمای تحویل‌شده را بازنویسی نمی‌کنند. فقط برای بازسازی عمدی راهنما، متغیر `MAKAN_GUIDE_SCREENSHOTS=true` را پیش از اجرای تست‌های `redesign.spec.ts` تنظیم کنید.
+
 بازسازی PDF پس از آماده‌بودن تصاویر و وابستگی‌های توسعه:
 
 ```powershell
@@ -46,6 +48,31 @@ npm test
 ```
 
 نگاشت مجوزها از `contracts/platform-permissions.json` می‌آید. نقش مالک مجوز اضافی عملیات یا دسترسی به محتوای خصوصی ایجاد نمی‌کند.
+
+## آزمون زنده اتصال
+
+پس از build، ابزار زیر یک نمونه موقت محلی پنل روی پورت 3112 اجرا می‌کند و آن را به بک‌اند تنظیم‌شده وصل می‌کند. هیچ توکن، شماره، کد ورود یا بدنه خصوصی در گزارش ذخیره نمی‌شود. مقدار متغیرها را فقط در نشست ترمینال وارد کنید و در فایل یا Git ننویسید:
+
+```powershell
+$env:MAKAN_LIVE_OWNER_PHONE='<شماره حساب مالک آزمایشی>'
+$env:MAKAN_LIVE_OTP='<کد ورود معتبر محیط تست>'
+# اختیاری: بررسی رد ورود حساب غیرمالک
+$env:MAKAN_LIVE_NONOWNER_PHONE='<شماره حساب غیرمالک آزمایشی>'
+node scripts/verify-live-integration.mjs
+```
+
+حالت پیش‌فرض، صفحه‌ها و APIهای خواندنی را بررسی می‌کند. آزمون تغییرات کتابخانه را فقط با `--library-lifecycle` و روی سرور تست `http://94.184.32.84:8090` اجرا کنید. این آزمون PDF راهنمای موجود را بارگذاری، یک منبع QA پنهان ایجاد و در پایان آن را بایگانی می‌کند. رکورد بایگانی‌شده برای پیگیری باقی می‌ماند؛ حذف منبع در قرارداد وجود ندارد. نتیجه در `maintenance/generated/integration-vnext/live-report.json` ذخیره می‌شود. نشست آزمایشی و سرویس موقت در پایان بسته می‌شوند.
+
+تست مستقل کتابخانه: `npx playwright test tests/e2e/library.spec.ts`. گزارش HTML مجموعه مرورگر در `maintenance/generated/playwright-report/index.html` است. نتیجه این تست‌های fixture را با تأیید زنده عملیات واقعی یکی ندانید.
+
+بررسی image مستقل Docker پس از تنظیم همان متغیرهای حساب آزمایشی:
+
+```powershell
+docker build -t makan-management:integration-vnext .
+node scripts/verify-docker-integration.mjs
+```
+
+این ابزار فقط کانتینر موقت خودش را روی پورت 3113 ایجاد و در پایان حذف می‌کند؛ به volume نشست‌های نصب موجود وصل نمی‌شود و کلید نشست تصادفی آن در گزارش نوشته نمی‌شود. نتیجه در `maintenance/generated/integration-vnext/docker-report.json` ذخیره می‌شود.
 
 ساخت بسته قابل ارسال از ریشه پروژه:
 
